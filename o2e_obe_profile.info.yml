@@ -1,7 +1,7 @@
 name: O2E OBE Profile
 type: profile
 description: 'This Drupal installation profile is used to create the D9 OBEs.'
-core_version_requirement: '^8.8 || ^9'
+core_version_requirement: '^9'
 
 # Modules to install to support the profile.
 install:
@@ -10,7 +10,6 @@ install:
   - breakpoint
   - color
   - config
-  - comment
   - contextual
   - contact
   - quickedit
@@ -18,7 +17,6 @@ install:
   - image
   - options
   - path
-  - taxonomy
   - dblog
   - search
   - shortcut
@@ -26,10 +24,9 @@ install:
   - field_ui
   - file
   - rdf
-  - views
-  - views_ui
   - editor
   - ckeditor
+  - webform
 
 # Required modules
 # Note that any dependencies of the modules listed here will be installed automatically.
