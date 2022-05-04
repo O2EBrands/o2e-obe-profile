@@ -1,7 +1,7 @@
 {
   "name": "o2ebrands/o2e-obe-profile",
   "description": "This install profile is used for the D9 OBEs.",
-  "type": "project",
+  "type": "drupal-profile",
   "autoload": {
       "psr-4": {
           "O2ebrands\\O2eObeProfile\\": "src/"
