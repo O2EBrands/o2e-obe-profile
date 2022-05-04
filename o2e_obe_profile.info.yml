@@ -1,5 +1,5 @@
 name: O2E OBE Profile
-type: profile
+type: drupal-profile
 description: 'This Drupal installation profile is used to create the D9 OBEs.'
 core_version_requirement: '^9'
 
@@ -8,17 +8,14 @@ install:
   - history
   - block_content
   - breakpoint
-  - color
   - config
   - contextual
-  - contact
   - quickedit
   - help
   - image
   - options
   - path
   - dblog
-  - search
   - shortcut
   - toolbar
   - field_ui
