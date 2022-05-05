@@ -1,5 +1,5 @@
 {
-  "name": "o2ebrands/o2e-obe-profile",
+  "name": "o2ebrands/o2e_obe_profile",
   "description": "This install profile is used for the D9 OBEs.",
   "type": "drupal-profile",
   "autoload": {
