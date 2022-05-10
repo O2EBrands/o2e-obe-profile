@@ -14,7 +14,7 @@
       }
   ],
   "require": {
-    "php": ">=7.4",
+    "php": ">=8.0",
     "drupal/admin_toolbar": "^3.1",
     "drupal/allowed_formats": "^1.4",
     "drupal/big_pipe_sessionless": "^2.0",
