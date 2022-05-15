@@ -1,0 +1,9 @@
+o2e_obe_common.admin_settings_form:
+  path: '/admin/config/o2e_obe_common/adminsettings'
+  defaults:
+    _form: '\Drupal\o2e_obe_common\Form\AdminSettingsForm'
+    _title: 'AdminSettingsForm'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE
