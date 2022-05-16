@@ -6,9 +6,9 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class AdminSettingsForm.
+ * Class SettingsForm.
  */
-class AdminSettingsForm extends ConfigFormBase {
+class SettingsForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
@@ -23,7 +23,7 @@ class AdminSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'admin_settings_form';
+    return 'common_settings_form';
   }
 
   /**
