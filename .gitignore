@@ -1,2 +1,3 @@
 *.DS_Store
-web/themes/custom/node_modules
+!web/themes/custom/o2e_obe_subtheme/node_modules/
+web/themes/custom/o2e_obe_subtheme/node_modules/*
