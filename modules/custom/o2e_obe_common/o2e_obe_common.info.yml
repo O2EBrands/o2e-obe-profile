@@ -1,0 +1,5 @@
+name: 'Common'
+type: module
+description: 'O2E common settings'
+core_version_requirement: ^9.3
+package: 'O2E OBE'

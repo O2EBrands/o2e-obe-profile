@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains o2e_obe_common.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function o2e_obe_common_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the o2e_obe_common module.
+    case 'help.page.o2e_obe_common':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('O2E common settings') . '</p>';
+      return $output;
+
+    default:
+  }
+}
