@@ -40,7 +40,8 @@
     "drupal/webform": "^6.1",
     "drupal/xmlsitemap": "^1.2",
     "drush/drush": "^10.6.2",
-    "drupal/console": "^1.9"
+    "drupal/console": "^1.9",
+    "drupal/key": "^1.15"
   },
   "require-dev": {
     "drupal/core-dev": "~9.3.3",

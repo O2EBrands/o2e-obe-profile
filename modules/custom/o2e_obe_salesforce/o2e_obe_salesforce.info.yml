@@ -1,0 +1,5 @@
+name: 'O2E OBE Salesforce'
+type: module
+description: 'This module handles the connection with the O2E SF instance for ther OBE.'
+core_version_requirement: ^8 || ^9
+package: 'O2E OBE'
