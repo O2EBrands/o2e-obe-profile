@@ -39,7 +39,7 @@
     "drupal/token": "^1.10",
     "drupal/webform": "^6.1",
     "drupal/xmlsitemap": "^1.2",
-    "drush/drush": "^10.6.2",
+    "drush/drush": "^11 || ^12",
     "drupal/console": "^1.9"
   },
   "require-dev": {
