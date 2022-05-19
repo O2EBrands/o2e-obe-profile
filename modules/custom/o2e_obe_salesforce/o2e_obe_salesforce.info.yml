@@ -1,5 +1,5 @@
-name: 'O2E OBE Salesforce'
+name: 'O2E Salesforce Integration'
 type: module
 description: 'This module handles the connection with the O2E SF instance for ther OBE.'
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9.3
 package: 'O2E OBE'
