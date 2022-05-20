@@ -2,19 +2,23 @@
 
 namespace Drupal\o2e_obe_salesforce\Form;
 
-use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class DefaultForm.
+ * SettingsForm class creates the OBE Salesforce configuration form.
+ *
+ * This form is only accessible in the back-end.
+ * 'salesforce_authentication_key' is a select to pick which SF API key will be used by the website.
+ * 'submit' button is used to submit the form.
  */
-class DefaultForm extends FormBase {
+class SettingsForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'default_form';
+    return 'settings_form';
   }
 
   /**
