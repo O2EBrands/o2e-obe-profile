@@ -17,19 +17,28 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
+  protected function getEditableConfigNames() {
+    return [
+      'o2e_obe_salesforce.settings',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getFormId() {
-    return 'settings_form';
+    return 'salesforce_settings_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $config = $this->config('o2e_obe_salesforce.settings');
     $form['salesforce_authentication_key'] = [
-      '#type' => 'select',
+      '#type' => 'key_select',
       '#title' => $this->t('Salesforce Authentication Key'),
       '#description' => $this->t('Select the SF environment authentication key needed for this website.'),
-      '#options' => ['Dev' => $this->t('Dev'), 'Test' => $this->t('Test'), 'Live' => $this->t('Live')],
       '#size' => 1,
       '#default_value' => 'Dev',
       '#weight' => '0',
@@ -39,22 +48,18 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('Submit'),
       '#weight' => '0',
     ];
-    $form['submit'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Submit'),
-    ];
-
-    return $form;
+    return parent::buildForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Display result.
-    foreach ($form_state->getValues() as $key => $value) {
-      \Drupal::messenger()->addMessage($key . ': ' . ($key === 'text_format'?$value['value']:$value));
-    }
+    parent::submitForm($form, $form_state);
+
+    $this->config('o2e_obe_salesforce.settings')
+      ->set('brand', $form_state->getValue('salesforce_authentication_key'))
+      ->save();
   }
 
 }
