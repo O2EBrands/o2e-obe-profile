@@ -1,0 +1,7 @@
+o2e_obe_salesforce.default_form:
+  path: '/admin/config/salesforce-settings'
+  defaults:
+    _form: '\Drupal\o2e_obe_salesforce\Form\SettingsForm'
+    _title: 'OBE Salesforce Configuration'
+  requirements:
+    _permission: 'access salesforce form'
