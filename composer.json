@@ -45,7 +45,9 @@
   },
   "require-dev": {
     "drupal/core-dev": "~9.3.3",
-    "drupal/devel": "^4.0"
+    "drupal/devel": "^4.0",
+    "symfony/phpunit-bridge": "^6.0",
+    "weitzman/drupal-test-traits": "^1.5"
   },
   "extra": {
     "composer-exit-on-patch-failure": true,
