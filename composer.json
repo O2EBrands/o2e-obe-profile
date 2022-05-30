@@ -40,12 +40,15 @@
     "drupal/webform": "^6.1",
     "drupal/xmlsitemap": "^1.2",
     "drush/drush": "^11 || ^12",
-    "drupal/console": "^1.9", 
+    "drupal/console": "^1.9",
+    "drupal/key": "^1.15",
     "kamermans/guzzle-oauth2-subscriber": "~1.0"
   },
   "require-dev": {
     "drupal/core-dev": "~9.3.3",
-    "drupal/devel": "^4.0"
+    "drupal/devel": "^4.0",
+    "symfony/phpunit-bridge": "^6.0",
+    "weitzman/drupal-test-traits": "^1.5"
   },
   "extra": {
     "composer-exit-on-patch-failure": true,
