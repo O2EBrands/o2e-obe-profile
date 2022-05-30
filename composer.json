@@ -41,7 +41,7 @@
     "drupal/xmlsitemap": "^1.2",
     "drush/drush": "^11 || ^12",
     "drupal/console": "^1.9", 
-    "drupal/simple_oauth": "^5.2"
+    "kamermans/guzzle-oauth2-subscriber": "~1.0"
   },
   "require-dev": {
     "drupal/core-dev": "~9.3.3",
