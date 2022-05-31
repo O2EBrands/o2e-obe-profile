@@ -17,7 +17,7 @@ class DefaultSiteSetupTest extends ExistingSiteBase {
   public function testSiteName() {
     /** @var \Drupal\Core\Config\Config $config */
     $config = $this->container->get('config.factory')
-      ->get('site.settings');
+      ->get('system.site');
     $this->assertEquals('O2E Online Booking Engine', $config->get('name'));
   }
 
