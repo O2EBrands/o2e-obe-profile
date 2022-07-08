@@ -1,0 +1,11 @@
+langcode: en
+name: 'O2E OBE Project'
+mail: business.technology-web.operations@o2ebrands.com
+slogan: ''
+page:
+  403: ''
+  404: ''
+  front: /user/login
+admin_compact_mode: false
+weight_select_max: 100
+default_langcode: en
