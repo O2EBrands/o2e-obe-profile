@@ -43,10 +43,41 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => 'Dev',
       '#weight' => '0',
     ];
-    $form['submit'] = [
-      '#type' => 'submit',
-      '#title' => $this->t('Submit'),
-      '#weight' => '0',
+    $form['api'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Salesforce API Information'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    ];
+    $form['api']['login_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Login URL'),
+      '#default_value' => $config->get('login_url'),
+    ];
+    $form['api']['api_username'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('API username'),
+      '#default_value' => $config->get('api_username'),
+    ];
+    $form['api']['api_password'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('API password'),
+      '#default_value' => $config->get('api_password'),
+    ];
+    $form['api']['grant_type'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('OBE Grant Type'),
+      '#default_value' => $config->get('grant_type'),
+    ];
+    $form['api']['client_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('OBE Client ID'),
+      '#default_value' => $config->get('client_id'),
+    ];
+    $form['api']['client_secret'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('OBE Client Secret'),
+      '#default_value' => $config->get('client_secret'),
     ];
     return parent::buildForm($form, $form_state);
   }
@@ -59,6 +90,12 @@ class SettingsForm extends ConfigFormBase {
 
     $this->config('o2e_obe_salesforce.settings')
       ->set('brand', $form_state->getValue('salesforce_authentication_key'))
+      ->set('login_url', $form_state->getValue('login_url'))
+      ->set('api_username', $form_state->getValue('api_username'))
+      ->set('api_password', $form_state->getValue('api_password'))
+      ->set('grant_type', $form_state->getValue('grant_type'))
+      ->set('client_id', $form_state->getValue('client_id'))
+      ->set('client_secret', $form_state->getValue('client_secret'))
       ->save();
   }
 
