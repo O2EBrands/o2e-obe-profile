@@ -1,0 +1,27 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.node.basic_page.default
+    - node.type.basic_page
+  module:
+    - layout_builder
+    - node
+    - system
+    - toolbar
+id: content_contributor
+label: 'Content Contributor'
+weight: 2
+is_admin: null
+permissions:
+  - 'access content overview'
+  - 'access toolbar'
+  - 'configure editable basic_page node layout overrides'
+  - 'create and edit custom blocks'
+  - 'create basic_page content'
+  - 'delete any basic_page content'
+  - 'delete own basic_page content'
+  - 'edit any basic_page content'
+  - 'revert basic_page revisions'
+  - 'view basic_page revisions'
+  - 'view the administration theme'
