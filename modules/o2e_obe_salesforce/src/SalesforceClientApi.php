@@ -135,7 +135,7 @@ class SalesforceClientApi {
     try {
       $result = $this->httpClient->request('GET', $api_url, $options);
       $result = Json::decode($result->getBody(), TRUE);
-      $this->loggerFactory->get('Salesforce - VerifyAreaServiced')->notice($query .' '. Json::encode($result));
+      $this->loggerFactory->get('Salesforce - VerifyAreaServiced')->notice($query . ' ' . Json::encode($result));
       return $result;
     }
     catch (RequestException $e) {
