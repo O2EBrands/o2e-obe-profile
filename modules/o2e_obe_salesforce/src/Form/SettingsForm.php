@@ -35,14 +35,6 @@ class SettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('o2e_obe_salesforce.settings');
-    $form['salesforce_authentication_key'] = [
-      '#type' => 'key_select',
-      '#title' => $this->t('Salesforce Authentication Key'),
-      '#description' => $this->t('Select the SF environment authentication key needed for this website.'),
-      '#size' => 1,
-      '#default_value' => 'Dev',
-      '#weight' => '0',
-    ];
     $form['api'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Salesforce API Information'),
@@ -79,6 +71,21 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('OBE Client Secret'),
       '#default_value' => $config->get('client_secret'),
     ];
+    $form['api']['duration'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Expire Druration'),
+      '#default_value' => !empty($config->get('duration')) ? $config->get('duration') : '900',
+    ];
+    $form['api']['brand'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Brand'),
+      '#default_value' => $config->get('brand'),
+    ];
+    $form['api']['api_url_segment'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Api URL Segment'),
+      '#default_value' => $config->get('api_url_segment'),
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -89,13 +96,15 @@ class SettingsForm extends ConfigFormBase {
     parent::submitForm($form, $form_state);
 
     $this->config('o2e_obe_salesforce.settings')
-      ->set('brand', $form_state->getValue('salesforce_authentication_key'))
       ->set('login_url', $form_state->getValue('login_url'))
       ->set('api_username', $form_state->getValue('api_username'))
       ->set('api_password', $form_state->getValue('api_password'))
       ->set('grant_type', $form_state->getValue('grant_type'))
       ->set('client_id', $form_state->getValue('client_id'))
       ->set('client_secret', $form_state->getValue('client_secret'))
+      ->set('duration', $form_state->getValue('duration'))
+      ->set('brand', $form_state->getValue('brand'))
+      ->set('api_url_segment', $form_state->getValue('api_url_segment'))
       ->save();
   }
 

@@ -1,2 +1,9 @@
-o2e_obe_salesforce:
-  salesforce_authentication_key: "Dev"
+brand: ''
+login_url: ''
+api_password: 
+grant_type: 
+client_id: 
+client_secret: ''
+api_username: 
+duration: ''
+api_url_segment: 

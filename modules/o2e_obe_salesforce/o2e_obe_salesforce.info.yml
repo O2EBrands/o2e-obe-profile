@@ -4,4 +4,4 @@ description: 'This module handles the connection with the O2E SF instance for th
 core_version_requirement: ^9.3
 package: 'O2E OBE'
 dependencies:
-  - key:key
+  - o2e_obe_common

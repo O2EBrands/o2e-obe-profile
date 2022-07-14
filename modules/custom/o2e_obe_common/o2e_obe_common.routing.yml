@@ -7,3 +7,10 @@ o2e_obe_common.settings_form:
     _permission: 'access obe common settings'
   options:
     _admin_route: TRUE
+o2e_obe_common.o2e_obe_config:
+  path: '/admin/config/links'
+  defaults:
+    _title: 'OBE Common Config'
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'administer site configuration'
