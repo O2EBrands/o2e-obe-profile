@@ -14,9 +14,15 @@ module:
   help: 0
   history: 0
   image: 0
+  layout_builder: 0
+  layout_builder_admin_theme: 0
+  layout_builder_modal: 0
+  layout_builder_operation_link: 0
+  layout_builder_restrictions: 0
+  layout_builder_restrictions_by_region: 0
+  layout_discovery: 0
   link: 0
   node: 0
-  o2e_obe_profile: 0
   options: 0
   path: 0
   path_alias: 0
@@ -29,9 +35,13 @@ module:
   user: 0
   webform: 0
   views: 10
+  o2e_obe_profile: 1000
 theme:
   bartik: 0
   seven: 0
   olivero: 0
+  bootstrap_barrio: 0
+  bootstrap_barrio_subtheme: 0
+  o2e_obe_subtheme: 0
   claro: 0
 profile: o2e_obe_profile
