@@ -8,9 +8,9 @@ o2e_obe_common.settings_form:
   options:
     _admin_route: TRUE
 o2e_obe_common.o2e_obe_config:
-  path: '/admin/config/links'
+  path: '/admin/config/obe-config'
   defaults:
-    _title: 'OBE Common Config'
+    _title: 'OBE Brand Configuration'
     _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
   requirements:
     _permission: 'administer site configuration'

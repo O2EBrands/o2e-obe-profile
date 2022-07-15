@@ -4,7 +4,7 @@ o2e_obe_salesforce.settings:
   type: config_object
   label: 'Salesforce Settings'
   mapping:
-    api:
+    sf_auth:
       type: mapping
       label: 'Fieldset for the fields'
       mapping:
@@ -26,6 +26,10 @@ o2e_obe_salesforce.settings:
         client_secret:
           type: text
           label: 'OBE Client Secret'
+    sf_verify_area:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
         duration:
           type: text
           label: 'Expire Druration'

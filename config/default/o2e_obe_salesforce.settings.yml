@@ -1,9 +1,11 @@
-brand: ''
-login_url: ''
-api_password: null
-grant_type: null
-client_id: null
-client_secret: ''
-api_username: null
-duration: ''
-api_url_segment: null
+sf_auth:
+  login_url: ''
+  api_username: 
+  api_password: 
+  grant_type: 
+  client_id: 
+  client_secret: ''
+sf_verify_area:
+  duration: ''
+  brand: ''
+  api_url_segment: 

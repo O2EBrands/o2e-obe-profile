@@ -9,8 +9,8 @@ use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
-use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * SalesforceClientApi class is create for handle the api requests.
@@ -84,12 +84,9 @@ class SalesforceClientApi {
    */
   public function getAuthToken() {
     $config = $this->config->get('o2e_obe_salesforce.settings');
-    foreach ($config->get() as $key => $value) {
-      if (empty($value) && $key != '_core') {
-        $message = $this->t(' @field field is required in the Salesforce configuration.', ['@field' => $key]);
-        $this->loggerFactory->get('Salesforce - Api Fields ')->error($message);
-        return [];
-      }
+    $checkAuthConfig = $this->checkAuthConfig($config);
+    if (empty($checkAuthConfig)) {
+      return [];
     }
     $currentTimeStamp = $this->timeService->getRequestTime();
     /* If last authentication was in last 15 min (900 seconds),
@@ -98,28 +95,28 @@ class SalesforceClientApi {
     if (!empty($this->state->get('authToken')) && $this->state->get('lastAuthTime')) {
       $timeDifference = $currentTimeStamp - $this->state->get('lastAuthTime');
 
-      if ($timeDifference < $config->get('duration')) {
+      if ($timeDifference < $config->get('sf_verify_area')['duration']) {
         return $this->state->get('authtoken');
       }
     }
-    $endpoint = $config->get('login_url');
+    $endpoint = $config->get('sf_auth')['login_url'];
     $options = [
-      'grant_type' => $config->get('grant_type'),
-      'client_id' => $config->get('client_id'),
-      'client_secret' => $config->get('client_secret'),
-      'username' => $config->get('api_username'),
-      'password' => $config->get('api_password'),
+      'grant_type' => $config->get('sf_auth')['grant_type'],
+      'client_id' => $config->get('sf_auth')['client_id'],
+      'client_secret' => $config->get('sf_auth')['client_secret'],
+      'username' => $config->get('sf_auth')['api_username'],
+      'password' => $config->get('sf_auth')['api_password'],
     ];
     try {
       // Get the access token first.
       $res = $this->httpClient->request('POST', $endpoint, ['form_params' => $options]);
       $result = Json::decode($res->getBody(), TRUE);
       $this->state->set('authtoken', $result['access_token']);
-      $this->state->set('sfUrl', $result['instance_url'] . $config->get('api_url_segment'));
+      $this->state->set('sfUrl', $result['instance_url'] . $config->get('sf_verify_area')['api_url_segment']);
       $this->state->set('lastAuthTime', $currentTimeStamp);
       return $result['access_token'];
     }
-    catch (RequestException $e) {
+    catch (ClientException $e) {
       $this->loggerFactory->get('Salesforce - Token Fail')->error($e->getMessage());
     }
   }
@@ -127,19 +124,40 @@ class SalesforceClientApi {
   /**
    * Get request infomation.
    */
-  public function salesforceClientGet($endpoint, $body, array $options = []) {
+  public function salesforceClientGet(string $endpoint, array $options = []) {
     $auth_token = $this->getAuthToken();
-    $query = UrlHelper::buildQuery($body);
-    $api_url = $this->state->get('sfUrl') . $endpoint . '?' . $query;
-    $options['headers']['Authorization'] = 'Bearer ' . $auth_token;
-    try {
-      $result = $this->httpClient->request('GET', $api_url, $options);
-      $result = Json::decode($result->getBody(), TRUE);
-      $this->loggerFactory->get('Salesforce - VerifyAreaServiced')->notice($query . ' ' . Json::encode($result));
-      return $result;
+    if (!empty($auth_token)) {
+      $api_url = $this->state->get('sfUrl') . $endpoint;
+      $options['headers']['Authorization'] = 'Bearer ' . $auth_token;
+      try {
+        $result = $this->httpClient->request('GET', $api_url, $options);
+        $result = Json::decode($result->getBody(), TRUE);
+        $this->loggerFactory->get('Salesforce - VerifyAreaServiced')->notice($query . ' ' . Json::encode($result));
+        return $result;
+      }
+      catch (ClientException $e) {
+        $this->loggerFactory->get('Salesforce - SalesforceClientGet Fail')->error($e->getMessage());
+      }
     }
-    catch (RequestException $e) {
-      $this->loggerFactory->get('Salesforce - SalesforceClientGet Fail')->error($e->getMessage());
+    else {
+      return [];
+    }
+  }
+
+  /**
+   * CheckAuthConfig method to if configuration details are correctly added.
+   */
+  public function checkAuthConfig($config) {
+    $conifg_data = array_merge($config->get('sf_auth'), $config->get('sf_verify_area'));
+    foreach ($conifg_data as $key => $value) {
+      if (empty($value)) {
+        $message = $this->t(' @field field is required in the Salesforce configuration.', ['@field' => $key]);
+        $this->loggerFactory->get('Salesforce - Api Fields ')->error($message);
+        return FALSE;
+      }
+      else {
+        return TRUE;
+      }
     }
   }
 
