@@ -1,0 +1,35 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.node.basic_page.default
+    - node.type.basic_page
+  module:
+    - layout_builder
+    - layout_builder_modal
+    - node
+    - system
+    - webform
+id: qa
+label: QA
+weight: 3
+is_admin: null
+permissions:
+  - 'access content overview'
+  - 'access site reports'
+  - 'administer layout builder modal'
+  - 'change own username'
+  - 'configure editable basic_page node layout overrides'
+  - 'create and edit custom blocks'
+  - 'create basic_page content'
+  - 'delete basic_page revisions'
+  - 'delete own basic_page content'
+  - 'edit any basic_page content'
+  - 'edit own basic_page content'
+  - 'revert basic_page revisions'
+  - 'select account cancellation method'
+  - 'view all revisions'
+  - 'view any webform submission'
+  - 'view basic_page revisions'
+  - 'view own unpublished content'
+  - 'view the administration theme'
