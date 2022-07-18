@@ -1,4 +1,4 @@
-o2e_obe_salesforce.obe.salesforc_setting_form:
+o2e_obe_salesforce.api_configuration:
   title: OBE Salesforce Configuration
   route_name: o2e_obe_salesforce.default_form
   parent: o2e_obe_common.o2e_obe_config
