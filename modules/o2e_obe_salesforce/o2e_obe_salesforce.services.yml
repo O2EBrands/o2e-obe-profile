@@ -1,4 +1,4 @@
 services:
  o2e_obe_salesforce.client.api:
    class: Drupal\o2e_obe_salesforce\SalesforceClientApi
-   arguments: ['@config.factory','@http_client', '@logger.factory', '@datetime.time', '@state']
+   arguments: ['@config.factory','@http_client', '@logger.factory', '@datetime.time', '@state', '@tempstore.private']

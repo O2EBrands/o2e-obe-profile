@@ -1,6 +1,6 @@
 o2e_obe_salesforce.api_configuration:
   title: OBE Salesforce Configuration
-  route_name: o2e_obe_salesforce.default_form
+  route_name: o2e_obe_salesforce.settings_form
   parent: o2e_obe_common.o2e_obe_config
   description: 'OBE Salesforce Configuration'
   weight: 2

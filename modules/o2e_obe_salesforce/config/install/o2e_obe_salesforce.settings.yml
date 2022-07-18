@@ -1,3 +1,5 @@
+sf_brand:
+  brand: ''
 sf_auth:
   login_url: ''
   api_password: 
@@ -5,7 +7,7 @@ sf_auth:
   client_id: 
   client_secret: ''
   api_username:
+  token_expiry: '18000'
 sf_verify_area:  
-  duration: ''
-  brand: ''
+  service_expiry: '900'
   api_url_segment:

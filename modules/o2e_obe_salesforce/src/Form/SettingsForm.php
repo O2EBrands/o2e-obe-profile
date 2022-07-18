@@ -34,11 +34,20 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $test = \Drupal::service('o2e_obe_salesforce.client.api')->salesforceClientGet('VerifyAreaServiced', ['query' => ['from_postal_code' => '90211', 'brand' => '1-800-GOT-JUNK?']]);
     $config = $this->config('o2e_obe_salesforce.settings');
+    $form['sf_brand'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Site Brand'),
+      '#tree' => TRUE,
+    ];
+    $form['sf_brand']['brand'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Brand'),
+      '#default_value' => $config->get('sf_brand')['brand'],
+    ];
     $form['sf_auth'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t('Salesforce API Information'),
+      '#title' => $this->t('Oauth Details'),
       '#tree' => TRUE,
     ];
     $form['sf_auth']['login_url'] = [
@@ -71,20 +80,20 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('OBE Client Secret'),
       '#default_value' => $config->get('sf_auth')['client_secret'],
     ];
+    $form['sf_auth']['token_expiry'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Token Expiry'),
+      '#default_value' => !empty($config->get('sf_verify_area')['token_expiry']) ? $config->get('sf_verify_area')['token_expiry'] : '18000',
+    ];
     $form['sf_verify_area'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t('Salesforce Verify Area Serviced information'),
+      '#title' => $this->t('Salesforce Verify Area Serviced Details'),
       '#tree' => TRUE,
     ];
-    $form['sf_verify_area']['brand'] = [
+    $form['sf_verify_area']['service_expiry'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Brand'),
-      '#default_value' => $config->get('sf_verify_area')['brand'],
-    ];
-    $form['sf_verify_area']['duration'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Expire Druration'),
-      '#default_value' => !empty($config->get('sf_verify_area')['duration']) ? $config->get('sf_verify_area')['duration'] : '900',
+      '#title' => $this->t('Service Expiry'),
+      '#default_value' => !empty($config->get('sf_verify_area')['service_expiry']) ? $config->get('sf_verify_area')['service_expiry'] : '900',
     ];
     $form['sf_verify_area']['api_url_segment'] = [
       '#type' => 'textfield',
@@ -100,6 +109,7 @@ class SettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
     $this->config('o2e_obe_salesforce.settings')
+      ->set('sf_brand', $form_state->getValue('sf_brand'))
       ->set('sf_auth', $form_state->getValue('sf_auth'))
       ->set('sf_verify_area', $form_state->getValue('sf_verify_area'))
       ->save();

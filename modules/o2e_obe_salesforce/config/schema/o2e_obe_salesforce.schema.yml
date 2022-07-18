@@ -4,6 +4,13 @@ o2e_obe_salesforce.settings:
   type: config_object
   label: 'Salesforce Settings'
   mapping:
+    sf_brand:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        brand:
+          type: text
+          label: 'Brand'  
     sf_auth:
       type: mapping
       label: 'Fieldset for the fields'
@@ -26,16 +33,16 @@ o2e_obe_salesforce.settings:
         client_secret:
           type: text
           label: 'OBE Client Secret'
+        token_expiry:
+          type: text
+          label: 'Token Expiry'
     sf_verify_area:
       type: mapping
       label: 'Fieldset for the fields'
       mapping:
-        duration:
+        service_expiry:
           type: text
-          label: 'Expire Druration'
-        brand:
-          type: text
-          label: 'Brand'
+          label: 'Service Expiry'
         api_url_segment:
           type: text
           label: 'Api URL Segment'
