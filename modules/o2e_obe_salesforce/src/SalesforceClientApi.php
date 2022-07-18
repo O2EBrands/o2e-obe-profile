@@ -146,6 +146,12 @@ class SalesforceClientApi {
     }
     $auth_token = $this->getAuthToken();
     if (!empty($auth_token)) {
+      if (substr($config->get('sf_verify_area')['api_url_segment'], 0, 1) == '/') {
+        $endpoint_segment = $config->get('sf_verify_area')['api_url_segment'];
+      }
+      else {
+        $endpoint_segment = '/' . $config->get('sf_verify_area')['api_url_segment'];
+      }
       $api_url = $this->state->get('sfUrl') . $config->get('sf_verify_area')['api_url_segment'];
       $options['headers']= [
         'Authorization' => 'Bearer ' . $auth_token,
