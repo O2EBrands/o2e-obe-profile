@@ -109,13 +109,13 @@ class SalesforceClientApi {
         return $this->state->get('authtoken');
       }
     }
-    $endpoint = $config->get('sf_auth')['login_url'];
+    $endpoint = $config->get('sf_auth.login_url');
     $options = [
-      'grant_type' => $config->get('sf_auth')['grant_type'],
-      'client_id' => $config->get('sf_auth')['client_id'],
-      'client_secret' => $config->get('sf_auth')['client_secret'],
-      'username' => $config->get('sf_auth')['api_username'],
-      'password' => $config->get('sf_auth')['api_password'],
+      'grant_type' => $config->get('sf_auth.grant_type'),
+      'client_id' => $config->get('sf_auth.client_id'),
+      'client_secret' => $config->get('sf_auth.client_secret'),
+      'username' => $config->get('sf_auth.api_username'),
+      'password' => $config->get('sf_auth.api_password'),
     ];
     try {
       // Get the access token first.
@@ -140,24 +140,24 @@ class SalesforceClientApi {
     $config = $this->config->get('o2e_obe_salesforce.settings');
     if ($tempstore->get('response')['lastServiceTime']) {
       $timeDifference = $currentTimeStamp - $tempstore->get('response')['lastServiceTime'];
-      if ($timeDifference < $config->get('sf_verify_area')['service_expiry']) {
+      if ($timeDifference < $config->get('sf_verify_area.service_expiry')) {
         return $tempstore->get('response');
       }
     }
     $auth_token = $this->getAuthToken();
     if (!empty($auth_token)) {
-      if (substr($config->get('sf_verify_area')['api_url_segment'], 0, 1) == '/') {
-        $endpoint_segment = $config->get('sf_verify_area')['api_url_segment'];
+      if (substr($config->get('sf_verify_area.api_url_segment'), 0, 1) == '/') {
+        $endpoint_segment = $config->get('sf_verify_area.api_url_segment');
       }
       else {
-        $endpoint_segment = '/' . $config->get('sf_verify_area')['api_url_segment'];
+        $endpoint_segment = '/' . $config->get('sf_verify_area.api_url_segment');
       }
       $api_url = $this->state->get('sfUrl') . $endpoint_segment;
       $options['headers']= [
         'Authorization' => 'Bearer ' . $auth_token,
         'content-type' => 'application/json',
       ]; 
-      $options['query']['brand'] = $config->get('sf_brand')['brand'];
+      $options['query']['brand'] = $config->get('sf_brand.brand');
       try {
         $response = $this->httpClient->request('GET', $api_url, $options);
         $result = Json::decode($response->getBody(), TRUE);
