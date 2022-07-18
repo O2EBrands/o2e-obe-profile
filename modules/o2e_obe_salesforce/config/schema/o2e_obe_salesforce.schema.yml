@@ -1,0 +1,48 @@
+# Schema for the configuration files of the salesforce module.
+
+o2e_obe_salesforce.settings:
+  type: config_object
+  label: 'Salesforce Settings'
+  mapping:
+    sf_brand:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        brand:
+          type: text
+          label: 'Brand'  
+    sf_auth:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        login_url:
+          type: text
+          label: 'Login URL'
+        api_username:
+          type: text
+          label: 'API username'
+        api_password:
+          type: text
+          label: 'API password'
+        grant_type:
+          type: text
+          label: 'OBE Grant Type'
+        client_id:
+          type: text
+          label: 'OBE Client ID'
+        client_secret:
+          type: text
+          label: 'OBE Client Secret'
+        token_expiry:
+          type: text
+          label: 'Token Expiry'
+    sf_verify_area:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        service_expiry:
+          type: text
+          label: 'Service Expiry'
+        api_url_segment:
+          type: text
+          label: 'Api URL Segment'

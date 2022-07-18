@@ -35,18 +35,70 @@ class SettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('o2e_obe_salesforce.settings');
-    $form['salesforce_authentication_key'] = [
-      '#type' => 'key_select',
-      '#title' => $this->t('Salesforce Authentication Key'),
-      '#description' => $this->t('Select the SF environment authentication key needed for this website.'),
-      '#size' => 1,
-      '#default_value' => 'Dev',
-      '#weight' => '0',
+    $form['sf_brand'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Site Brand'),
+      '#tree' => TRUE,
     ];
-    $form['submit'] = [
-      '#type' => 'submit',
-      '#title' => $this->t('Submit'),
-      '#weight' => '0',
+    $form['sf_brand']['brand'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Brand'),
+      '#default_value' => $config->get('sf_brand.brand'),
+    ];
+    $form['sf_auth'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Oauth Details'),
+      '#tree' => TRUE,
+    ];
+    $form['sf_auth']['login_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Login URL'),
+      '#default_value' => $config->get('sf_auth.login_url'),
+    ];
+    $form['sf_auth']['api_username'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('API username'),
+      '#default_value' => $config->get('sf_auth.api_username'),
+    ];
+    $form['sf_auth']['api_password'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('API password'),
+      '#default_value' => $config->get('sf_auth.api_password'),
+    ];
+    $form['sf_auth']['grant_type'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('OBE Grant Type'),
+      '#default_value' => $config->get('sf_auth.grant_type'),
+    ];
+    $form['sf_auth']['client_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('OBE Client ID'),
+      '#default_value' => $config->get('sf_auth.client_id'),
+    ];
+    $form['sf_auth']['client_secret'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('OBE Client Secret'),
+      '#default_value' => $config->get('sf_auth.client_secret'),
+    ];
+    $form['sf_auth']['token_expiry'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Token Expiry'),
+      '#default_value' => !empty($config->get('sf_verify_area.token_expiry')) ? $config->get('sf_verify_area.token_expiry') : '18000',
+    ];
+    $form['sf_verify_area'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Salesforce Verify Area Serviced Details'),
+      '#tree' => TRUE,
+    ];
+    $form['sf_verify_area']['service_expiry'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Service Expiry'),
+      '#default_value' => !empty($config->get('sf_verify_area.service_expiry')) ? $config->get('sf_verify_area.service_expiry') : '900',
+    ];
+    $form['sf_verify_area']['api_url_segment'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Api URL Segment'),
+      '#default_value' => $config->get('sf_verify_area.api_url_segment'),
     ];
     return parent::buildForm($form, $form_state);
   }
@@ -56,9 +108,10 @@ class SettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
-
     $this->config('o2e_obe_salesforce.settings')
-      ->set('brand', $form_state->getValue('salesforce_authentication_key'))
+      ->set('sf_brand', $form_state->getValue('sf_brand'))
+      ->set('sf_auth', $form_state->getValue('sf_auth'))
+      ->set('sf_verify_area', $form_state->getValue('sf_verify_area'))
       ->save();
   }
 

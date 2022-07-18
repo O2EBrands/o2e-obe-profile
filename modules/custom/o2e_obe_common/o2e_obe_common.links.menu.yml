@@ -1,0 +1,13 @@
+o2e_obe_common.o2e_obe_config:
+  title: OBE Configuration
+  route_name: o2e_obe_common.o2e_obe_config
+  parent: system.admin_config
+  description: 'OBE Configuration'
+  position: left
+  weight: 20
+o2e_obe_common.common_setting_form:
+  title: OBE Common Setting form
+  route_name: o2e_obe_common.settings_form
+  parent: o2e_obe_common.o2e_obe_config
+  description: 'OBE Setting form'
+  weight: 1

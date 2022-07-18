@@ -1,2 +1,13 @@
-o2e_obe_salesforce:
-  salesforce_authentication_key: "Dev"
+sf_brand:
+  brand: ''
+sf_auth:
+  login_url: ''
+  api_password: 
+  grant_type: 
+  client_id: 
+  client_secret: ''
+  api_username:
+  token_expiry: '18000'
+sf_verify_area:  
+  service_expiry: '900'
+  api_url_segment:
