@@ -217,7 +217,7 @@ class SalesforceClientApi {
       try {
         $res = $this->httpClient->request('POST', $endpoint, [
           'headers' => $headers,
-          'body' => Json::encode($options),
+          'json' => $options,
         ]);
         $result = Json::decode($res->getBody(), TRUE);
         $this->loggerFactory->get('Salesforce - GetAvailableTimes')->notice(UrlHelper::buildQuery($options) . ' ' . Json::encode($result));
