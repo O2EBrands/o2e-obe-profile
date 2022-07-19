@@ -5,37 +5,54 @@ core_version_requirement: '^9'
 
 # Modules to install to support the profile.
 install:
-  - history
+  - admin_toolbar
+  - admin_toolbar_tools
   - block_content
   - breakpoint
+  - ckeditor
   - config
   - contextual
-  - quickedit
-  - help
-  - image
-  - options
-  - path
   - dblog
-  - shortcut
-  - toolbar
+  - editor
+  - field
   - field_ui
   - file
+  - filter
+  - help
+  - history
+  - image
+  - layout_builder
+  - layout_builder_admin_theme
+  - layout_builder_modal
+  - layout_builder_operation_link
+  - layout_builder_restrictions
+  - layout_builder_restrictions_by_region
+  - layout_discovery
+  - link
+  - options
+  - path
+  - path_alias
+  - quickedit
   - rdf
-  - editor
-  - ckeditor
-  - webform
-  - o2e_obe_salesforce
+  - shortcut
+  - system
+  - text
+  - toolbar
 
 # Required modules
 # Note that any dependencies of the modules listed here will be installed automatically.
 dependencies:
-  - node
   - block
+  - node
+  - user
   - views
   - o2e_obe_common
+  - webform
 
 # List any themes that should be installed as part of the profile installation.
 # Note that this will not set any theme as the default theme.
 themes:
-  - bartik
-  - seven
+  - bootstrap_barrio
+  - o2e_obe_subtheme
+  - claro
+  - olivero
