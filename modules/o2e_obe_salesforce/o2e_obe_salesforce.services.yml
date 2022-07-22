@@ -1,4 +1,9 @@
 services:
- o2e_obe_salesforce.client.api:
-   class: Drupal\o2e_obe_salesforce\SalesforceClientApi
-   arguments: ['@config.factory','@http_client', '@logger.factory', '@datetime.time', '@state', '@tempstore.private']
+ o2e_obe_salesforce.authtoken_manager:
+   class: Drupal\o2e_obe_salesforce\AuthTokenManager
+   arguments: ['@config.factory','@http_client', '@logger.factory', '@datetime.time', '@state']
+   calls:
+    - [generateToken]
+ o2e_obe_salesforce.area_verification_service:
+   class: Drupal\o2e_obe_salesforce\AreaVerificationService
+   arguments: ['@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']

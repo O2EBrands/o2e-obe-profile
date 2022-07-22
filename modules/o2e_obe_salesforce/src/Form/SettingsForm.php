@@ -44,6 +44,7 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Brand'),
       '#default_value' => $config->get('sf_brand.brand'),
+      '#required' => TRUE,
     ];
     $form['sf_auth'] = [
       '#type' => 'fieldset',
@@ -54,36 +55,43 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Login URL'),
       '#default_value' => $config->get('sf_auth.login_url'),
+      '#required' => TRUE,
     ];
     $form['sf_auth']['api_username'] = [
       '#type' => 'textfield',
       '#title' => $this->t('API username'),
       '#default_value' => $config->get('sf_auth.api_username'),
+      '#required' => TRUE,
     ];
     $form['sf_auth']['api_password'] = [
       '#type' => 'textfield',
       '#title' => $this->t('API password'),
       '#default_value' => $config->get('sf_auth.api_password'),
+      '#required' => TRUE,
     ];
     $form['sf_auth']['grant_type'] = [
       '#type' => 'textfield',
       '#title' => $this->t('OBE Grant Type'),
       '#default_value' => $config->get('sf_auth.grant_type'),
+      '#required' => TRUE,
     ];
     $form['sf_auth']['client_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('OBE Client ID'),
       '#default_value' => $config->get('sf_auth.client_id'),
+      '#required' => TRUE,
     ];
     $form['sf_auth']['client_secret'] = [
       '#type' => 'textfield',
       '#title' => $this->t('OBE Client Secret'),
       '#default_value' => $config->get('sf_auth.client_secret'),
+      '#required' => TRUE,
     ];
     $form['sf_auth']['token_expiry'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Token Expiry'),
-      '#default_value' => !empty($config->get('sf_verify_area.token_expiry')) ? $config->get('sf_verify_area.token_expiry') : '18000',
+      '#default_value' => !empty($config->get('sf_auth.token_expiry')) ? $config->get('sf_auth.token_expiry') : '18000',
+      '#required' => TRUE,
     ];
     $form['sf_verify_area'] = [
       '#type' => 'fieldset',
@@ -94,11 +102,13 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Service Expiry'),
       '#default_value' => !empty($config->get('sf_verify_area.service_expiry')) ? $config->get('sf_verify_area.service_expiry') : '900',
+      '#required' => TRUE,
     ];
     $form['sf_verify_area']['api_url_segment'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Api URL Segment'),
       '#default_value' => $config->get('sf_verify_area.api_url_segment'),
+      '#required' => TRUE,
     ];
     return parent::buildForm($form, $form_state);
   }
