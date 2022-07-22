@@ -4,7 +4,6 @@ namespace Drupal\o2e_obe_salesforce;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use GuzzleHttp\Client;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\State\State;
@@ -74,19 +73,6 @@ class AuthTokenManager {
   }
 
   /**
-   * Create method.
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('http_client'),
-      $container->get('logger.factory'),
-      $container->get('datetime.time'),
-      $container->get('state'),
-    );
-  }
-
-  /**
    * GenerateToken the auth token.
    */
   public function generateToken() {
@@ -122,7 +108,14 @@ class AuthTokenManager {
   }
 
   /**
-   *
+   * Return the configuration.
+   */
+  public function getSfConfig() {
+    return $this->sfConfig;
+  }
+
+  /**
+   * Return the token.
    */
   public function getToken() {
     return $this->generateToken()->token;
@@ -150,37 +143,19 @@ class AuthTokenManager {
   }
 
   /**
-   * Validate slash is exist or not.
-   */
-  public function validateSlash($value) {
-    if (substr($value, 0, 1) == '/') {
-      return $endpoint_segment = $value;
-    }
-    else {
-      return $endpoint_segment = '/' . $value;
-    }
-  }
-
-  /**
    * CheckAuthConfig method to if configuration details are correctly added.
    */
   public function validateConfigField($config) {
-    $i = 0;
     if ($config) {
       foreach ($config as $key => $value) {
         if (empty($value)) {
           $message = $this->t(' @field field is required in the Salesforce configuration.', ['@field' => $key]);
           $this->loggerFactory->get('Salesforce - Api Fields ')->error($message);
-          $i++;
+          return TRUE;
         }
       }
     }
-    if ($i > 0) {
-      return TRUE;
-    }
-    else {
-      return FALSE;
-    }
+    return FALSE;
   }
 
 }

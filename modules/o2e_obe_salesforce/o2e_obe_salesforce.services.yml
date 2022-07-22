@@ -6,4 +6,4 @@ services:
     - [generateToken]
  o2e_obe_salesforce.area_verification_service:
    class: Drupal\o2e_obe_salesforce\AreaVerificationService
-   arguments: ['@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
+   arguments: ['@http_client', '@logger.factory', '@datetime.time', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
