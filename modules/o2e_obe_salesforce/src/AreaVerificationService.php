@@ -77,7 +77,7 @@ class AreaVerificationService {
   public function verifyAreaCode(array $options = []) {
     $currentTimeStamp = $this->timeService->getRequestTime();
     $auth_token = $this->authTokenManager->getToken();
-    $endpoint_segment = $this->authTokenManager->getSfConfig()->get('sf_verify_area.api_url_segment');
+    $endpoint_segment = $this->authTokenManager->getSfConfig('sf_verify_area.api_url_segment');
     if (substr($endpoint_segment, 0, 1) !== '/') {
       $endpoint_segment = '/' . $endpoint_segment;
     }
@@ -92,8 +92,7 @@ class AreaVerificationService {
       'content-type' => 'application/json',
     ];
 
-    $options['query']['brand'] = $this->authTokenManager->getSfConfig()->get('sf_brand.brand');
-
+    $options['query']['brand'] = $this->authTokenManager->getSfConfig('sf_brand.brand');
     try {
       $response = $this->httpClient->request('GET', $api_url, $options);
       $result = Json::decode($response->getBody(), TRUE);
@@ -123,7 +122,7 @@ class AreaVerificationService {
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
     if ($tempstore->get('response')['lastServiceTime']) {
       $timeDifference = $currentTimeStamp - $tempstore->get('response')['lastServiceTime'];
-      if ($timeDifference < $this->authTokenManager->getSfConfig()->get('sf_verify_area.service_expiry')) {
+      if ($timeDifference < $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
         return $tempstore->get('response');
       }
       else {
