@@ -83,7 +83,6 @@ class AuthTokenManager {
       $container->get('logger.factory'),
       $container->get('datetime.time'),
       $container->get('state'),
-      $container->get('tempstore.private'),
     );
   }
 
