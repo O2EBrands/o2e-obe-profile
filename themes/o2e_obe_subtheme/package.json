@@ -8,7 +8,8 @@
     "preinstall": "npx npm-force-resolutions"
   },
   "resolutions": {
-    "glob-parent": "^6.0.1"
+    "glob-parent": "^6.0.1",
+    "css-what": ">=5.0.1"
   },
   "keywords": [
     "SASS",
