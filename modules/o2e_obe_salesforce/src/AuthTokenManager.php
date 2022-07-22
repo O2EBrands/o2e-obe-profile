@@ -110,8 +110,8 @@ class AuthTokenManager {
   /**
    * Return the configuration.
    */
-  public function getSfConfig() {
-    return $this->sfConfig;
+  public function getSfConfig($key) {
+    return !empty($key) ? $this->sfConfig->get($key) : $this->sfConfig;
   }
 
   /**
