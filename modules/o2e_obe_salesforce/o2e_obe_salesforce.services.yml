@@ -10,3 +10,6 @@ services:
  o2e_obe_salesforce.available_times_service:
    class: Drupal\o2e_obe_salesforce\AvailableTimesService
    arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
+ o2e_obe_salesforce.promo_details_junk_service:
+   class: Drupal\o2e_obe_salesforce\PromoDetailsJunkService
+   arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']

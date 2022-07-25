@@ -127,6 +127,17 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('sf_available_time.api_url_segment'),
       '#required' => TRUE,
     ];
+    $form['sf_promo_details_junk'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Salesforce Promo Details Junk'),
+      '#tree' => TRUE,
+    ];
+    $form['sf_promo_details_junk']['api_url_segment'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Api URL Segment'),
+      '#default_value' => $config->get('sf_promo_details_junk.api_url_segment'),
+      '#required' => TRUE,
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -140,6 +151,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('sf_auth', $form_state->getValue('sf_auth'))
       ->set('sf_verify_area', $form_state->getValue('sf_verify_area'))
       ->set('sf_available_time', $form_state->getValue('sf_available_time'))
+      ->set('sf_promo_details_junk', $form_state->getValue('sf_promo_details_junk'))
       ->save();
   }
 
