@@ -11,3 +11,6 @@ sf_auth:
 sf_verify_area:  
   service_expiry: '900'
   api_url_segment:
+sf_available_time:  
+  services_type: ''
+  api_url_segment:

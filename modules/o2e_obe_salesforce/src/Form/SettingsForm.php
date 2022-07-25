@@ -110,6 +110,23 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('sf_verify_area.api_url_segment'),
       '#required' => TRUE,
     ];
+    $form['sf_available_time'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Salesforce AvailableTimes Serviced Details'),
+      '#tree' => TRUE,
+    ];
+    $form['sf_available_time']['services_type'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Services Type'),
+      '#default_value' => $config->get('sf_available_time.services_type'),
+      '#required' => TRUE,
+    ];
+    $form['sf_available_time']['api_url_segment'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Api URL Segment'),
+      '#default_value' => $config->get('sf_available_time.api_url_segment'),
+      '#required' => TRUE,
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -122,6 +139,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('sf_brand', $form_state->getValue('sf_brand'))
       ->set('sf_auth', $form_state->getValue('sf_auth'))
       ->set('sf_verify_area', $form_state->getValue('sf_verify_area'))
+      ->set('sf_available_time', $form_state->getValue('sf_available_time'))
       ->save();
   }
 

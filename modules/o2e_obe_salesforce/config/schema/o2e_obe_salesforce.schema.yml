@@ -46,3 +46,13 @@ o2e_obe_salesforce.settings:
         api_url_segment:
           type: text
           label: 'Api URL Segment'
+    sf_available_time:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        services_type:
+          type: text
+          label: 'Services Type'
+        api_url_segment:
+          type: text
+          label: 'Api URL Segment'

@@ -7,3 +7,6 @@ services:
  o2e_obe_salesforce.area_verification_service:
    class: Drupal\o2e_obe_salesforce\AreaVerificationService
    arguments: ['@http_client', '@logger.factory', '@datetime.time', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
+ o2e_obe_salesforce.available_times_service:
+   class: Drupal\o2e_obe_salesforce\AvailableTimesService
+   arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
