@@ -21,6 +21,7 @@
   "license": "MIT",
   "dependencies": {
     "@popperjs/core": "^2.9.2",
+    "ansi-styles": "^6.1.0",
     "bootstrap": "^5.1.0",
     "bootstrap-icons": "^1.4.0"
   },
@@ -33,7 +34,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-html-replace": "^1.6.2",
     "gulp-load-plugins": "^2.0.4",
-    "gulp-postcss": "^8.0.0",
+    "gulp-postcss": "^9.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^5.0.0",
     "gulp-sourcemaps": "^2.6.4",
@@ -42,5 +43,16 @@
     "postcss-inline-svg": "^5.0.0",
     "postcss-pxtorem": "^5.1.1",
     "sass": "^1.45.0"
-  }
+  },
+  "browserslist": [
+    "Chrome >= 35",
+    "Firefox >= 38",
+    "Edge >= 12",
+    "Explorer >= 10",
+    "iOS >= 8",
+    "Safari >= 8",
+    "Android 2.3",
+    "Android >= 4",
+    "Opera >= 12"
+  ]
 }
