@@ -33,16 +33,6 @@ elements: |-
     pick_a_date_and_time:
       '#type': label
       '#title': 'Pick a Date and Time'
-    promo_code_details:
-      '#type': webform_computed_token
-      '#title': 'Promo Code Details'
-      '#title_display': none
-      '#display_on': form
-      '#template': |-
-        <p class='sameday-promo-detail'>[custom_token:same-day-promo-code-detail]</p>
-        <p class='sameday-promo-term'>[custom_token:same-day-promo-code-term]</p>
-      '#hide_empty': true
-      '#ajax': true
     react_datepicker_component:
       '#type': container
     selected_date:
