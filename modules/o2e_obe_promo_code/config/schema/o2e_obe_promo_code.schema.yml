@@ -1,0 +1,19 @@
+# Schema for the configuration files of the promocode module.
+
+o2e_obe_promo_code.settings:
+  type: config_object
+  label: 'PromoCode Settings'
+  mapping:
+    o2e_obe_promo_code:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        sameday_status:
+          type: text
+          label: 'Sameday Status'
+        sameday_details:
+          type: text
+          label: 'Sameday Details'
+        sameday_terms:
+          type: text
+          label: 'Sameday Terms'
