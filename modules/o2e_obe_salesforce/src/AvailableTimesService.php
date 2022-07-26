@@ -10,8 +10,6 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Datetime\TimeInterface;
-use Drupal\o2e_obe_salesforce\AuthTokenManager;
-use Drupal\o2e_obe_salesforce\AreaVerificationService;
 
 /**
  * Available Times Service class is return the time slots details.
@@ -89,12 +87,14 @@ class AvailableTimesService {
     $currentTimeStamp = $this->timeService->getRequestTime();
     $auth_token = $this->state->get('authtoken');
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
-    if($tempstore->get('lastavailabletime')) {
+    if ($tempstore->get('lastavailabletime')) {
       $timeDifference = $currentTimeStamp - $tempstore->get('lastavailabletime');
-      if($timeDifference < $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
-         $this->areaVerification->verifyAreaCode(['query' => [
-          'from_postal_code' =>$tempstore->get('response')['from_postal_code'],
-        ]]);
+      if ($timeDifference < $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
+        $this->areaVerification->verifyAreaCode([
+          'query' => [
+            'from_postal_code' => $tempstore->get('response')['from_postal_code'],
+          ],
+        ]);
       }
     }
     $endpoint_segment = $this->authTokenManager->getSfConfig('sf_available_time.api_url_segment');
