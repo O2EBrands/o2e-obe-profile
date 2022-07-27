@@ -61,7 +61,7 @@ class ZipCodeValidation extends WebformHandlerBase {
       if (empty($zip_code) || is_array($zip_code)) {
         return;
       }
-      $response = $this->areaVerificationManager->verifyAreaCode(['query' => ['from_postal_code' => $zip_code]]);
+      $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
       if (!empty($response)) {
         if (isset($response['service_id'])) {
           return TRUE;
