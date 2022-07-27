@@ -16,3 +16,6 @@ sf_available_time:
   api_url_segment:
 sf_promo_details_junk:  
   api_url_segment:
+sf_book_job_junk:  
+  api_url_segment:
+  customer_type:

@@ -63,3 +63,13 @@ o2e_obe_salesforce.settings:
         api_url_segment:
           type: text
           label: 'Api URL Segment'
+    sf_book_job_junk:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        api_url_segment:
+          type: text
+          label: 'Api URL Segment'
+        customer_type:
+          type: text
+          label: 'Customer Type'
