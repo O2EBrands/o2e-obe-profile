@@ -1,0 +1,6 @@
+o2e_obe_promo_code.promo_code_setting_form:
+  title: OBE Promo Code Setting form
+  route_name: o2e_obe_promo_code.settings_form
+  parent: o2e_obe_common.o2e_obe_config
+  description: 'OBE Promo Code Setting form'
+  weight: 2
