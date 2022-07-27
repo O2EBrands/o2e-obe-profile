@@ -91,11 +91,7 @@ class AvailableTimesService {
     if ($tempstore->get('lastavailabletime')) {
       $timeDifference = $currentTimeStamp - $tempstore->get('lastavailabletime');
       if ($timeDifference < $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
-        $this->areaVerification->verifyAreaCode([
-          'query' => [
-            'from_postal_code' => $sf_response['from_postal_code'],
-          ],
-        ]);
+        $this->areaVerification->verifyAreaCode($sf_response['from_postal_code']);
       }
     }
     $endpoint_segment = $this->authTokenManager->getSfConfig('sf_available_time.api_url_segment');

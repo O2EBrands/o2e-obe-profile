@@ -74,7 +74,8 @@ class AreaVerificationService {
   /**
    * Verify the area on the basis of zip code.
    */
-  public function verifyAreaCode(array $options = []) {
+  public function verifyAreaCode(string $zipcode) {
+    $options = [];
     $currentTimeStamp = $this->timeService->getRequestTime();
     $auth_token = $this->authTokenManager->getToken();
     $endpoint_segment = $this->authTokenManager->getSfConfig('sf_verify_area.api_url_segment');
@@ -92,7 +93,10 @@ class AreaVerificationService {
       'content-type' => 'application/json',
     ];
 
-    $options['query']['brand'] = $this->authTokenManager->getSfConfig('sf_brand.brand');
+    $options['query'] = [
+      'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
+      'from_postal_code' => $zipcode,
+    ];
     try {
       $response = $this->httpClient->request('GET', $api_url, $options);
       $result = Json::decode($response->getBody(), TRUE);
