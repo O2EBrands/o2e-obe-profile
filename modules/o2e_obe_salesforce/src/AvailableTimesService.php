@@ -87,12 +87,13 @@ class AvailableTimesService {
     $currentTimeStamp = $this->timeService->getRequestTime();
     $auth_token = $this->state->get('authtoken');
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
+    $sf_response = $tempstore->get('response');
     if ($tempstore->get('lastavailabletime')) {
       $timeDifference = $currentTimeStamp - $tempstore->get('lastavailabletime');
       if ($timeDifference < $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
         $this->areaVerification->verifyAreaCode([
           'query' => [
-            'from_postal_code' => $tempstore->get('response')['from_postal_code'],
+            'from_postal_code' => $sf_response['from_postal_code'],
           ],
         ]);
       }
@@ -103,23 +104,22 @@ class AvailableTimesService {
         $endpoint_segment = '/' . $endpoint_segment;
       }
       $endpoint = $this->state->get('sfUrl') . $endpoint_segment;
-      $jobDuration = $tempstore->get('response')['job_duration'];
-      $jobDuration = str_replace(" hours", "", $jobDuration);
-      $jobDuration = str_replace(" hour", "", $jobDuration);
-      if (strpos($jobDuration, "min") > 0 || strpos($jobDuration, "Minutes") > 0 || strpos($jobDuration, "minutes")) {
-        $jobDuration = 0.5;
+      $job_duration = $sf_response['job_duration'];
+      $job_duration = str_replace([' hours', ' hour'], '', $job_duration);
+      if (strpos($job_duration, "min") > 0 || strpos($job_duration, "Minutes") > 0 || strpos($job_duration, "minutes")) {
+        $job_duration = 0.5;
       }
       $headers = [
         'Authorization' => $auth_token,
         'content-type' => 'application/json',
       ];
       $options += [
-        "franchise_id" => $tempstore->get('response')['franchise_id'],
+        "franchise_id" => $sf_response['franchise_id'],
         "brand" => $this->authTokenManager->getSfConfig('sf_brand.brand'),
         "service_type" => $this->authTokenManager->getSfConfig('sf_available_time.services_type'),
-        "postal_code" => $tempstore->get('response')['from_postal_code'],
-        "service_id" => $tempstore->get('response')['service_id'],
-        "job_duration" => $jobDuration,
+        "postal_code" => $sf_response['from_postal_code'],
+        "service_id" => $sf_response['service_id'],
+        "job_duration" => $job_duration,
       ];
       try {
         $res = $this->httpClient->request('POST', $endpoint, [
