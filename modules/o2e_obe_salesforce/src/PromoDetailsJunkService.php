@@ -65,7 +65,8 @@ class PromoDetailsJunkService {
   /**
    * Return the promo code data.
    */
-  public function getPromocode(array $options = []) {
+  public function getPromocode(string $promocode) {
+    $options = [];
     $auth_token = $this->authTokenManager->getToken();
     $endpoint_segment = $this->authTokenManager->getSfConfig('sf_promo_details_junk.api_url_segment');
     if (substr($endpoint_segment, 0, 1) !== '/') {
@@ -79,9 +80,10 @@ class PromoDetailsJunkService {
       'content-type' => 'application/json',
     ];
 
-    $options['query'] += [
+    $options['query'] = [
       'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
       'franchise_id' => $tempstore['franchise_id'],
+      'promotion_code' => $promocode,
     ];
     try {
       $response = $this->httpClient->request('GET', $api_url, $options);

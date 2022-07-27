@@ -9,6 +9,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use GuzzleHttp\Exception\RequestException;
+use Drupal\Component\Datetime\TimeInterface;
 
 /**
  * Available Times Service class is return the time slots details.
@@ -43,6 +44,7 @@ class AvailableTimesService {
    * @var \Drupal\Core\State\State
    */
   protected $state;
+
   /**
    * The Auth Token Manager.
    *
@@ -51,14 +53,30 @@ class AvailableTimesService {
   protected $authTokenManager;
 
   /**
+   * The Area Verification Service.
+   *
+   * @var \Drupal\o2e_obe_salesforce\AreaVerificationService
+   */
+  protected $areaVerification;
+
+  /**
+   * The datetime.time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $timeService;
+
+  /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, LoggerChannelFactory $logger_factory, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager) {
+  public function __construct(Client $http_client, LoggerChannelFactory $logger_factory, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification) {
     $this->httpClient = $http_client;
     $this->loggerFactory = $logger_factory;
     $this->state = $state;
     $this->tempStoreFactory = $temp_store_factory;
     $this->authTokenManager = $auth_token_manager;
+    $this->timeService = $time_service;
+    $this->areaVerification = $area_verification;
 
   }
 
@@ -66,31 +84,38 @@ class AvailableTimesService {
    * Get the time slots on the basis of start and end date.
    */
   public function getAvailableTimes(array $options = []) {
-    $auth_token = $this->authTokenManager->getToken();
+    $currentTimeStamp = $this->timeService->getRequestTime();
+    $auth_token = $this->state->get('authtoken');
+    $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
+    $sf_response = $tempstore->get('response');
+    if ($tempstore->get('lastavailabletime')) {
+      $timeDifference = $currentTimeStamp - $tempstore->get('lastavailabletime');
+      if ($timeDifference < $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
+        $this->areaVerification->verifyAreaCode($sf_response['from_postal_code']);
+      }
+    }
     $endpoint_segment = $this->authTokenManager->getSfConfig('sf_available_time.api_url_segment');
     if (!empty($auth_token)) {
       if (substr($endpoint_segment, 0, 1) !== '/') {
         $endpoint_segment = '/' . $endpoint_segment;
       }
-      $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
       $endpoint = $this->state->get('sfUrl') . $endpoint_segment;
-      $jobDuration = $tempstore['job_duration'];
-      $jobDuration = str_replace(" hours", "", $jobDuration);
-      $jobDuration = str_replace(" hour", "", $jobDuration);
-      if (strpos($jobDuration, "min") > 0 || strpos($jobDuration, "Minutes") > 0 || strpos($jobDuration, "minutes")) {
-        $jobDuration = 0.5;
+      $job_duration = $sf_response['job_duration'];
+      $job_duration = str_replace([' hours', ' hour'], '', $job_duration);
+      if (strpos($job_duration, "min") > 0 || strpos($job_duration, "Minutes") > 0 || strpos($job_duration, "minutes")) {
+        $job_duration = 0.5;
       }
       $headers = [
         'Authorization' => $auth_token,
         'content-type' => 'application/json',
       ];
       $options += [
-        "franchise_id" => $tempstore['franchise_id'],
+        "franchise_id" => $sf_response['franchise_id'],
         "brand" => $this->authTokenManager->getSfConfig('sf_brand.brand'),
         "service_type" => $this->authTokenManager->getSfConfig('sf_available_time.services_type'),
-        "postal_code" => $tempstore['from_postal_code'],
-        "service_id" => $tempstore['service_id'],
-        "job_duration" => $jobDuration,
+        "postal_code" => $sf_response['from_postal_code'],
+        "service_id" => $sf_response['service_id'],
+        "job_duration" => $job_duration,
       ];
       try {
         $res = $this->httpClient->request('POST', $endpoint, [
@@ -98,6 +123,7 @@ class AvailableTimesService {
           'json' => $options,
         ]);
         $result = Json::decode($res->getBody(), TRUE);
+        $tempstore->set('lastavailabletime', $currentTimeStamp);
         $this->loggerFactory->get('Salesforce - GetAvailableTimes')->notice(UrlHelper::buildQuery($options) . ' ' . Json::encode($result));
         return $result;
       }
