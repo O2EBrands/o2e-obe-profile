@@ -9,7 +9,7 @@ o2e_obe_promo_code.settings:
       label: 'Fieldset for the fields'
       mapping:
         sameday_status:
-          type: text
+          type: Boolean
           label: 'Sameday Status'
         sameday_details:
           type: text

@@ -43,13 +43,13 @@ function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, 
     foreach ($tokens as $name => $original) {
       $config = \Drupal::config('o2e_obe_promo_code.settings')->get('o2e_obe_promo_code');
       $promo_status = FALSE;
-      if ($config && $config['sameday_status'] && !empty($config['sameday_status']) && $config['sameday_status'] === 'Active') {
+      if ($config && !empty($config['sameday_status']) && $config['sameday_status'] == '1') {
         $promo_status = TRUE;
       }
       switch ($name) {
         case 'same-day-promo-code-detail':
           $sameday_promo_detail = "";
-          if ($promo_status && $config['sameday_details'] && !empty($config['sameday_details'])) {
+          if ($promo_status && !empty($config['sameday_details'])) {
             $sameday_promo_detail = $config['sameday_details'];
           }
           $replacements[$original] = $sameday_promo_detail;
@@ -57,7 +57,7 @@ function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, 
 
         case 'same-day-promo-code-term':
           $sameday_promo_term = "";
-          if ($promo_status && $config['sameday_terms'] && !empty($config['sameday_terms'])) {
+          if ($promo_status && !empty($config['sameday_terms'])) {
             $sameday_promo_term = $config['sameday_terms'];
           }
           $replacements[$original] = $sameday_promo_term;
