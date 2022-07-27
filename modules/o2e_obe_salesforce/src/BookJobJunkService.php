@@ -11,7 +11,7 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
 /**
- * Promo Details Junk Service class is return the promo details.
+ * Book Job Junk Service class is return the book Job details.
  */
 class BookJobJunkService {
 
