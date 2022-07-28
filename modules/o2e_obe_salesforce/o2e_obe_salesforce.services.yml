@@ -13,6 +13,9 @@ services:
  o2e_obe_salesforce.promo_details_junk_service:
    class: Drupal\o2e_obe_salesforce\PromoDetailsJunkService
    arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
+ o2e_obe_salesforce.book_job_junk_customer:
+   class: Drupal\o2e_obe_salesforce\BookJobJunkCustomerService
+   arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
  o2e_obe_salesforce.book_job_junk:
    class: Drupal\o2e_obe_salesforce\BookJobJunkService
    arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
