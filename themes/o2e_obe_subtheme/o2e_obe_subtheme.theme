@@ -30,3 +30,15 @@ function o2e_obe_subtheme_form_system_theme_settings_alter(&$form, FormStateInte
     'bg-transparent' => t('Transparent'),
   );
 }
+
+/**
+ * Implements template_preprocess_container() for settings form.
+ *
+ * Attach datepicker dependencies to the webform field.
+ */
+
+function o2e_obe_subtheme_preprocess_container(&$variables) {
+  if ($variables['element']['#webform_id'] === 'o2e_webform--react_datepicker_component') {
+    $variables['#attached']['library'][] = 'o2e_obe_subtheme/o2e-datepicker';
+  }
+}
