@@ -138,6 +138,23 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('sf_promo_details_junk.api_url_segment'),
       '#required' => TRUE,
     ];
+    $form['sf_book_job_junk_customer'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Salesforce Book Job Junk'),
+      '#tree' => TRUE,
+    ];
+    $form['sf_book_job_junk_customer']['api_url_segment'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Api URL Segment'),
+      '#default_value' => $config->get('sf_book_job_junk_customer.api_url_segment'),
+      '#required' => TRUE,
+    ];
+    $form['sf_book_job_junk_customer']['customer_type'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Customer Type'),
+      '#default_value' => $config->get('sf_book_job_junk_customer.customer_type'),
+      '#required' => TRUE,
+    ];
     $form['sf_book_job_junk'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Salesforce Book Job Junk'),
@@ -147,12 +164,6 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Api URL Segment'),
       '#default_value' => $config->get('sf_book_job_junk.api_url_segment'),
-      '#required' => TRUE,
-    ];
-    $form['sf_book_job_junk']['customer_type'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Customer Type'),
-      '#default_value' => $config->get('sf_book_job_junk.customer_type'),
       '#required' => TRUE,
     ];
     return parent::buildForm($form, $form_state);
@@ -169,6 +180,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('sf_verify_area', $form_state->getValue('sf_verify_area'))
       ->set('sf_available_time', $form_state->getValue('sf_available_time'))
       ->set('sf_promo_details_junk', $form_state->getValue('sf_promo_details_junk'))
+      ->set('sf_book_job_junk_customer', $form_state->getValue('sf_book_job_junk_customer'))
       ->set('sf_book_job_junk', $form_state->getValue('sf_book_job_junk'))
       ->save();
   }

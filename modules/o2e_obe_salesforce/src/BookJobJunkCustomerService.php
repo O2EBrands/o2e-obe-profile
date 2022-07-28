@@ -6,14 +6,14 @@ use GuzzleHttp\Client;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
+use GuzzleHttp\Exception\ClientException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
-use GuzzleHttp\Exception\RequestException;
 
 /**
- * Book Job Junk Service class is return the book Job details.
+ * Book Job Junk Customer Service class is return the book Job details.
  */
-class BookJobJunkService {
+class BookJobJunkCustomerService {
 
 
   /**
@@ -63,11 +63,11 @@ class BookJobJunkService {
   }
 
   /**
-   * Return the book job junk data.
+   * Return the book job junk customer data.
    */
-  public function bookJobJunk(array $options = []) {
+  public function bookJobJunkCustomer(array $options = []) {
     $auth_token = $this->authTokenManager->getToken();
-    $endpoint_segment = $this->authTokenManager->getSfConfig('sf_book_job_junk.api_url_segment');
+    $endpoint_segment = $this->authTokenManager->getSfConfig('sf_book_job_junk_customer.api_url_segment');
     if (substr($endpoint_segment, 0, 1) !== '/') {
       $endpoint_segment = '/' . $endpoint_segment;
     }
@@ -83,7 +83,6 @@ class BookJobJunkService {
       'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
       'franchise_id' => $tempstore['franchise_id'],
       'customer_type' => $this->authTokenManager->getSfConfig('sf_book_job_junk_customer.customer_type'),
-      'service_id' => $tempstore['service_id'],
     ];
     try {
       $response = $this->httpClient->request('POST', $api_url, [
@@ -91,11 +90,11 @@ class BookJobJunkService {
         'json' => $options,
       ]);
       $result = Json::decode($response->getBody(), TRUE);
-      $this->loggerFactory->get('Salesforce - Book Job Junk')->notice(UrlHelper::buildQuery($options) . ' ' . $response->getStatusCode());
-      return $response->getStatusCode();
+      $this->loggerFactory->get('Salesforce - Book Job Junk Customer')->notice(UrlHelper::buildQuery($options) . ' ' . Json::encode($result));
+      return $result;
     }
-    catch (RequestException $e) {
-      $this->loggerFactory->get('Salesforce - Book Job Junk Fail')->error($e->getMessage());
+    catch (ClientException $e) {
+      $this->loggerFactory->get('Salesforce - Book Job Junk Fail Customer')->error($e->getMessage());
     }
   }
 
