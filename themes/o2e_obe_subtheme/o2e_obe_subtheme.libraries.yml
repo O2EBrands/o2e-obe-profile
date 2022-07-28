@@ -1,6 +1,6 @@
 global-styling:
   version: VERSION
-  js: 
+  js:
     js/bootstrap.min.js: { weight: -48 }
     js/barrio.js: {}
     js/custom.js: {}
@@ -11,3 +11,8 @@ global-styling:
     - core/jquery
     - core/drupal
     - core/popperjs
+
+o2e-datepicker:
+  js:
+    js/datepicker-build.min.js: {}
+    js/react-chunk.min.js: {}
