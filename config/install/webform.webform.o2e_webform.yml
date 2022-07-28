@@ -1,6 +1,8 @@
 langcode: en
 status: open
-dependencies: {  }
+dependencies:
+  module:
+    - o2e_obe_form
 weight: 0
 open: null
 close: null
@@ -241,5 +243,14 @@ access:
     roles: {  }
     users: {  }
     permissions: {  }
-handlers: {  }
+handlers:
+  zip_code_validator:
+    id: o2e_obe_form_zip_code_validator
+    handler_id: zip_code_validator
+    label: 'Zip Code Validator'
+    notes: ''
+    status: true
+    conditions: {  }
+    weight: 0
+    settings: {  }
 variants: {  }
