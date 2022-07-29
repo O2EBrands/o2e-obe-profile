@@ -29,6 +29,7 @@ elements: |-
       '#type': textfield
       '#title': 'Zip Code'
       '#required': true
+      '#pattern': '^([0-9]{4})$'
   step2:
     '#type': webform_wizard_page
     '#title': 'Page 2'
@@ -37,15 +38,33 @@ elements: |-
       '#title': 'Pick a Date and Time'
     react_datepicker_component:
       '#type': container
-    selected_date:
-      '#type': value
-      '#title': 'Selected date'
-    selected_time_slot:
-      '#type': value
-      '#title': 'Selected Time Slot'
+    start_date_time:
+      '#type': hidden
+      '#title': start_date_time
+    finish_date_time:
+      '#type': hidden
+      '#title': finish_date_time
   step3:
     '#type': webform_wizard_page
     '#title': 'Page 3'
+    address:
+      '#type': webform_address
+      '#title': Address
+      '#required': true
+      '#default_value':
+        address: ''
+        city: ''
+        state_province: '[custom_token:state]'
+        postal_code: '[custom_token:zip-code]'
+        country: '[custom_token:country]'
+        address_2: ''
+      '#address__required': true
+      '#address_2__access': false
+      '#city__required': true
+      '#state_province__required': true
+      '#state_province__options': state_province_codes
+      '#postal_code__required': true
+      '#country__title_display': invisible
     first_name:
       '#type': textfield
       '#title': 'First Name'
@@ -62,6 +81,9 @@ elements: |-
       '#type': tel
       '#title': 'Phone Number'
       '#required': true
+    promo_code:
+      '#type': textfield
+      '#title': 'Promo Code'
 css: ''
 javascript: ''
 settings:
@@ -251,6 +273,15 @@ handlers:
     notes: ''
     status: true
     conditions: {  }
-    weight: 0
+    weight: -50
+    settings: {  }
+  contact_information_validator:
+    id: o2e_obe_form_contact_validator
+    handler_id: contact_information_validator
+    label: 'Contact Information Validator'
+    notes: ''
+    status: true
+    conditions: {  }
+    weight: -49
     settings: {  }
 variants: {  }

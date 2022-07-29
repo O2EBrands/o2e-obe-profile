@@ -63,7 +63,9 @@ class ZipCodeValidation extends WebformHandlerBase {
       }
       $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
       if (!empty($response)) {
-        if (isset($response['service_id'])) {
+        if (isset($response['service_id']) && isset($response['state'])) {
+          \Drupal::state()->set('state', $response['state']);
+          \Drupal::state()->set('zip_code', $zip_code);
           return TRUE;
         }
         else {
