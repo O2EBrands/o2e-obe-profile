@@ -5,3 +5,10 @@ o2e_obe_salesforce.settings_form:
     _title: 'OBE Salesforce Configuration'
   requirements:
     _permission: 'access salesforce form'
+o2e_obe_salesforce.available_time_slots:
+  path: '/availabletime'
+  defaults:
+    _controller: '\Drupal\o2e_obe_salesforce\Controller\GetAvailabeTime::gettimeslots'
+    _title: 'Get Available Time data'
+  requirements:
+    _permission: 'access content'
