@@ -13,6 +13,9 @@ global-styling:
     - core/popperjs
 
 o2e-datepicker:
+  css:
+    base:
+      css/react-chunk.css: {}
   js:
     js/datepicker-build.min.js: {}
     js/react-chunk.min.js: {}
