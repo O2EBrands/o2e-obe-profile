@@ -21,8 +21,8 @@ function App() {
 
   useEffect(() => {
     // API with parameters.
-    let hostname = window.location.hostname;
-    let apiWithParam = `https://${hostname}/availabletime?start_date=${apiStartDate}&end_date=${apiEndDate}`;
+    let hostname = window.location.origin;
+    let apiWithParam = `${hostname}/availabletime?start_date=${apiStartDate}&end_date=${apiEndDate}`;
 
     //API calling and parsing logic.
     setLoader(true);
