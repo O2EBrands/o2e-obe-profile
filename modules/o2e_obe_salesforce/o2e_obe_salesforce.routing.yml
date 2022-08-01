@@ -8,7 +8,7 @@ o2e_obe_salesforce.settings_form:
 o2e_obe_salesforce.available_time_slots:
   path: '/availabletime'
   defaults:
-    _controller: 'o2e_obe_salesforce.available_times_service:getAvailableTimes'
+    _controller: 'o2e_obe_salesforce.available_times_service:getTimesSlots'
     _title: 'Get Available Time data'
   requirements:
     _permission: 'access content'
