@@ -125,7 +125,7 @@ class AvailableTimesService {
         $result = Json::decode($res->getBody(), TRUE);
         $tempstore->set('lastavailabletime', $currentTimeStamp);
         $this->loggerFactory->get('Salesforce - GetAvailableTimes')->notice(UrlHelper::buildQuery($options) . ' ' . Json::encode($result));
-        return $result;
+        return Json::encode($result);
       }
       catch (RequestException $e) {
         $this->loggerFactory->get('Salesforce - GetAvailableTimes Fail')->error($e->getMessage());
