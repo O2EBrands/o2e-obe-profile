@@ -155,7 +155,7 @@ class AvailableTimesService {
       return new JsonResponse($response);
     }
     else {
-      return new JsonResponse(['start date and End date are missing.']);
+      return FALSE;
     }
   }
 
