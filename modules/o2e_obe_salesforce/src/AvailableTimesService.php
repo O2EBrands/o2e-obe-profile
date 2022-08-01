@@ -10,6 +10,8 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Http\RequestStack;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Available Times Service class is return the time slots details.
@@ -67,9 +69,16 @@ class AvailableTimesService {
   protected $timeService;
 
   /**
+   * Request stack.
+   *
+   * @var \Drupal\Core\Http\RequestStack
+   */
+  protected $request;
+
+  /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, LoggerChannelFactory $logger_factory, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification) {
+  public function __construct(Client $http_client, LoggerChannelFactory $logger_factory, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification, RequestStack $request_stack) {
     $this->httpClient = $http_client;
     $this->loggerFactory = $logger_factory;
     $this->state = $state;
@@ -77,6 +86,7 @@ class AvailableTimesService {
     $this->authTokenManager = $auth_token_manager;
     $this->timeService = $time_service;
     $this->areaVerification = $area_verification;
+    $this->request = $request_stack;
 
   }
 
@@ -121,8 +131,8 @@ class AvailableTimesService {
         $res = $this->httpClient->request('POST', $endpoint, [
           'headers' => $headers,
           'json' => $options,
-        ]);
-        $result = Json::decode($res->getBody(), TRUE);
+        ])->getBody();
+        $result = Json::decode($res, TRUE);
         $tempstore->set('lastavailabletime', $currentTimeStamp);
         $this->loggerFactory->get('Salesforce - GetAvailableTimes')->notice(UrlHelper::buildQuery($options) . ' ' . Json::encode($result));
         return $result;
@@ -130,6 +140,22 @@ class AvailableTimesService {
       catch (RequestException $e) {
         $this->loggerFactory->get('Salesforce - GetAvailableTimes Fail')->error($e->getMessage());
       }
+    }
+  }
+
+  /**
+   * Get the time slots on the basis of start and end date form URL.
+   */
+  public function getTimesSlots() {
+    $params = $this->request->getCurrentRequest();
+    $start_date = $params->get('start_date');
+    $end_date = $params->get('end_date');
+    if ($start_date && $end_date) {
+      $response = $this->getAvailableTimes(['start_date' => $start_date, 'end_date' => $end_date]);
+      return new JsonResponse($response);
+    }
+    else {
+      return FALSE;
     }
   }
 
