@@ -84,6 +84,11 @@ elements: |-
     promo_code:
       '#type': textfield
       '#title': 'Promo Code'
+  step4:
+    '#type': webform_wizard_page
+    '#title': 'Page 4'
+    confirm_data_container:
+      '#type': container
 css: ''
 javascript: ''
 settings:

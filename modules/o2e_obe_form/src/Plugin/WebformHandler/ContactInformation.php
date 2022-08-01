@@ -2,16 +2,15 @@
 
 namespace Drupal\o2e_obe_form\Plugin\WebformHandler;
 
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
+use Drupal\o2e_obe_salesforce\PromoDetailsJunkService;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\o2e_obe_salesforce\BookJobJunkCustomerService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Locale\CountryManager;
-use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\o2e_obe_salesforce\PromoDetailsJunkService;
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
 
 /**
@@ -74,13 +73,13 @@ class ContactInformation extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-    $this->validateZipCode($form_state);
+    $this->validateCustomer($form_state);
   }
 
    /**
    * Validate phone.
    */
-  private function validateZipCode(FormStateInterface $formState) {
+  private function validateCustomer(FormStateInterface $formState) {
     // $promotion_applied = FALSE;
     $current_page = $formState->get('current_page');
     if ($current_page === 'step3') {
@@ -116,24 +115,38 @@ class ContactInformation extends WebformHandlerBase {
     }
   }
 
+  /**
+   * Custom function to execute BookJobJunkCustomerService.
+   *
+   * @param FormStateInterface $formState
+   * @param array $promo_query
+   * @return bool|string
+   */
   function _bookJobJunkCustomer(FormStateInterface $formState, $promo_query = []) {
-    $subdivisionRepository = new SubdivisionRepository();
     // Get contact details from form.
     $fname = !empty($formState->getValue('first_name')) ? Html::escape($formState->getValue('first_name')) : NULL;
     $lname = !empty($formState->getValue('last_name')) ? $formState->getValue('last_name') : NULL;
     $phone = !empty($formState->getValue('phone_number')) ? Html::escape($formState->getValue('phone_number')) : NULL;
     $email = !empty($formState->getValue('email')) ? Html::escape($formState->getValue('email')) : NULL;
+
     // Get Address filled.
+    $subdivisionRepository = new SubdivisionRepository();
     $address = !empty($formState->getValue('address')) ? $formState->getValue('address') : NULL;
     $country_code = \Drupal::state()->get('country_code');
     $state_code = $address['state_province'];
     $states = $subdivisionRepository->getList(['US']);
     $state = $states[$state_code];
     $to_address = $address['city'] . ';' . $address['country'] . ';' . $state . ';' . $address['address'] . ';' . $address['postal_code'];
-    $start_date_time = '2022-07-28T12:30:00.000Z';
-    $finish_date_time = '2022-07-30T12:30:00.000Z';
+
+    // Get Start and End time.
+    $start_date_time = $formState->getValue('start_date_time');
+    $finish_date_time = $formState->getValue('finish_date_time');
+
+    // Get current language.
     $current_language = \Drupal::languageManager()->getCurrentLanguage()->getName();
     $language = ($current_language === 'English') ? $current_language : 'French';
+
+    // Query parameter.
     $query = [
       'first_name' => $fname,
       'last_name' => $lname,
@@ -150,10 +163,20 @@ class ContactInformation extends WebformHandlerBase {
     else {
       $query['additional_information_required'] = FALSE;
     }
+
     $response = $this->bookJobJunkService->bookJobJunkCustomer($query);
 
     if (!empty($response)) {
       if (isset($response['service_type_id'])) {
+        $general_data = [
+          'first_name' => $fname,
+          'phone' => $phone,
+          'email' => $email,
+          'to_address' => $to_address,
+          'start_date_time' => $start_date_time,
+          'finish_date_time' => $finish_date_time,
+        ];
+        \Drupal::state()->setMultiple($general_data);
         return TRUE;
       }
       else {
