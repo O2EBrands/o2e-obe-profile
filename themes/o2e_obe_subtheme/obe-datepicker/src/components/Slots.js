@@ -50,9 +50,9 @@ export default function Slots(props) {
     let { start, finish } = props.timeslots[key];
 
     // Setting up moment object.
-    let iMoment = moment(start);
+    let iMoment = moment(start).utc();
     let iDate = iMoment.clone().format("DD");
-    let endMoment = moment(finish);
+    let endMoment = moment(finish).utc();
 
     // set the options day to 1, 2, or 3, depending on the Y-m-d of this timeslot
     if (day1.date == iDate) optionsDay = 1;
@@ -64,7 +64,7 @@ export default function Slots(props) {
     let slotMinutes = iMoment.clone().format("mm");
 
     // Push the input radios into array based on their date and time.
-    if (slotHours < 12 && slotMinutes < 30) {
+    if (slotHours < 12 && slotMinutes < 31) {
       if (optionsByDay[optionsDay].hasOwnProperty("morning")) {
         optionsByDay[optionsDay].morning.push(
           <div>
@@ -72,17 +72,18 @@ export default function Slots(props) {
               type="radio"
               onClick={updateWebform}
               name="timeSlot"
-              data-start={iMoment.clone().utc().format()}
-              data-finish={endMoment.clone().utc().format()}
-              value={iMoment.clone().utc().format()}
+              data-start={iMoment.clone().format()}
+              data-finish={endMoment.clone().format()}
+              value={iMoment.clone().format()}
             ></input>
             <label>
-              {iMoment.format("hh:mm A")} -{endMoment.format("hh:mm A")}
+              {iMoment.format("hh:mm A")} -
+              {endMoment.add(2, "hours").format("hh:mm A")}
             </label>
           </div>
         );
       }
-    } else if (slotHours < 16) {
+    } else if (slotHours < 16 && slotMinutes < 31) {
       if (optionsByDay[optionsDay].hasOwnProperty("afternoon")) {
         optionsByDay[optionsDay].afternoon.push(
           <div>
@@ -90,12 +91,13 @@ export default function Slots(props) {
               type="radio"
               onClick={updateWebform}
               name="timeSlot"
-              data-start={iMoment.clone().utc().format()}
-              data-finish={endMoment.clone().utc().format()}
-              value={iMoment.clone().utc().format()}
+              data-start={iMoment.clone().format()}
+              data-finish={endMoment.clone().format()}
+              value={iMoment.clone().format()}
             ></input>
             <label>
-              {iMoment.format("hh:mm A")} -{endMoment.format("hh:mm A")}
+              {iMoment.format("hh:mm A")} -
+              {endMoment.add(2, "hours").format("hh:mm A")}
             </label>
           </div>
         );
@@ -106,15 +108,16 @@ export default function Slots(props) {
           <div>
             <input
               onClick={updateWebform}
-              id={iMoment.clone().utc().format()}
+              id={iMoment.clone().format()}
               type="radio"
               name="timeSlot"
-              data-start={iMoment.clone().utc().format()}
-              data-finish={endMoment.clone().utc().format()}
-              value={iMoment.clone().utc().format()}
+              data-start={iMoment.clone().format()}
+              data-finish={endMoment.clone().format()}
+              value={iMoment.clone().format()}
             ></input>
             <label>
-              {iMoment.format("hh:mm A")} -{endMoment.format("hh:mm A")}
+              {iMoment.format("hh:mm A")} -
+              {endMoment.add(2, "hours").format("hh:mm A")}
             </label>
           </div>
         );
