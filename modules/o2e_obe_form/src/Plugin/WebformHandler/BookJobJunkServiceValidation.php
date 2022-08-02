@@ -81,7 +81,7 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
         return TRUE;
       }
       else {
-        $this->messenger()->addMessage($this->t('We are unable to complete the booking now.'));
+        $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
         return FALSE;
       }
     }

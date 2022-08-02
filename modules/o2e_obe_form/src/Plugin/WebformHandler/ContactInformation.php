@@ -3,6 +3,7 @@
 namespace Drupal\o2e_obe_form\Plugin\WebformHandler;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Locale\CountryManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
@@ -105,7 +106,7 @@ class ContactInformation extends WebformHandlerBase {
           }
         }
         else {
-          $this->messenger()->addMessage($this->t('We are unable to complete the booking now.'));
+          $formState->setErrorByName('promo_code', $this->t('Please enter correct Promo Code'));
           return FALSE;
         }
       }
@@ -220,7 +221,7 @@ class ContactInformation extends WebformHandlerBase {
       }
     }
     else {
-      $this->messenger()->addMessage($this->t('We are unable to complete the booking now.'));
+      $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
       return FALSE;
     }
   }
