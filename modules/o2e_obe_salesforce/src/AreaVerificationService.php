@@ -7,7 +7,7 @@ use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
@@ -114,7 +114,7 @@ class AreaVerificationService {
       $this->loggerFactory->get('Salesforce - VerifyAreaServiced')->notice(UrlHelper::buildQuery($options['query']) . ' ' . Json::encode($result));
       return $result;
     }
-    catch (ClientException $e) {
+    catch (RequestException $e) {
       $this->loggerFactory->get('Salesforce - VerifyAreaServiced Fail')->error($e->getMessage());
     }
   }
