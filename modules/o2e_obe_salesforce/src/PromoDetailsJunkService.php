@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
@@ -91,7 +91,7 @@ class PromoDetailsJunkService {
       $this->loggerFactory->get('Salesforce - Promo Details Junk')->notice(UrlHelper::buildQuery($options['query']) . ' ' . Json::encode($result));
       return $result;
     }
-    catch (ClientException $e) {
+    catch (RequestException $e) {
       $this->loggerFactory->get('Salesforce - Promo Details Junk Fail')->error($e->getMessage());
     }
   }
