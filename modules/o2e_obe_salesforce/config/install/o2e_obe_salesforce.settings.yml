@@ -21,3 +21,5 @@ sf_book_job_junk_customer:
   customer_type:
 sf_book_job_junk:  
   api_url_segment:
+sf_hold_time:  
+  api_url_segment:
