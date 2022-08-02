@@ -5,7 +5,9 @@ export default function AccordionItem({
   accordionId,
   itemsArray,
 }) {
+  // State for more button.
   const [isExpanded, setExpanded] = useState(false);
+
   return (
     <div className="accordion-item">
       <h3
@@ -46,15 +48,20 @@ export default function AccordionItem({
           data-bs-parent={`#accordion${accordionId}`}
         >
           <div className="accordion-body">
-            {isExpanded
+            {isExpanded || itemsArray[timeOfTheDay].length < 5
               ? itemsArray[timeOfTheDay]
               : itemsArray[timeOfTheDay].slice(0, 4)}
-            <span
-              className="btn-expand"
-              onClick={() => setExpanded(!isExpanded)}
-            >
-              {isExpanded ? "Less" : "More"}
-            </span>
+
+            {itemsArray[timeOfTheDay].length > 4 ? (
+              <span
+                className="btn-expand"
+                onClick={() => setExpanded(!isExpanded)}
+              >
+                {isExpanded ? "Less" : "More"}
+              </span>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       ) : (
