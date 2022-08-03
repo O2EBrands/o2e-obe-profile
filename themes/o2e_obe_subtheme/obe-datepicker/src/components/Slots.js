@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import moment from "moment";
 import Accordion from "./Accordion";
 export default function Slots(props) {
@@ -33,16 +33,31 @@ export default function Slots(props) {
     { morning: [], afternoon: [], evening: [] },
   ];
 
-  //Function to keep the DOM values in sync on click.
+  // Getting dom objects for selecting values.
+  let startTimeField = document.querySelector(
+    'input[data-drupal-selector="edit-start-time"]'
+  );
+  let finshTimeField = document.querySelector(
+    'input[data-drupal-selector="edit-finish-time"]'
+  );
+
+  // Function to keep the DOM values in sync.
   function updateWebform(event) {
+    // fetching selected values.
     let startValue = event.target.getAttribute("data-start");
     let finishValue = event.target.getAttribute("data-finish");
-    document.querySelectorAll(
-      '[data-drupal-selector="edit-end-time"]'
-    ).value = finishValue;
-    document.querySelectorAll(
-      '[data-drupal-selector="edit-start-time"]'
-    ).value = startValue;
+
+    // Updating the values.
+    startTimeField.value = startValue.toString();
+    finshTimeField.value = finishValue.toString();
+
+    //Logging values on to the console.
+    console.log(
+      document.querySelector('input[data-drupal-selector="edit-finish-time"]')
+        .value,
+      document.querySelector('input[data-drupal-selector="edit-start-time"]')
+        .value
+    );
   }
 
   // Loop through each timeslot and group them by date.
@@ -141,5 +156,11 @@ export default function Slots(props) {
     }
   });
 
-  return <div className="row">{accordionGroup}</div>;
+  // Cleaning up on re-renders
+  useEffect(() => {
+    startTimeField.value = "";
+    finshTimeField.value = "";
+  });
+
+  return <div className="row fadein">{accordionGroup}</div>;
 }

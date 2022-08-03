@@ -1,8 +1,24 @@
+@keyframes pulsing {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
 #edit-react-datepicker-component {
+  .pulsing {
+    animation: pulsing 1s infinite;
+  }
   .btn-expand {
     color: $accent-shade;
     text-decoration: underline;
     cursor: pointer;
+    position: absolute;
+    bottom: 5px;
   }
   .react-datepicker-time__header,
   .react-datepicker-year-header,
@@ -54,6 +70,8 @@
     border-radius: 0;
   }
   .accordion-body {
+    position: relative;
+    padding-bottom: 25px;
     & > div {
       display: flex;
       gap: 10px;
@@ -67,5 +85,17 @@
     top: 15px;
     width: 12px;
     height: 12px;
+  }
+
+  // Loader for datepicker.
+  .datepicker-wrapper {
+    position: relative;
+    align-self: baseline;
+    .obe-loader {
+      z-index: 1;
+      position: absolute;
+      cursor: not-allowed;
+      background: rgba($white, 0.7);
+    }
   }
 }
