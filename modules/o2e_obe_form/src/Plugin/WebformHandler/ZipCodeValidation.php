@@ -9,6 +9,9 @@ use Drupal\webform\WebformSubmissionInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\o2e_obe_salesforce\AreaVerificationService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\State\State;
+use Drupal\Core\Render\Markup;
 
 /**
  * Webform validate handler.
@@ -28,6 +31,11 @@ class ZipCodeValidation extends WebformHandlerBase {
   use StringTranslationTrait;
 
   /**
+   * State Manager.
+   */
+  protected $state;
+
+  /**
    * The Area Verification Manager.
    *
    * @var \Drupal\o2e_obe_salesforce\AreaVerificationService
@@ -35,13 +43,38 @@ class ZipCodeValidation extends WebformHandlerBase {
   protected $areaVerificationManager;
 
   /**
+   * The SalesForce Config values.
+   *
+   * @var \object|null
+   */
+  protected $salesforceConfig;
+
+  /**
+   * Constructor method.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $salesforceConfig, AreaVerificationService $areaVerificationManager, State $state) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->salesforceConfig = $salesforceConfig;
+    $this->areaVerificationManager = $areaVerificationManager;
+    $this->state = $state;
+
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    $instance->areaVerificationManager = $container->get('o2e_obe_salesforce.area_verification_service');
-    return $instance;
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('config.factory'),
+      $container->get('o2e_obe_salesforce.area_verification_service'),
+      $container->get('state')
+    );
   }
+
+
 
   /**
    * {@inheritdoc}
@@ -64,9 +97,19 @@ class ZipCodeValidation extends WebformHandlerBase {
       $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
       if (!empty($response)) {
         if (isset($response['service_id']) && isset($response['state'])) {
-          \Drupal::state()->set('state', $response['state']);
-          \Drupal::state()->set('zip_code', $zip_code);
+          $this->state->set('state', $response['state']);
+          $this->state->set('zip_code', $zip_code);
           return TRUE;
+        }
+        elseif (isset($response['code']) && $response['code'] === 404) {
+          if (strpos('Area Not Serviced', $response['message'])) {
+            $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
+            $enable_ans = $salesforceConfigData['enable_ans'];
+            if ($enable_ans == TRUE) {
+              $message = Markup::create($salesforceConfigData['ans_message']);
+              $formState->setErrorByName('zip_code', $message);
+            }
+          }
         }
         else {
           $formState->setErrorByName('zip_code', $this->t('Please enter valid zip code.'));

@@ -46,6 +46,12 @@ o2e_obe_salesforce.settings:
         api_url_segment:
           type: text
           label: 'Api URL Segment'
+        enable_ans:
+          type: string
+          label: Enable ANS
+        ans_message:
+          type: text
+          label: ANS Message
     sf_available_time:
       type: mapping
       label: 'Fieldset for the fields'

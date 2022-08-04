@@ -13,6 +13,8 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\o2e_obe_salesforce\BookJobJunkCustomerService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
+use Drupal\Core\State\State;
+use Drupal\Core\Language\LanguageManager;
 
 /**
  * Webform validate handler.
@@ -60,14 +62,41 @@ class ContactInformation extends WebformHandlerBase {
   protected $promoCodeService;
 
   /**
+   * State Manager.
+   */
+  protected $state;
+
+  /**
+   * Language Manager.
+   */
+  protected $languageManager;
+
+  /**
+   * Constructor method.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, BookJobJunkCustomerService $bookJobJunkService, PromoDetailsJunkService $promoCodeService, MessengerInterface $messenger, State $state, LanguageManager $languageManager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->bookJobJunkService = $bookJobJunkService;
+    $this->promoCodeService = $promoCodeService;
+    $this->messenger = $messenger;
+    $this->state = $state;
+    $this->languageManager = $languageManager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    $instance->bookJobJunkService = $container->get('o2e_obe_salesforce.book_job_junk_customer');
-    $instance->messenger = $container->get('messenger');
-    $instance->promoCodeService = $container->get('o2e_obe_salesforce.promo_details_junk_service');
-    return $instance;
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('o2e_obe_salesforce.book_job_junk_customer'),
+      $container->get('o2e_obe_salesforce.promo_details_junk_service'),
+      $container->get('messenger'),
+      $container->get('state'),
+      $container->get('language_manager')
+    );
   }
 
   /**
@@ -131,7 +160,7 @@ class ContactInformation extends WebformHandlerBase {
     // Get Address filled.
     $subdivisionRepository = new SubdivisionRepository();
     $address = !empty($formState->getValue('address')) ? $formState->getValue('address') : NULL;
-    $country_code = \Drupal::state()->get('country_code');
+    $country_code = $this->state->get('country_code');
     $state_code = $address['state_province'];
     $states = $subdivisionRepository->getList(['US']);
     $state = $states[$state_code];
@@ -142,7 +171,7 @@ class ContactInformation extends WebformHandlerBase {
     $finish_date_time = $formState->getValue('finish_date_time');
 
     // Get current language.
-    $current_language = \Drupal::languageManager()->getCurrentLanguage()->getName();
+    $current_language = $this->languageManager->getCurrentLanguage()->getName();
     $language = ($current_language === 'English') ? $current_language : 'French';
 
     // Query parameter.
@@ -175,7 +204,7 @@ class ContactInformation extends WebformHandlerBase {
           'start_date_time' => $start_date_time,
           'finish_date_time' => $finish_date_time,
         ];
-        \Drupal::state()->setMultiple($general_data);
+        $this->state->setMultiple($general_data);
         return TRUE;
       }
       else {

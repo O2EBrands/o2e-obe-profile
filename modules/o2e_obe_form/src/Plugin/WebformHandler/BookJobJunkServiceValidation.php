@@ -9,6 +9,7 @@ use Drupal\webform\WebformSubmissionInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\o2e_obe_salesforce\BookJobJunkService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\State\State;
 
 /**
  * Webform validate handler.
@@ -42,13 +43,33 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
   protected $messenger;
 
   /**
+   * State Manager.
+   */
+  protected $state;
+
+  /**
+   * Constructor method.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, BookJobJunkService $bookJobService, State $state, MessengerInterface $messenger) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->bookJobService = $bookJobService;
+    $this->state = $state;
+    $this->messenger = $messenger;
+
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    $instance->bookJobService = $container->get('o2e_obe_salesforce.book_job_junk');
-    $instance->messenger = $container->get('messenger');
-    return $instance;
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('o2e_obe_salesforce.book_job_junk'),
+      $container->get('state'),
+      $container->get('messenger')
+    );
   }
 
   /**
@@ -73,7 +94,7 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
         'start_date_time',
         'finish_date_time',
       ];
-      $query = \Drupal::state()->getMultiple($general_data);
+      $query = $this->state->getMultiple($general_data);
       $response = $this->bookJobJunkService->bookJobJunk($query);
       if (!empty($response)) {
         $this->messenger()->addMessage($this->t('Booking done.'));

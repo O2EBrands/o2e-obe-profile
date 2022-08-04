@@ -110,6 +110,21 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('sf_verify_area.api_url_segment'),
       '#required' => TRUE,
     ];
+    $form['sf_verify_area']['enable_ans'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable ANS'),
+      '#default_value' => $config->get('sf_verify_area.enable_ans'),
+    );
+    $form['sf_verify_area']['ans_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('ANS Message'),
+      '#default_value' => $config->get('sf_verify_area.ans_message'),
+      '#states' => [
+        'visible' => [
+          ':input[name="sf_verify_area[enable_ans]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
     $form['sf_available_time'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Salesforce AvailableTimes Serviced Details'),
