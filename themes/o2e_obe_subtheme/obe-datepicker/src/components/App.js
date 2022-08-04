@@ -3,6 +3,7 @@ import moment from "moment";
 import DatePicker from "react-datepicker";
 import Loader from "./Loader";
 import Slots from "./Slots";
+import SlotLoader from "./SlotLoader";
 // import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -41,7 +42,8 @@ function App() {
 
   return (
     <div className="row fadein">
-      <div className="col-lg-3 col-md-6 col-sm-12">
+      <div className="col-lg-3 col-md-6 col-sm-12 datepicker-wrapper">
+        {isLoading ? <Loader /> : ""}
         <DatePicker
           selected={selectedDate.clone().toDate()}
           onChange={(date: Date) => setSelectedDate(moment(date))}
@@ -52,7 +54,7 @@ function App() {
       </div>
       <div className="col-lg-9 col-md-6 col-sm-12">
         {isLoading ? (
-          <Loader />
+          <SlotLoader />
         ) : (
           <Slots {...data} selectedDate={selectedDate} />
         )}
