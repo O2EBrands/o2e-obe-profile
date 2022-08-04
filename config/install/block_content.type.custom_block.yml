@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+id: custom_block
+label: 'Custom Block'
+revision: 0
+description: 'Block to be added in O2E OBE sites.'
