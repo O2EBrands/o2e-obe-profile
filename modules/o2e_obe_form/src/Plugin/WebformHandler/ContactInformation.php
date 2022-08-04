@@ -81,7 +81,6 @@ class ContactInformation extends WebformHandlerBase {
    * Validate phone.
    */
   private function validateCustomer(FormStateInterface $formState) {
-    // $promotion_applied = FALSE;
     $current_page = $formState->get('current_page');
     if ($current_page === 'step3') {
       // Promo Code Verification (if applicable).
@@ -90,7 +89,6 @@ class ContactInformation extends WebformHandlerBase {
         $promo_response = $this->promoCodeService->getPromocode($promocode);
         if (!empty($promo_response)) {
           if (isset($promo_response['promotion_code'])) {
-            // $promotion_applied = TRUE;
             $this->_bookJobJunkCustomer($formState);
           }
           if (isset($promo_response['program_code'])) {

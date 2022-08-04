@@ -61,6 +61,7 @@ elements: |-
       '#type': webform_address
       '#title': Address
       '#required': true
+      '#states_clear': false
       '#default_value':
         address: ''
         city: ''
@@ -73,8 +74,8 @@ elements: |-
       '#city__required': true
       '#state_province__required': true
       '#state_province__options': state_province_codes
-      '#postal_code__required': true
       '#country__title_display': invisible
+      '#postal_code__readonly': true
     first_name:
       '#type': textfield
       '#title': 'First Name'
