@@ -67,29 +67,44 @@ a {
 .obe-loader {
   display: flex;
   position: relative;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
   gap: 15px;
+  .loader-title {
+    width: 100%;
+    font-weight: 600;
+    text-align: center;
+    color: $accent-shade;
+  }
   width: 100%;
   height: 100%;
-  div {
-    width: 13px;
-    height: 13px;
-    border-radius: 50%;
-    background: $accent-shade;
-    animation-timing-function: cubic-bezier(0, 1, 1, 0);
-    &:nth-child(1) {
-      animation: obe-loader1 0.6s infinite;
-    }
-    &:nth-child(2) {
-      animation: obe-loader2 0.6s infinite;
-    }
-    &:nth-child(3) {
-      animation: obe-loader2 0.6s infinite;
-    }
-    &:nth-child(4) {
-      left: 56px;
-      animation: obe-loader3 0.6s infinite;
+  .obe-loader-circles {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    div {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: $accent-shade;
+      animation-timing-function: cubic-bezier(0, 1, 1, 0);
+      &:nth-child(1) {
+        animation: obe-loader1 0.6s infinite;
+      }
+      &:nth-child(2) {
+        animation: obe-loader2 0.6s infinite;
+      }
+      &:nth-child(3) {
+        animation: obe-loader2 0.6s infinite;
+      }
+      &:nth-child(4) {
+        left: 56px;
+        animation: obe-loader3 0.6s infinite;
+      }
     }
   }
 }

@@ -35,10 +35,16 @@ export default function Slots(props) {
 
   // Getting dom objects for selecting values.
   let startTimeField = document.querySelector(
-    'input[data-drupal-selector="edit-start-time"]'
+    'input[data-drupal-selector="edit-start-date-time"]'
   );
   let finshTimeField = document.querySelector(
-    'input[data-drupal-selector="edit-finish-time"]'
+    'input[data-drupal-selector="edit-finish-date-time"]'
+  );
+  let pickUpField = document.querySelector(
+    'input[data-drupal-selector="edit-pick-up-date"]'
+  );
+  let arrivalTimeField = document.querySelector(
+    'input[data-drupal-selector="edit-arrival-time"]'
   );
 
   // Function to keep the DOM values in sync.
@@ -46,18 +52,19 @@ export default function Slots(props) {
     // fetching selected values.
     let startValue = event.target.getAttribute("data-start");
     let finishValue = event.target.getAttribute("data-finish");
+    let pickUpValue = moment(startValue).utc().format("ddd, MMM D, YYYY");
+    let arrivalTimeValue = `${moment(startValue)
+      .utc()
+      .format("hh:mm A")} - ${moment(startValue)
+      .utc()
+      .add(2, "hours")
+      .format("hh:mm A")}`;
 
     // Updating the values.
     startTimeField.value = startValue.toString();
     finshTimeField.value = finishValue.toString();
-
-    //Logging values on to the console.
-    console.log(
-      document.querySelector('input[data-drupal-selector="edit-finish-time"]')
-        .value,
-      document.querySelector('input[data-drupal-selector="edit-start-time"]')
-        .value
-    );
+    pickUpField.value = pickUpValue.toString();
+    arrivalTimeField.value = arrivalTimeValue.toString();
   }
 
   // Loop through each timeslot and group them by date.
@@ -77,65 +84,36 @@ export default function Slots(props) {
 
     let slotHours = iMoment.clone().format("HH");
     let slotMinutes = iMoment.clone().format("mm");
+    let radioBtnTemplate = (
+      <div>
+        <input
+          type="radio"
+          id={iMoment.clone().format()}
+          onChange={updateWebform}
+          name="timeSlot"
+          data-start={iMoment.clone().format()}
+          data-finish={endMoment.clone().format()}
+          value={iMoment.clone().format()}
+        ></input>
+        <label for={iMoment.clone().format()}>
+          {iMoment.format("hh:mm A")} -{" "}
+          {iMoment.clone().add(2, "hours").format("hh:mm A")}
+        </label>
+      </div>
+    );
 
     // Push the input radios into array based on their date and time.
     if (slotHours < 12 && slotMinutes < 31) {
       if (optionsByDay[optionsDay].hasOwnProperty("morning")) {
-        optionsByDay[optionsDay].morning.push(
-          <div>
-            <input
-              type="radio"
-              onClick={updateWebform}
-              name="timeSlot"
-              data-start={iMoment.clone().format()}
-              data-finish={endMoment.clone().format()}
-              value={iMoment.clone().format()}
-            ></input>
-            <label>
-              {iMoment.format("hh:mm A")} -
-              {endMoment.add(2, "hours").format("hh:mm A")}
-            </label>
-          </div>
-        );
+        optionsByDay[optionsDay].morning.push(radioBtnTemplate);
       }
     } else if (slotHours < 16 && slotMinutes < 31) {
       if (optionsByDay[optionsDay].hasOwnProperty("afternoon")) {
-        optionsByDay[optionsDay].afternoon.push(
-          <div>
-            <input
-              type="radio"
-              onClick={updateWebform}
-              name="timeSlot"
-              data-start={iMoment.clone().format()}
-              data-finish={endMoment.clone().format()}
-              value={iMoment.clone().format()}
-            ></input>
-            <label>
-              {iMoment.format("hh:mm A")} -
-              {endMoment.add(2, "hours").format("hh:mm A")}
-            </label>
-          </div>
-        );
+        optionsByDay[optionsDay].afternoon.push(radioBtnTemplate);
       }
     } else {
       if (optionsByDay[optionsDay].hasOwnProperty("evening")) {
-        optionsByDay[optionsDay].evening.push(
-          <div>
-            <input
-              onClick={updateWebform}
-              id={iMoment.clone().format()}
-              type="radio"
-              name="timeSlot"
-              data-start={iMoment.clone().format()}
-              data-finish={endMoment.clone().format()}
-              value={iMoment.clone().format()}
-            ></input>
-            <label>
-              {iMoment.format("hh:mm A")} -
-              {endMoment.add(2, "hours").format("hh:mm A")}
-            </label>
-          </div>
-        );
+        optionsByDay[optionsDay].evening.push(radioBtnTemplate);
       }
     }
   }
@@ -160,6 +138,8 @@ export default function Slots(props) {
   useEffect(() => {
     startTimeField.value = "";
     finshTimeField.value = "";
+    pickUpField.value = "";
+    arrivalTimeField.value = "";
   });
 
   return <div className="row fadein">{accordionGroup}</div>;
