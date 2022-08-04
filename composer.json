@@ -13,6 +13,25 @@
           "email": "daryl.bautista@o2ebrands.com"
       }
   ],
+  "repositories": [
+    {
+      "type": "package",
+      "package": {
+          "name": "commerceguys/addressing",
+          "version": "v1.3.0",
+          "type": "drupal-library",
+          "dist": {
+              "url": "https://github.com/commerceguys/addressing/archive/refs/heads/master.zip",
+              "type": "zip"
+          },
+          "source": {
+              "url": "https://github.com/commerceguys/addressing.git",
+              "type": "git",
+              "reference": "566febd56ca71e31dd383b014c4e1bec680507bf"
+          }
+      }
+    }
+  ],
   "require": {
     "drupal/admin_toolbar": "^3.1",
     "drupal/allowed_formats": "^1.4",
@@ -42,7 +61,8 @@
     "drush/drush": "^11 || ^12",
     "drupal/console": "^1.9",
     "drupal/key": "^1.15",
-    "kamermans/guzzle-oauth2-subscriber": "~1.0"
+    "kamermans/guzzle-oauth2-subscriber": "~1.0",
+    "commerceguys/addressing": "^1.3"
   },
   "require-dev": {
     "drupal/core-dev": "~9.3.3",

@@ -29,6 +29,7 @@ elements: |-
       '#type': textfield
       '#title': 'Zip Code'
       '#required': true
+      '#pattern': '^([0-9]{4})$'
   step2:
     '#type': webform_wizard_page
     '#title': 'Page 2'
@@ -37,15 +38,44 @@ elements: |-
       '#title': 'Pick a Date and Time'
     react_datepicker_component:
       '#type': container
-    selected_date:
-      '#type': value
-      '#title': 'Selected date'
-    selected_time_slot:
-      '#type': value
-      '#title': 'Selected Time Slot'
+    start_date_time:
+      '#type': hidden
+      '#title': start_date_time
+    finish_date_time:
+      '#type': hidden
+      '#title': finish_date_time
+    service_id:
+      '#type': hidden
+      '#title': 'Service ID'
+      '#default_value': '[custom_token:serviceId]'
+    pick_up_date:
+      '#type': hidden
+      '#title': 'Pick-Up Date'
+    arrival_time:
+      '#type': hidden
+      '#title': 'Arrival Time'
   step3:
     '#type': webform_wizard_page
     '#title': 'Page 3'
+    address:
+      '#type': webform_address
+      '#title': Address
+      '#required': true
+      '#states_clear': false
+      '#default_value':
+        address: ''
+        city: ''
+        state_province: '[custom_token:state]'
+        postal_code: '[custom_token:zip-code]'
+        country: '[custom_token:country]'
+        address_2: ''
+      '#address__required': true
+      '#address_2__access': false
+      '#city__required': true
+      '#state_province__required': true
+      '#state_province__options': state_province_codes
+      '#country__title_display': invisible
+      '#postal_code__readonly': true
     first_name:
       '#type': textfield
       '#title': 'First Name'
@@ -62,6 +92,34 @@ elements: |-
       '#type': tel
       '#title': 'Phone Number'
       '#required': true
+    promo_code:
+      '#type': textfield
+      '#title': 'Promo Code'
+  step4:
+    '#type': webform_wizard_page
+    '#title': 'Page 4'
+    review_data_container:
+      '#type': webform_computed_twig
+      '#title': 'Review Data Container'
+      '#template': |-
+        <div class="review-data-container">
+        <div class="date-time-data">
+
+        <button formnovalidate="formnovalidate" class="webform-button--previous button js-form-submit form-submit btn btn-primary" data-webform-wizard-page="step2" data-drupal-selector="edit-wizard-prev" type="submit" id="edit-wizard-prev" name="op" value="EDIT">EDIT</button>
+
+        <div>Pick-Up Date: {{data.pick_up_date}}
+        <div>Arrival Time: {{data.arrival_time}}
+        </div>
+        <div class="contact-info">
+
+        <button formnovalidate="formnovalidate" class="webform-button--previous button js-form-submit form-submit btn btn-primary" data-webform-wizard-page="step3" data-drupal-selector="edit-wizard-prev" type="submit" id="edit-wizard-prev" name="op" value="EDIT">EDIT</button>
+
+        <div>Name: {{data.first_name}} {{data.last_name}}</div>
+        <div>Address: {{data.address.address}},{{data.address.city}}, {{data.address.state_province}}, {{data.address.postal_code}}</div>
+        <div>Email: {{data.email}}</div>
+        <div>Phone Number: {{data.phone_number}}</div>
+        </div>
+        </div>
 css: ''
 javascript: ''
 settings:
@@ -115,7 +173,8 @@ settings:
   submission_exception_message: ''
   submission_locked_message: ''
   submission_log: false
-  submission_excluded_elements: {  }
+  submission_excluded_elements:
+    review_data_container: review_data_container
   submission_exclude_empty: false
   submission_exclude_empty_checkbox: false
   submission_views: {  }
@@ -248,6 +307,24 @@ handlers:
     id: o2e_obe_form_zip_code_validator
     handler_id: zip_code_validator
     label: 'Zip Code Validator'
+    notes: ''
+    status: true
+    conditions: {  }
+    weight: -50
+    settings: {  }
+  contact_information_validator:
+    id: o2e_obe_form_contact_validator
+    handler_id: contact_information_validator
+    label: 'Contact Information Validator'
+    notes: ''
+    status: true
+    conditions: {  }
+    weight: -49
+    settings: {  }
+  service_validator:
+    id: o2e_obe_form_service_validator
+    handler_id: service_validator
+    label: 'Service Validator'
     notes: ''
     status: true
     conditions: {  }

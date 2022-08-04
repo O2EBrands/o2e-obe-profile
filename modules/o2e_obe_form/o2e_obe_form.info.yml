@@ -6,3 +6,4 @@ package: 'O2E OBE'
 dependencies:
   - o2e_obe_salesforce:o2e_obe_salesforce
   - webform:webform
+  - o2e_obe_promo_code:o2e_obe_promo_code
