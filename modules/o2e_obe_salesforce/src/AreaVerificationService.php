@@ -116,6 +116,10 @@ class AreaVerificationService {
     }
     catch (RequestException $e) {
       $this->loggerFactory->get('Salesforce - VerifyAreaServiced Fail')->error($e->getMessage());
+      return [
+        'code' => $e->getCode(),
+        'message' => $e->getResponseBodySummary($e->getResponse())
+      ];
     }
   }
 
