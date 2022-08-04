@@ -62,7 +62,6 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
    * Validate phone.
    */
   private function validateService(FormStateInterface $formState) {
-    // $promotion_applied = FALSE;
     $current_page = $formState->get('current_page');
     if ($current_page === 'step4') {
       // Get common parameters.
