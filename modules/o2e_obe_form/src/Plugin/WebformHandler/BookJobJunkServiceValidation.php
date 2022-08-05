@@ -48,28 +48,14 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
   protected $state;
 
   /**
-   * Constructor method.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, BookJobJunkService $bookJobService, State $state, MessengerInterface $messenger) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->bookJobService = $bookJobService;
-    $this->state = $state;
-    $this->messenger = $messenger;
-
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('o2e_obe_salesforce.book_job_junk'),
-      $container->get('state'),
-      $container->get('messenger')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->bookJobService = $container->get('o2e_obe_salesforce.book_job_junk');
+    $instance->messenger = $container->get('messenger');
+    $instance->state = $container->get('state');
+    return $instance;
   }
 
   /**
