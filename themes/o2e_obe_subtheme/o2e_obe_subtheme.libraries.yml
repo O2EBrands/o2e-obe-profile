@@ -17,5 +17,5 @@ o2e-datepicker:
     base:
       css/react-chunk.css: {}
   js:
-    js/datepicker-build.min.js: {}
+    js/drupal-datepicker.js: {}
     js/react-chunk.min.js: {}
