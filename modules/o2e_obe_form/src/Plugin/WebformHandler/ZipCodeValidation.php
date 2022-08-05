@@ -45,36 +45,21 @@ class ZipCodeValidation extends WebformHandlerBase {
   /**
    * The SalesForce Config values.
    *
-   * @var \object|null
+   * @var \Drupal\Core\Config\ImmutableConfig
    */
   protected $salesforceConfig;
-
-  /**
-   * Constructor method.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $salesforceConfig, AreaVerificationService $areaVerificationManager, State $state) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->salesforceConfig = $salesforceConfig;
-    $this->areaVerificationManager = $areaVerificationManager;
-    $this->state = $state;
-
-  }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('config.factory'),
-      $container->get('o2e_obe_salesforce.area_verification_service'),
-      $container->get('state')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->salesforceConfig = $container->get('config.factory');
+    $instance->areaVerificationManager = $container->get('o2e_obe_salesforce.area_verification_service');
+    $instance->state = $container->get('state');
+
+    return $instance;
   }
-
-
 
   /**
    * {@inheritdoc}

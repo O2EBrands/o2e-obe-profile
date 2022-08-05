@@ -72,31 +72,16 @@ class ContactInformation extends WebformHandlerBase {
   protected $languageManager;
 
   /**
-   * Constructor method.
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, BookJobJunkCustomerService $bookJobJunkService, PromoDetailsJunkService $promoCodeService, MessengerInterface $messenger, State $state, LanguageManager $languageManager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->bookJobJunkService = $bookJobJunkService;
-    $this->promoCodeService = $promoCodeService;
-    $this->messenger = $messenger;
-    $this->state = $state;
-    $this->languageManager = $languageManager;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('o2e_obe_salesforce.book_job_junk_customer'),
-      $container->get('o2e_obe_salesforce.promo_details_junk_service'),
-      $container->get('messenger'),
-      $container->get('state'),
-      $container->get('language_manager')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->bookJobJunkService = $container->get('o2e_obe_salesforce.book_job_junk_customer');
+    $instance->promoCodeService = $container->get('o2e_obe_salesforce.promo_details_junk_service');
+    $instance->messenger = $container->get('messenger');
+    $instance->state = $container->get('state');
+    $instance->languageManager = $container->get('language_manager');
+    return $instance;
   }
 
   /**
