@@ -86,7 +86,7 @@ class BookJobJunkService {
       'customer_type' => $this->authTokenManager->getSfConfig('sf_book_job_junk_customer.customer_type'),
       'service_id' => $sf_response['service_id'],
     ];
-    $tempstore->set('bookJobJunkService', $options);
+    $tempstore->set('bookJobJunkService', UrlHelper::buildQuery($options));
     try {
       $response = $this->httpClient->request('POST', $api_url, [
         'headers' => $headers,
