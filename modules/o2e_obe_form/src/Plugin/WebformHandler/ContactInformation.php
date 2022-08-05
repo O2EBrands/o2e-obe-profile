@@ -203,13 +203,12 @@ class ContactInformation extends WebformHandlerBase {
       }
       else {
         if (isset($response['code'])) {
-          $current_page = $formState->get('current_page');
           $form_object = $formState->getFormObject();
           $webform_submission = $form_object->getEntity();
           $webform = $webform_submission->getWebform();
           // Get email handler whose id matches the current page's id.
           $handlers = $webform->getHandlers();
-          $email_handler = $handlers->get($current_page);
+          $email_handler = $handlers->get('book_junk_customer_failure');
           // Get message.
           $message = $email_handler->getMessage($webform_submission);
 

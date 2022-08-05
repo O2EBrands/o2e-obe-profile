@@ -330,10 +330,10 @@ handlers:
     conditions: {  }
     weight: 0
     settings: {  }
-  step3:
+  book_junk_customer_failure:
     id: email
-    handler_id: step3
-    label: Step3
+    handler_id: book_junk_customer_failure
+    label: 'Book Junk Customer Failure'
     notes: ''
     status: true
     conditions: {  }
@@ -367,10 +367,10 @@ handlers:
       theme_name: ''
       parameters: {  }
       debug: false
-  step4:
+  book_junk_service_failure:
     id: email
-    handler_id: step4
-    label: Step4
+    handler_id: book_junk_service_failure
+    label: 'Book Junk Service Failure'
     notes: ''
     status: true
     conditions: {  }
