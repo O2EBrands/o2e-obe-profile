@@ -98,21 +98,21 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
         return TRUE;
       }
       elseif (!empty($response) && $response > 200) {
-          $form_object = $formState->getFormObject();
-          $webform_submission = $form_object->getEntity();
-          $webform = $webform_submission->getWebform();
-          // Get email handler whose id matches the current page's id.
-          $handlers = $webform->getHandlers();
-          $email_handler = $handlers->get('book_junk_service_failure');
-          // Get message.
-          $message = $email_handler->getMessage($webform_submission);
+        $form_object = $formState->getFormObject();
+        $webform_submission = $form_object->getEntity();
+        $webform = $webform_submission->getWebform();
+        // Get email handler whose id matches the current page's id.
+        $handlers = $webform->getHandlers();
+        $email_handler = $handlers->get('book_junk_service_failure');
+        // Get message.
+        $message = $email_handler->getMessage($webform_submission);
 
-          // @todo Optional: Alter message before it is sent.
-          $modify_body = str_replace('sf_parameter', $tempstore, $message['body']);
-          $modify_body = str_replace('sf_failure_log', Json::encode($response), $modify_body);
-          $message['body'] = $modify_body;
-          // Send message.
-          $email_handler->sendMessage($webform_submission, $message);
+        // @todo Optional: Alter message before it is sent.
+        $modify_body = str_replace('sf_parameter', $tempstore, $message['body']);
+        $modify_body = str_replace('sf_failure_log', Json::encode($response), $modify_body);
+        $message['body'] = $modify_body;
+        // Send message.
+        $email_handler->sendMessage($webform_submission, $message);
         $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
         return FALSE;
       }
