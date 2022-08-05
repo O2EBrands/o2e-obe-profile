@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
 use Drupal\Core\State\State;
 use Drupal\Core\Language\LanguageManager;
+use Drupal\Component\Serialization\Json;
 
 /**
  * Webform validate handler.
@@ -72,6 +73,12 @@ class ContactInformation extends WebformHandlerBase {
   protected $languageManager;
 
   /**
+   * PrivateTempStoreFactory definition.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   */
+  protected $tempStoreFactory;
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -81,6 +88,7 @@ class ContactInformation extends WebformHandlerBase {
     $instance->messenger = $container->get('messenger');
     $instance->state = $container->get('state');
     $instance->languageManager = $container->get('language_manager');
+    $instance->tempStoreFactory = $container->get('tempstore.private');
     return $instance;
   }
 
@@ -137,6 +145,7 @@ class ContactInformation extends WebformHandlerBase {
    */
   function _bookJobJunkCustomer(FormStateInterface $formState, $promo_query = []) {
     // Get contact details from form.
+    $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('bookJobJunkCustomer');
     $fname = !empty($formState->getValue('first_name')) ? Html::escape($formState->getValue('first_name')) : NULL;
     $lname = !empty($formState->getValue('last_name')) ? $formState->getValue('last_name') : NULL;
     $phone = !empty($formState->getValue('phone_number')) ? Html::escape($formState->getValue('phone_number')) : NULL;
@@ -194,6 +203,23 @@ class ContactInformation extends WebformHandlerBase {
       }
       else {
         if (isset($response['code'])) {
+          $current_page = $formState->get('current_page');
+          $form_object = $formState->getFormObject();
+          $webform_submission = $form_object->getEntity();
+          $webform = $webform_submission->getWebform();
+          // Get email handler whose id matches the current page's id.
+          $handlers = $webform->getHandlers();
+          $email_handler = $handlers->get($current_page);
+          // Get message.
+          $message = $email_handler->getMessage($webform_submission);
+
+          // @todo Optional: Alter message before it is sent.
+          
+          $modify_body = str_replace('sf_parameter', $tempstore, $message['body']);
+          $modify_body = str_replace('sf_failure_log', Json::encode($response), $modify_body);
+          $message['body'] = $modify_body;
+          // Send message.
+          $email_handler->sendMessage($webform_submission, $message);
           switch ($response['code']) {
             case 102:
               $formState->setErrorByName('first_name', $response['message']);

@@ -330,4 +330,78 @@ handlers:
     conditions: {  }
     weight: 0
     settings: {  }
+  step3:
+    id: email
+    handler_id: step3
+    label: Step3
+    notes: ''
+    status: true
+    conditions: {  }
+    weight: 0
+    settings:
+      states:
+        - completed
+      to_mail: _default
+      to_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      from_mail: _default
+      from_options: {  }
+      from_name: _default
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      subject: 'OBE Failed Job Booking Notification - [current-date:custom: d-M-Y]'
+      body: "<h3>Hello Sales Center,</h3>\r\n<p></p>\r\n<p>The following information was captured from a failed OBE job booking. Please, follow up.</p>\r\n\r\n<p>Requested Job Date: {{ data.start_date_time }} <br/>\r\nFirst Name: {{ data.first_name }} <br/>\r\nLast Name: {{ data.last_name }} <br/>\r\nEmail: {{ data.email }} <br/>\r\nPhone: {{ data.phone_number }} <br/>\r\nZIP Code: {{ data.zip_code }} <br/>\r\nAddress: {{ data.address.city }};{{ data.address.country }};{{ data.address.state_province }};{{ data.address.address }}; {{ data.address.postal_code }} <br/> \r\n<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Customer Request: sf_parameter</p>\r\n<p>Book Job Junk Customer Result: sf_failure_log </p>"
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      exclude_attachments: false
+      html: true
+      attachments: false
+      twig: true
+      theme_name: ''
+      parameters: {  }
+      debug: false
+  step4:
+    id: email
+    handler_id: step4
+    label: Step4
+    notes: ''
+    status: true
+    conditions: {  }
+    weight: 0
+    settings:
+      states:
+        - completed
+      to_mail: _default
+      to_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      from_mail: _default
+      from_options: {  }
+      from_name: _default
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      subject: 'OBE Failed Job Booking Notification - [current-date:custom: d-M-Y]'
+      body: "<h3>Hello Sales Center,</h3>\r\n<p></p>\r\n<p>The following information was captured from a failed OBE job booking. Please, follow up.</p>\r\n\r\n<p>Requested Job Date: {{ data.start_date_time }} <br/>\r\nFirst Name: {{ data.first_name }} <br/>\r\nLast Name: {{ data.last_name }} <br/>\r\nEmail: {{ data.email }} <br/>\r\nPhone: {{ data.phone_number }} <br/>\r\nZIP Code: {{ data.zip_code }} <br/>\r\nAddress: {{ data.address.city }};{{ data.address.country }};{{ data.address.state_province }};{{ data.address.address }}; {{ data.address.postal_code }} <br/> \r\n<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Customer Request: sf_parameter</p>\r\n<p>Book Job Junk Customer Result: sf_failure_log </p>"
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      exclude_attachments: false
+      html: true
+      attachments: false
+      twig: true
+      theme_name: ''
+      parameters: {  }
+      debug: false
 variants: {  }
