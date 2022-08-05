@@ -94,7 +94,6 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
       $query = $this->state->getMultiple($general_data);
       $response = $this->bookJobService->bookJobJunk($query);
       if (!empty($response) && $response == 200) {
-        dump($response);exit;
         $this->messenger()->addMessage($this->t('Booking done.'));
         return TRUE;
       }
