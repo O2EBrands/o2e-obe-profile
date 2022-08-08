@@ -355,7 +355,7 @@ handlers:
       sender_mail: ''
       sender_name: ''
       subject: 'OBE Failed Job Booking Notification - [current-date:custom: d-M-Y]'
-      body: "<h3>Hello Sales Center,</h3>\r\n<p></p>\r\n<p>The following information was captured from a failed OBE job booking. Please, follow up.</p>\r\n\r\n<p>Requested Job Date: {{ data.start_date_time }} <br/>\r\nFirst Name: {{ data.first_name }} <br/>\r\nLast Name: {{ data.last_name }} <br/>\r\nEmail: {{ data.email }} <br/>\r\nPhone: {{ data.phone_number }} <br/>\r\nZIP Code: {{ data.zip_code }} <br/>\r\nAddress: {{ data.address.city }};{{ data.address.country }};{{ data.address.state_province }};{{ data.address.address }}; {{ data.address.postal_code }} <br/> \r\n<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Customer Request: sf_parameter</p>\r\n<p>Book Job Junk Customer Result: sf_failure_log </p>"
+      body: "<h3>Hello Sales Center,</h3>\r\n<p></p>\r\n<p>The following information was captured from a failed OBE job booking. Please, follow up.</p>\r\n\r\n<p>Requested Job Date: {{ data.start_date_time }} <br/>\r\nFirst Name: {{ data.first_name }} <br/>\r\nLast Name: {{ data.last_name }} <br/>\r\nEmail: {{ data.email }} <br/>\r\nPhone: {{ data.phone_number }} <br/>\r\nZIP Code: {{ data.zip_code }} <br/>\r\nAddress: {{ data.address.city }};{{ data.address.country }};{{ data.address.state_province }};{{ data.address.address }}; {{ data.address.postal_code }} <br/>\r\n[sf_failure_log]"
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
@@ -392,7 +392,7 @@ handlers:
       sender_mail: ''
       sender_name: ''
       subject: 'OBE Failed Job Booking Notification - [current-date:custom: d-M-Y]'
-      body: "<h3>Hello Sales Center,</h3>\r\n<p></p>\r\n<p>The following information was captured from a failed OBE job booking. Please, follow up.</p>\r\n\r\n<p>Requested Job Date: {{ data.start_date_time }} <br/>\r\nFirst Name: {{ data.first_name }} <br/>\r\nLast Name: {{ data.last_name }} <br/>\r\nEmail: {{ data.email }} <br/>\r\nPhone: {{ data.phone_number }} <br/>\r\nZIP Code: {{ data.zip_code }} <br/>\r\nAddress: {{ data.address.city }};{{ data.address.country }};{{ data.address.state_province }};{{ data.address.address }}; {{ data.address.postal_code }} <br/> \r\n<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Customer Request: sf_parameter</p>\r\n<p>Book Job Junk Customer Result: sf_failure_log </p>"
+      body: "<h3>Hello Sales Center,</h3>\r\n<p></p>\r\n<p>The following information was captured from a failed OBE job booking. Please, follow up.</p>\r\n\r\n<p>Requested Job Date: {{ data.start_date_time }} <br/>\r\nFirst Name: {{ data.first_name }} <br/>\r\nLast Name: {{ data.last_name }} <br/>\r\nEmail: {{ data.email }} <br/>\r\nPhone: {{ data.phone_number }} <br/>\r\nZIP Code: {{ data.zip_code }} <br/>\r\nAddress: {{ data.address.city }};{{ data.address.country }};{{ data.address.state_province }};{{ data.address.address }}; {{ data.address.postal_code }} <br/> \r\n[sf_failure_log]"
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true

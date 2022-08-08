@@ -211,11 +211,10 @@ class ContactInformation extends WebformHandlerBase {
           $email_handler = $handlers->get('book_junk_customer_failure');
           // Get message.
           $message = $email_handler->getMessage($webform_submission);
-
+          $modify_text = '<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Customer Request: ' . $tempstore . '</p><p>Book Job Junk Customer Result: '. Json::encode($response) . ' </p>';
           // @todo Optional: Alter message before it is sent.
           
-          $modify_body = str_replace('sf_parameter', $tempstore, $message['body']);
-          $modify_body = str_replace('sf_failure_log', Json::encode($response), $modify_body);
+          $modify_body = str_replace('[sf_failure_log]', $modify_text, $message['body']);
           $message['body'] = $modify_body;
           // Send message.
           $email_handler->sendMessage($webform_submission, $message);
