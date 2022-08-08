@@ -59,6 +59,7 @@
     "drupal/webform": "^6.1",
     "drupal/xmlsitemap": "^1.2",
     "drush/drush": "^11 || ^12",
+    "drupal/reroute_email": "^2.1",
     "drupal/console": "^1.9",
     "drupal/key": "^1.15",
     "kamermans/guzzle-oauth2-subscriber": "~1.0",
