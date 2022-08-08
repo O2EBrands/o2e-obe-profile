@@ -71,7 +71,8 @@ class BookJobJunkService {
     if (substr($endpoint_segment, 0, 1) !== '/') {
       $endpoint_segment = '/' . $endpoint_segment;
     }
-    $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
+    $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
+    $sf_response = $tempstore->get('response');
     $api_url = $this->state->get('sfUrl') . $endpoint_segment;
 
     $headers = [
@@ -81,10 +82,11 @@ class BookJobJunkService {
 
     $options += [
       'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
-      'franchise_id' => $tempstore['franchise_id'],
+      'franchise_id' => $sf_response['franchise_id'],
       'customer_type' => $this->authTokenManager->getSfConfig('sf_book_job_junk_customer.customer_type'),
-      'service_id' => $tempstore['service_id'],
+      'service_id' => $sf_response['service_id'],
     ];
+    $tempstore->set('bookJobJunkService', UrlHelper::buildQuery($options));
     try {
       $response = $this->httpClient->request('POST', $api_url, [
         'headers' => $headers,
@@ -96,6 +98,12 @@ class BookJobJunkService {
     }
     catch (RequestException $e) {
       $this->loggerFactory->get('Salesforce - Book Job Junk Fail')->error($e->getMessage());
+      if (!empty($e->getResponse())) {
+        return [
+          'code' => $e->getCode(),
+          'message' => $e->getResponseBodySummary($e->getResponse())
+        ];
+      }
     }
   }
 
