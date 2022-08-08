@@ -98,9 +98,9 @@ class AvailableTimesService {
     $auth_token = $this->state->get('authtoken');
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
     $sf_response = $tempstore->get('response');
-    if ($tempstore->get('lastavailabletime')) {
-      $timeDifference = $currentTimeStamp - $tempstore->get('lastavailabletime');
-      if ($timeDifference < $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
+    if ($sf_response['lastServiceTime']) {
+      $timeDifference = $currentTimeStamp - $sf_response['lastServiceTime'];
+      if ($timeDifference > $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
         $this->areaVerification->verifyAreaCode($sf_response['from_postal_code']);
       }
     }
@@ -133,7 +133,6 @@ class AvailableTimesService {
           'json' => $options,
         ])->getBody();
         $result = Json::decode($res, TRUE);
-        $tempstore->set('lastavailabletime', $currentTimeStamp);
         $this->loggerFactory->get('Salesforce - GetAvailableTimes')->notice(UrlHelper::buildQuery($options) . ' ' . Json::encode($result));
         return $result;
       }
