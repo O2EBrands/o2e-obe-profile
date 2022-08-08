@@ -10,7 +10,9 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\o2e_obe_salesforce\BookJobJunkService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\State;
-use Drupal\Component\Serialization\Json;
+use Drupal\o2e_obe_salesforce\AreaVerificationService;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
 /**
  * Webform validate handler.
@@ -45,10 +47,29 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
 
   /**
    * State Manager.
+   * 
+   * @var \Drupal\Core\State\State
    */
   protected $state;
 
   /**
+<<<<<<< HEAD
+=======
+   * The Area Verification Manager.
+   *
+   * @var \Drupal\o2e_obe_salesforce\AreaVerificationService
+   */
+  protected $areaVerificationManager;
+
+  /**
+   * The datetime.time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $timeService;
+
+  /**
+>>>>>>> WEB-4417: Update BookJobJunk API Integrations.
    * PrivateTempStoreFactory definition.
    *
    * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
@@ -63,6 +84,11 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
     $instance->bookJobService = $container->get('o2e_obe_salesforce.book_job_junk');
     $instance->messenger = $container->get('messenger');
     $instance->state = $container->get('state');
+<<<<<<< HEAD
+=======
+    $instance->areaVerificationManager = $container->get('o2e_obe_salesforce.area_verification_service');
+    $instance->timeService = $container->get('datetime.time');
+>>>>>>> WEB-4417: Update BookJobJunk API Integrations.
     $instance->tempStoreFactory = $container->get('tempstore.private');
     return $instance;
   }
@@ -92,10 +118,28 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
       ];
 
       $query = $this->state->getMultiple($general_data);
+<<<<<<< HEAD
       $response = $this->bookJobService->bookJobJunk($query);
       if (!empty($response) && $response == 200) {
         $this->messenger()->addMessage($this->t('Booking done.'));
         return TRUE;
+=======
+      $bookJobCustom = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('bookJobCustomer');
+      $query+= $bookJobCustom;
+      // Check Expiry.
+      $currentTimeStamp = $this->timeService->getRequestTime();
+      $checkExpiry = $this->areaVerificationManager->checkExpiry($currentTimeStamp);
+      if ($checkExpiry) {
+        $response = $this->bookJobService->bookJobJunk($query);
+        if (!empty($response)) {
+          $this->messenger()->addMessage($this->t('Booking done.'));
+          return TRUE;
+        }
+        else {
+          $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
+          return FALSE;
+        }
+>>>>>>> WEB-4417: Update BookJobJunk API Integrations.
       }
       elseif (!empty($response) && $response > 200) {
         $form_object = $formState->getFormObject();
@@ -116,9 +160,20 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
         return FALSE;
       }
       else {
-        $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
-        return FALSE;
+        // Redirect to step 2
+        $pages = $formState->get('pages');
+        $this->goto_step('step2', $pages, $formState);
       }
+    }
+  }
+
+  function goto_step($page, $pages, FormStateInterface $form_state) {
+    // Convert associative array to index for easier manipulation.
+    $all_keys = array_keys($pages);
+    $goto_destination_page_index = array_search($page, $all_keys);
+    if($goto_destination_page_index > 0){
+      // The backend pointer for page will add 1 so to go our page we must -1.
+      $form_state->set('current_page', $all_keys[$goto_destination_page_index-1]);
     }
   }
 }

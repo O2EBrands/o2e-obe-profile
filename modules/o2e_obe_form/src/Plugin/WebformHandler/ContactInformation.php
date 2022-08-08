@@ -15,7 +15,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
 use Drupal\Core\State\State;
 use Drupal\Core\Language\LanguageManager;
-use Drupal\Component\Serialization\Json;
+use Drupal\o2e_obe_salesforce\AreaVerificationService;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
 /**
  * Webform validate handler.
@@ -64,20 +66,45 @@ class ContactInformation extends WebformHandlerBase {
 
   /**
    * State Manager.
+   * 
+   * @var \Drupal\Core\State\State
    */
   protected $state;
 
   /**
    * Language Manager.
+   * 
+   * @var \Drupal\Core\Language\LanguageManager
    */
   protected $languageManager;
 
   /**
+<<<<<<< HEAD
+=======
+   * The Area Verification Manager.
+   *
+   * @var \Drupal\o2e_obe_salesforce\AreaVerificationService
+   */
+  protected $areaVerificationManager;
+
+  /**
+   * The datetime.time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $timeService;
+
+  /**
+>>>>>>> WEB-4417: Update BookJobJunk API Integrations.
    * PrivateTempStoreFactory definition.
    *
    * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
    */
   protected $tempStoreFactory;
+<<<<<<< HEAD
+=======
+
+>>>>>>> WEB-4417: Update BookJobJunk API Integrations.
   /**
    * {@inheritdoc}
    */
@@ -88,6 +115,11 @@ class ContactInformation extends WebformHandlerBase {
     $instance->messenger = $container->get('messenger');
     $instance->state = $container->get('state');
     $instance->languageManager = $container->get('language_manager');
+<<<<<<< HEAD
+=======
+    $instance->areaVerificationManager = $container->get('o2e_obe_salesforce.area_verification_service');
+    $instance->timeService = $container->get('datetime.time');
+>>>>>>> WEB-4417: Update BookJobJunk API Integrations.
     $instance->tempStoreFactory = $container->get('tempstore.private');
     return $instance;
   }
@@ -156,7 +188,7 @@ class ContactInformation extends WebformHandlerBase {
     $address = !empty($formState->getValue('address')) ? $formState->getValue('address') : NULL;
     $country_code = $this->state->get('country_code');
     $state_code = $address['state_province'];
-    $states = $subdivisionRepository->getList(['US']);
+    $states = $subdivisionRepository->getList([$country_code]);
     $state = $states[$state_code];
     $to_address = $address['city'] . ';' . $address['country'] . ';' . $state . ';' . $address['address'] . ';' . $address['postal_code'];
 
@@ -186,6 +218,7 @@ class ContactInformation extends WebformHandlerBase {
       $query['additional_information_required'] = FALSE;
     }
 
+<<<<<<< HEAD
     $response = $this->bookJobJunkService->bookJobJunkCustomer($query);
 
     if (!empty($response)) {
@@ -252,13 +285,86 @@ class ContactInformation extends WebformHandlerBase {
             default:
               $this->messenger()->addMessage($response['message']);
               return FALSE;
+=======
+    // Check Expiry.
+    $currentTimeStamp = $this->timeService->getRequestTime();
+    $checkExpiry = $this->areaVerificationManager->checkExpiry($currentTimeStamp);
+    if ($checkExpiry) {
+      $response = $this->bookJobJunkService->bookJobJunkCustomer($query);
+      if (!empty($response)) {
+        if (isset($response['service_type_id'])) {
+          $general_data = [
+            'first_name' => $fname,
+            'phone' => $phone,
+            'email' => $email,
+            'to_address' => $to_address,
+            'start_date_time' => $start_date_time,
+            'finish_date_time' => $finish_date_time,
+          ];
+          $this->state->setMultiple($general_data);
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('bookJobCustomer', $response);
+          return TRUE;
+        }
+        else {
+          if (isset($response['code'])) {
+            switch ($response['code']) {
+              case 102:
+                $formState->setErrorByName('first_name', $response['message']);
+                break;
+              case 103:
+                $formState->setErrorByName('last_name', $response['message']);
+                break;
+              case 104:
+                $formState->setErrorByName('phone', $response['message']);
+                break;
+              case 105:
+                $formState->setErrorByName('email', $response['message']);
+                break;
+              case 106:
+                $formState->setErrorByName('address][city', $response['message']);
+                break;
+              case 107:
+                $formState->setErrorByName('address][country', $response['message']);
+                break;
+              case 108:
+                $formState->setErrorByName('address][state_province', $response['message']);
+                break;
+              case 109:
+                $formState->setErrorByName('address][address', $response['message']);
+                break;
+              case 110:
+                $formState->setErrorByName('address][postal_code', $response['message']);
+                break;
+              case 113:
+                $formState->setErrorByName('address][postal_code', $response['message']);
+                break;
+              default:
+                $this->messenger()->addMessage($response['message']);
+                return FALSE;
+            }
+>>>>>>> WEB-4417: Update BookJobJunk API Integrations.
           }
         }
       }
+      else {
+        $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
+        return FALSE;
+      }
     }
     else {
-      $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
-      return FALSE;
+      // Redirect to step 2
+      $pages = $formState->get('pages');
+      $this->goto_step('step2', $pages, $formState);
+    }
+  }
+
+  function goto_step($page, $pages, FormStateInterface $form_state) {
+    // Convert associative array to index for easier manipulation.
+    $all_keys = array_keys($pages);
+    $goto_destination_page_index = array_search($page, $all_keys);
+    if($goto_destination_page_index > 0){
+      // The backend pointer for page will add 1 so to go our page we must -1.
+      $form_state->set('current_page', $all_keys[$goto_destination_page_index-1]);
     }
   }
 }

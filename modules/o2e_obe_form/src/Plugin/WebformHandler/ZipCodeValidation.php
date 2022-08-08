@@ -32,6 +32,8 @@ class ZipCodeValidation extends WebformHandlerBase {
 
   /**
    * State Manager.
+   *
+   * @var \Drupal\Core\State\State
    */
   protected $state;
 
