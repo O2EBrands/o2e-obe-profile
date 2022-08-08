@@ -12,6 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\State\State;
 use Drupal\Core\Render\Markup;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
 /**
  * Webform validate handler.
@@ -32,6 +34,8 @@ class ZipCodeValidation extends WebformHandlerBase {
 
   /**
    * State Manager.
+   *
+   * @var \Drupal\Core\State\State
    */
   protected $state;
 
@@ -50,6 +54,20 @@ class ZipCodeValidation extends WebformHandlerBase {
   protected $salesforceConfig;
 
   /**
+   * The datetime.time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $timeService;
+
+  /**
+   * PrivateTempStoreFactory definition.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   */
+  protected $tempStoreFactory;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -57,7 +75,8 @@ class ZipCodeValidation extends WebformHandlerBase {
     $instance->salesforceConfig = $container->get('config.factory');
     $instance->areaVerificationManager = $container->get('o2e_obe_salesforce.area_verification_service');
     $instance->state = $container->get('state');
-
+    $instance->timeService = $container->get('datetime.time');
+    $instance->tempStoreFactory = $container->get('tempstore.private');
     return $instance;
   }
 
@@ -84,6 +103,10 @@ class ZipCodeValidation extends WebformHandlerBase {
         if (isset($response['service_id']) && isset($response['state'])) {
           $this->state->set('state', $response['state']);
           $this->state->set('zip_code', $zip_code);
+          $currentTimeStamp = $this->timeService->getRequestTime();
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('currentLocalTime', [
+            'currentTimeStamp' => $currentTimeStamp
+          ]);
           return TRUE;
         }
         elseif (isset($response['code']) && $response['code'] === 404) {

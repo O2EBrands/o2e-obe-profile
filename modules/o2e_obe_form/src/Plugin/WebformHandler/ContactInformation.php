@@ -16,6 +16,9 @@ use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
 use Drupal\Core\State\State;
 use Drupal\Core\Language\LanguageManager;
 use Drupal\Component\Serialization\Json;
+use Drupal\o2e_obe_salesforce\AreaVerificationService;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
 /**
  * Webform validate handler.
@@ -64,13 +67,31 @@ class ContactInformation extends WebformHandlerBase {
 
   /**
    * State Manager.
+   * 
+   * @var \Drupal\Core\State\State
    */
   protected $state;
 
   /**
    * Language Manager.
+   * 
+   * @var \Drupal\Core\Language\LanguageManager
    */
   protected $languageManager;
+
+  /**
+   * The Area Verification Manager.
+   *
+   * @var \Drupal\o2e_obe_salesforce\AreaVerificationService
+   */
+  protected $areaVerificationManager;
+
+  /**
+   * The datetime.time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $timeService;
 
   /**
    * PrivateTempStoreFactory definition.
@@ -78,6 +99,7 @@ class ContactInformation extends WebformHandlerBase {
    * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
    */
   protected $tempStoreFactory;
+
   /**
    * {@inheritdoc}
    */
@@ -88,6 +110,8 @@ class ContactInformation extends WebformHandlerBase {
     $instance->messenger = $container->get('messenger');
     $instance->state = $container->get('state');
     $instance->languageManager = $container->get('language_manager');
+    $instance->areaVerificationManager = $container->get('o2e_obe_salesforce.area_verification_service');
+    $instance->timeService = $container->get('datetime.time');
     $instance->tempStoreFactory = $container->get('tempstore.private');
     return $instance;
   }
@@ -156,7 +180,7 @@ class ContactInformation extends WebformHandlerBase {
     $address = !empty($formState->getValue('address')) ? $formState->getValue('address') : NULL;
     $country_code = $this->state->get('country_code');
     $state_code = $address['state_province'];
-    $states = $subdivisionRepository->getList(['US']);
+    $states = $subdivisionRepository->getList([$country_code]);
     $state = $states[$state_code];
     $to_address = $address['city'] . ';' . $address['country'] . ';' . $state . ';' . $address['address'] . ';' . $address['postal_code'];
 
@@ -186,77 +210,90 @@ class ContactInformation extends WebformHandlerBase {
       $query['additional_information_required'] = FALSE;
     }
 
-    $response = $this->bookJobJunkService->bookJobJunkCustomer($query);
-
-    if (!empty($response)) {
-      if (isset($response['service_type_id'])) {
-        $general_data = [
-          'first_name' => $fname,
-          'phone' => $phone,
-          'email' => $email,
-          'to_address' => $to_address,
-          'start_date_time' => $start_date_time,
-          'finish_date_time' => $finish_date_time,
-        ];
-        $this->state->setMultiple($general_data);
-        return TRUE;
-      }
-      else {
-        if (isset($response['code'])) {
-          $form_object = $formState->getFormObject();
-          $webform_submission = $form_object->getEntity();
-          $webform = $webform_submission->getWebform();
-          // Get email handler whose id matches the current page's id.
-          $handlers = $webform->getHandlers();
-          $email_handler = $handlers->get('book_junk_customer_failure');
-          // Get message.
-          $message = $email_handler->getMessage($webform_submission);
-          $modify_text = '<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Customer Request: ' . $tempstore . '</p><p>Book Job Junk Customer Result: '. Json::encode($response) . ' </p>';
-          // @todo Optional: Alter message before it is sent.
-          
-          $modify_body = str_replace('[sf_failure_log]', $modify_text, $message['body']);
-          $message['body'] = $modify_body;
-          // Send message.
-          $email_handler->sendMessage($webform_submission, $message);
-          switch ($response['code']) {
-            case 102:
-              $formState->setErrorByName('first_name', $response['message']);
-              break;
-            case 103:
-              $formState->setErrorByName('last_name', $response['message']);
-              break;
-            case 104:
-              $formState->setErrorByName('phone', $response['message']);
-              break;
-            case 105:
-              $formState->setErrorByName('email', $response['message']);
-              break;
-            case 106:
-              $formState->setErrorByName('address][city', $response['message']);
-              break;
-            case 107:
-              $formState->setErrorByName('address][country', $response['message']);
-              break;
-            case 108:
-              $formState->setErrorByName('address][state_province', $response['message']);
-              break;
-            case 109:
-              $formState->setErrorByName('address][address', $response['message']);
-              break;
-            case 110:
-              $formState->setErrorByName('address][postal_code', $response['message']);
-              break;
-            case 113:
-              $formState->setErrorByName('address][postal_code', $response['message']);
-              break;
-            default:
-              $this->messenger()->addMessage($response['message']);
-              return FALSE;
+    // Check Expiry.
+    $currentTimeStamp = $this->timeService->getRequestTime();
+    $checkExpiry = checkLocalTimeExpiry($currentTimeStamp);
+    if ($checkExpiry) {
+      $response = $this->bookJobJunkService->bookJobJunkCustomer($query);
+      if (!empty($response)) {
+        if (isset($response['service_type_id'])) {
+          $general_data = [
+            'first_name' => $fname,
+            'phone' => $phone,
+            'email' => $email,
+            'to_address' => $to_address,
+            'start_date_time' => $start_date_time,
+            'finish_date_time' => $finish_date_time,
+          ];
+          $this->state->setMultiple($general_data);
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('bookJobCustomer', $response);
+          return TRUE;
+        }
+        else {
+          if (isset($response['code'])) {
+            $form_object = $formState->getFormObject();
+            $webform_submission = $form_object->getEntity();
+            $webform = $webform_submission->getWebform();
+            // Get email handler whose id matches the current page's id.
+            $handlers = $webform->getHandlers();
+            $email_handler = $handlers->get('book_junk_customer_failure');
+            // Get message.
+            $message = $email_handler->getMessage($webform_submission);
+            $modify_text = '<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Customer Request: ' . $tempstore . '</p><p>Book Job Junk Customer Result: '. Json::encode($response) . ' </p>';
+            // @todo Optional: Alter message before it is sent.
+            
+            $modify_body = str_replace('[sf_failure_log]', $modify_text, $message['body']);
+            $message['body'] = $modify_body;
+            // Send message.
+            $email_handler->sendMessage($webform_submission, $message);
+  
+            switch ($response['code']) {
+              case 102:
+                $formState->setErrorByName('first_name', $response['message']);
+                break;
+              case 103:
+                $formState->setErrorByName('last_name', $response['message']);
+                break;
+              case 104:
+                $formState->setErrorByName('phone', $response['message']);
+                break;
+              case 105:
+                $formState->setErrorByName('email', $response['message']);
+                break;
+              case 106:
+                $formState->setErrorByName('address][city', $response['message']);
+                break;
+              case 107:
+                $formState->setErrorByName('address][country', $response['message']);
+                break;
+              case 108:
+                $formState->setErrorByName('address][state_province', $response['message']);
+                break;
+              case 109:
+                $formState->setErrorByName('address][address', $response['message']);
+                break;
+              case 110:
+                $formState->setErrorByName('address][postal_code', $response['message']);
+                break;
+              case 113:
+                $formState->setErrorByName('address][postal_code', $response['message']);
+                break;
+              default:
+                $this->messenger()->addMessage($response['message']);
+                return FALSE;
+            }
           }
         }
       }
+      else {
+        $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
+        return FALSE;
+      }
     }
     else {
+      // Redirect to step 2
+      $pages = $formState->get('pages');
+      goto_step('step2', $pages, $formState);
       $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
       return FALSE;
     }
