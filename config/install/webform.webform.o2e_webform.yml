@@ -57,6 +57,19 @@ elements: |-
   step3:
     '#type': webform_wizard_page
     '#title': 'Page 3'
+    pick_up_date_edit_section:
+      '#type': webform_computed_twig
+      '#title': 'Pick Up Date'
+      '#template': |-
+        <div class="pickup-edit-data-container">
+        <div class="date-time-data">
+
+        <button formnovalidate="formnovalidate" class="webform-button--previous button js-form-submit form-submit btn btn-primary" data-webform-wizard-page="step2" type="submit" id="edit-wizard-prev-2" name="op" value="EDIT">EDIT</button>
+
+        <div>Pick-Up Date: {{data.pick_up_date}} </div>
+        <div>Arrival Time: {{data.arrival_time}} </div>
+        </div>
+        </div>
     address:
       '#type': webform_address
       '#title': Address
