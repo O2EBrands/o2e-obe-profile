@@ -109,6 +109,9 @@ function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, 
             } elseif (preg_match('/^([a-zA-Z]\d[a-zA-Z])\ {0,1}(\d[a-zA-Z]\d)$/', $zip_code)) {
               $country = 'Canada';
               \Drupal::state()->set('country_code', 'CA');
+            } elseif (preg_match('#[0-9]{4}#', $zip_code)) {
+              $country = 'Australia';
+              \Drupal::state()->set('country_code', 'AU');
             }
           }
           $replacements[$original] = $country;
