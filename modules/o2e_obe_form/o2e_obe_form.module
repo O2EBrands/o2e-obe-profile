@@ -9,11 +9,41 @@ use Drupal\Core\Form\FormStateInterface;
 function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $current_page = $form_state->get('current_page');
   if ($current_page === 'step3') {
-    $form['actions']['calendar']['#submit'][] = '_o2e_obe_form_calendar_redirect';
+    $form['actions']['calendar'] = [
+      "#type" => "submit",
+      "#value" => "Edit Slots",
+      "#webform_actions_button_custom" => false,
+      "#submit" => ['_o2e_obe_form_calendar_redirect'],
+      "#weight" => 0,
+      "#attributes" => [
+        "formnovalidate" =>"formnovalidate",
+      ],
+      "#validate" => ['::noValidate'],
+    ];
   }
   if ($current_page === 'step4') {
-    $form['actions']['calendar']['#submit'][] = '_o2e_obe_form_calendar_redirect';
-    $form['actions']['contact']['#submit'][] = '_o2e_obe_form_contact_redirect';
+    $form['actions']['calendar'] = [
+      "#type" => "submit",
+      "#value" => "Edit Slots",
+      "#webform_actions_button_custom" => false,
+      "#submit" => ['_o2e_obe_form_calendar_redirect'],
+      "#weight" => 0,
+      "#attributes" => [
+        "formnovalidate" =>"formnovalidate",
+      ],
+      "#validate" => ['::noValidate'],
+    ];
+    $form['actions']['contact'] = [
+      "#type" => "submit",
+      "#value" => "Edit Contact Information",
+      "#webform_actions_button_custom" => false,
+      "#submit" => ['_o2e_obe_form_contact_redirect'],
+      "#weight" => 0,
+      "#attributes" => [
+        "formnovalidate" =>"formnovalidate",
+      ],
+      "#validate" => ['::noValidate'],
+    ];
   }
   if (isset($form['#webform_id']) && $form['#webform_id'] === 'o2e_webform') {
     $form['elements']['step3']['address']['#after_build'][] = '_update_address';
@@ -32,10 +62,11 @@ function goto_step($page, $pages, FormStateInterface $form_state) {
   // Convert associative array to index for easier manipulation.
   $all_keys = array_keys($pages);
   $goto_destination_page_index = array_search($page, $all_keys);
-  if($goto_destination_page_index > 0){
+  if ($goto_destination_page_index > 0){
     // The backend pointer for page will add 1 so to go our page we must -1.
     $form_state->set('current_page', $all_keys[$goto_destination_page_index-1]);
   }
+
 }
 
 /**
@@ -63,7 +94,7 @@ function checkLocalTimeExpiry($currentTime) {
 /**
  * Custom function to redirect to step 2 for data Update
  */
-function _o2e_obe_form_calendar_redirect(FormStateInterface $form_state) {
+function _o2e_obe_form_calendar_redirect(&$form, FormStateInterface $form_state) {
   $pages = $form_state->get('pages');
   goto_step('step2', $pages, $form_state);
 }
@@ -71,7 +102,7 @@ function _o2e_obe_form_calendar_redirect(FormStateInterface $form_state) {
 /**
  * Custom function to redirect to step 3 for data Update
  */
-function _o2e_obe_form_contact_redirect(FormStateInterface $form_state) {
+function _o2e_obe_form_contact_redirect(&$form, FormStateInterface $form_state) {
   $pages = $form_state->get('pages');
   goto_step('step3', $pages, $form_state);
 }
