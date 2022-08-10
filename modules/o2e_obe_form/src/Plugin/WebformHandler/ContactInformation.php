@@ -278,8 +278,11 @@ class ContactInformation extends WebformHandlerBase {
               case 113:
                 $formState->setErrorByName('address][postal_code', $response['message']);
                 break;
+              case 404:
+                $formState->setErrorByName('address][address', $this->t('Address is not correct.'));
+                break;
               default:
-                $this->messenger()->addMessage($response['message']);
+                $formState->setErrorByName('', $this->t('Please enter correct data'));
                 return FALSE;
             }
           }
