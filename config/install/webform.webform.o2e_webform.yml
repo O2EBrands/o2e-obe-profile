@@ -136,10 +136,10 @@ elements: |-
 css: ''
 javascript: ''
 settings:
-  ajax: false
+  ajax: true
   ajax_scroll_top: form
-  ajax_progress_type: ''
-  ajax_effect: ''
+  ajax_progress_type: throbber
+  ajax_effect: fade
   ajax_speed: null
   page: true
   page_submit_path: ''
