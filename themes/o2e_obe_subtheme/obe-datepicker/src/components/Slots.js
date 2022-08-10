@@ -77,9 +77,9 @@ export default function Slots(props) {
     let endMoment = moment(finish).utc();
 
     // set the options day to 1, 2, or 3, depending on the Y-m-d of this timeslot
-    if (day1.date == iDate) optionsDay = 1;
-    else if (day2.date == iDate) optionsDay = 2;
-    else if (day3.date == iDate) optionsDay = 3;
+    if (parseInt(day1.date) === parseInt(iDate)) optionsDay = 1;
+    else if (parseInt(day2.date) === parseInt(iDate)) optionsDay = 2;
+    else if (parseInt(day3.date) === parseInt(iDate)) optionsDay = 3;
     else optionsDay = 0;
 
     let slotHours = iMoment.clone().format("HH");

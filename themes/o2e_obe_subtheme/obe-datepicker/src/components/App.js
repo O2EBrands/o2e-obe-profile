@@ -16,11 +16,11 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(startDate);
   const [isLoading, setLoader] = useState(true);
 
-  // Setting up dates for API call.
-  let apiStartDate = selectedDate.clone().format("YYYY-MM-D");
-  let apiEndDate = selectedDate.clone().add(2, "days").format("YYYY-MM-D");
-
   useEffect(() => {
+    // Setting up dates for API call.
+    let apiStartDate = selectedDate.clone().format("YYYY-MM-D");
+    let apiEndDate = selectedDate.clone().add(2, "days").format("YYYY-MM-D");
+
     // API with parameters.
     let hostname = window.location.origin;
     let apiWithParam = `${hostname}/availabletime?start_date=${apiStartDate}&end_date=${apiEndDate}`;

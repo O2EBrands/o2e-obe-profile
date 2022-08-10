@@ -9,7 +9,6 @@ export default function Accordion(props) {
 
   // index for accordion if there are multiple accordions.
   let accordionId = props.index;
-  let timeOfTheDay = 0;
 
   // Accordion item generator.
   function accordionItemGenerate(timeOfTheDay, accordionId) {
