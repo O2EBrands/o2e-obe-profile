@@ -123,8 +123,9 @@ class ContactInformation extends WebformHandlerBase {
     $this->validateCustomer($form_state);
   }
 
-   /**
-   * Validate phone.
+  /**
+   * Custom function to integrate BookJunkJob1 API.
+   *
    */
   private function validateCustomer(FormStateInterface $formState) {
     $current_page = $formState->get('current_page');
@@ -163,9 +164,6 @@ class ContactInformation extends WebformHandlerBase {
   /**
    * Custom function to execute BookJobJunkCustomerService.
    *
-   * @param FormStateInterface $formState
-   * @param array $promo_query
-   * @return bool|string
    */
   function _bookJobJunkCustomer(FormStateInterface $formState, $promo_query = []) {
     // Get contact details from form.
@@ -278,8 +276,11 @@ class ContactInformation extends WebformHandlerBase {
               case 113:
                 $formState->setErrorByName('address][postal_code', $response['message']);
                 break;
+              case 404:
+                $formState->setErrorByName('address][address', $this->t('Address is not correct.'));
+                break;
               default:
-                $this->messenger()->addMessage($response['message']);
+                $formState->setErrorByName('', $this->t('Please enter correct data'));
                 return FALSE;
             }
           }
