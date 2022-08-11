@@ -50,6 +50,10 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
   }
 }
 
+/**
+ * Custom function to hide country field.
+ *
+ */
 function _update_address($element, FormStateInterface $form_state) {
   $element['country']['#attributes']['hidden'] = TRUE;
   return $element;
@@ -73,14 +77,12 @@ function goto_step($page, $pages, FormStateInterface $form_state) {
 /**
  * Function to check expiry of 900 seconds.
  *
- * @param string $currentTime
- * @return bool
  */
 function checkLocalTimeExpiry($currentTime) {
-  $tempstore = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('currentLocalTime');
+  $currentLocalTimeTemp = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('currentLocalTime');
   $service_expiry = \Drupal::config('o2e_obe_salesforce.settings')->get('sf_verify_area')['service_expiry'];
-  if ($tempstore['currentTimeStamp']) {
-    $timeDifference = $currentTime - $tempstore['currentTimeStamp'];
+  if ($currentLocalTimeTemp['currentTimeStamp']) {
+    $timeDifference = $currentTime - $currentLocalTimeTemp['currentTimeStamp'];
     if (abs($timeDifference) < $service_expiry) {
       return TRUE;
     }
@@ -94,7 +96,8 @@ function checkLocalTimeExpiry($currentTime) {
 }
 
 /**
- * Custom function to redirect to step 2 for data Update
+ * Custom function to redirect to step 2 for data Update.
+ *
  */
 function _o2e_obe_form_calendar_redirect(&$form, FormStateInterface $form_state) {
   $pages = $form_state->get('pages');
@@ -102,13 +105,19 @@ function _o2e_obe_form_calendar_redirect(&$form, FormStateInterface $form_state)
 }
 
 /**
- * Custom function to redirect to step 3 for data Update
+ * Custom function to redirect to step 3 for data Update.
+ *
  */
 function _o2e_obe_form_contact_redirect(&$form, FormStateInterface $form_state) {
   $pages = $form_state->get('pages');
   goto_step_redirect('step3', $pages, $form_state);
 }
 
+/**
+ * Custom function to redirect to pages on click of edit button
+ * from webform wizard page.
+ *
+ */
 function goto_step_redirect($page, $pages, FormStateInterface $form_state) {
   // Convert associative array to index for easier manipulation.
   $all_keys = array_keys($pages);
