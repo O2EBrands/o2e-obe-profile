@@ -41,9 +41,11 @@ elements: |-
     start_date_time:
       '#type': hidden
       '#title': start_date_time
+      '#prepopulate': true
     finish_date_time:
       '#type': hidden
       '#title': finish_date_time
+      '#prepopulate': true
     service_id:
       '#type': hidden
       '#title': 'Service ID'
@@ -51,15 +53,18 @@ elements: |-
     pick_up_date:
       '#type': hidden
       '#title': 'Pick-Up Date'
+      '#prepopulate': true
     arrival_time:
       '#type': hidden
       '#title': 'Arrival Time'
+      '#prepopulate': true
   step3:
     '#type': webform_wizard_page
     '#title': 'Page 3'
     pick_up_date_edit_section:
       '#type': webform_computed_twig
       '#title': 'Pick Up Date'
+      '#title_display': invisible
       '#template': |-
         <div class="pickup-edit-data-container">
         <div class="date-time-data">
@@ -72,13 +77,6 @@ elements: |-
       '#title': Address
       '#required': true
       '#states_clear': false
-      '#default_value':
-        address: ''
-        city: ''
-        state_province: '[custom_token:state]'
-        postal_code: '[custom_token:zip-code]'
-        country: '[custom_token:country]'
-        address_2: ''
       '#address__required': true
       '#address_2__access': false
       '#city__required': true
@@ -111,6 +109,7 @@ elements: |-
     review_data_container:
       '#type': webform_computed_twig
       '#title': 'Review Data Container'
+      '#title_display': invisible
       '#template': |-
         <div class="review-data-container">
         <div class="date-time-data">

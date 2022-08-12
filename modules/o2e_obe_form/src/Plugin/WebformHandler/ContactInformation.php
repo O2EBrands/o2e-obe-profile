@@ -176,7 +176,7 @@ class ContactInformation extends WebformHandlerBase {
     // Get Address filled.
     $subdivisionRepository = new SubdivisionRepository();
     $address = !empty($formState->getValue('address')) ? $formState->getValue('address') : NULL;
-    $country_code = $this->state->get('country_code');
+    $country_code = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('country_code');
     $state_code = $address['state_province'];
     $states = $subdivisionRepository->getList([$country_code]);
     $state = $states[$state_code];
