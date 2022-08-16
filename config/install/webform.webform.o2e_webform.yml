@@ -49,7 +49,6 @@ elements: |-
     service_id:
       '#type': hidden
       '#title': 'Service ID'
-      '#default_value': '[custom_token:serviceId]'
     pick_up_date:
       '#type': hidden
       '#title': 'Pick-Up Date'
