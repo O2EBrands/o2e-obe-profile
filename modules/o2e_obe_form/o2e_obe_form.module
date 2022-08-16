@@ -68,6 +68,10 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
   if (isset($form['#webform_id']) && $form['#webform_id'] === 'o2e_webform') {
     $form['elements']['step3']['address']['#after_build'][] = '_update_address';
   }
+  if ($current_page === 'step2') {
+   $serviceId = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('response');
+   $form['elements']['step2']['service_id']['#default_value'] = $serviceId['service_id'];
+  }
 }
 
 /**
