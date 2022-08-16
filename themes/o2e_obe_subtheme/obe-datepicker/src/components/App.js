@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import Loader from "./Loader";
 import Slots from "./Slots";
 import SlotLoader from "./SlotLoader";
+import nextBtnHandler from "./nextBtnHandler";
 // import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -15,6 +16,12 @@ function App() {
   const startDate = useMemo(() => moment(), []);
   const [selectedDate, setSelectedDate] = useState(startDate);
   const [isLoading, setLoader] = useState(true);
+
+  // Disabling Next button if values not set.
+  useEffect(() => {
+    // Initializing button handler.
+    nextBtnHandler();
+  });
 
   useEffect(() => {
     // Setting up dates for API call.
