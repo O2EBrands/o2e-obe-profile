@@ -26,21 +26,6 @@ function o2e_obe_promo_code_token_info() {
     'description' => t("Token will get the value for SameDay Promo code term stored in config form."),
   ];
 
-  $token['zip-code'] = [
-    'name' => t("Zip Code"),
-    'description' => t("Zip Code will be prepopulated in Address field for Postal Code.")
-  ];
-
-  $token['state'] = [
-    'name' => t("State"),
-    'description' => t("State Name will be prepopulated in Address field for State.")
-  ];
-
-  $token['country'] = [
-    'name' => t("Country"),
-    'description' => t("Country will be prepopulated in Address field for Country.")
-  ];
-
   $token['serviceId'] = [
     'name' => t("Service ID"),
     'description' => t("Gets the service ID for the O2E multistep webform.")
@@ -66,7 +51,6 @@ function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, 
       if ($config && !empty($config['sameday_status']) && $config['sameday_status'] == TRUE) {
         $promo_status = TRUE;
       }
-      $state_service = \Drupal::state();
       switch ($name) {
         case 'same-day-promo-code-detail':
           $sameday_promo_detail = "";
@@ -82,40 +66,6 @@ function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, 
             $sameday_promo_term = $config['sameday_terms'];
           }
           $replacements[$original] = $sameday_promo_term;
-          break;
-
-        case 'zip-code':
-          $zip_code = '';
-          if (!empty($state_service->get('zip_code'))) {
-            $zip_code = $state_service->get('zip_code');
-          }
-          $replacements[$original] = $zip_code;
-          break;
-
-        case 'state':
-          $state = '';
-          if (!empty($state_service->get('state'))) {
-            $state = $state_service->get('state');
-          }
-          $replacements[$original] = $state;
-          break;
-        
-        case 'country':
-          $country = '';
-          if (!empty($state_service->get('zip_code'))) {
-            $zip_code = $state_service->get('zip_code');
-            if (preg_match('#[0-9]{5}#', $zip_code)) {
-              $country = 'United States';
-              $state_service->set('country_code', 'US');
-            } elseif (preg_match('/^([a-zA-Z]\d[a-zA-Z])\ {0,1}(\d[a-zA-Z]\d)$/', $zip_code)) {
-              $country = 'Canada';
-              $state_service->set('country_code', 'CA');
-            } elseif (preg_match('#[0-9]{4}#', $zip_code)) {
-              $country = 'Australia';
-              $state_service->set('country_code', 'AU');
-            }
-          }
-          $replacements[$original] = $country;
           break;
 
         case 'serviceId':

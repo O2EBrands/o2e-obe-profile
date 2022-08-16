@@ -101,8 +101,10 @@ class ZipCodeValidation extends WebformHandlerBase {
       $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
       if (!empty($response)) {
         if (isset($response['service_id']) && isset($response['state'])) {
-          $this->state->set('state', $response['state']);
-          $this->state->set('zip_code', $zip_code);
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('postalCodeData', [
+            'state' => $response['state'],
+            'zip_code' => $zip_code,
+          ]);
           $currentTimeStamp = $this->timeService->getRequestTime();
           $this->tempStoreFactory->get('o2e_obe_salesforce')->set('currentLocalTime', [
             'currentTimeStamp' => $currentTimeStamp
@@ -110,12 +112,15 @@ class ZipCodeValidation extends WebformHandlerBase {
           return TRUE;
         }
         elseif (isset($response['code']) && $response['code'] === 404) {
-          if (strpos('Area Not Serviced', $response['message'])) {
+          if (strpos($response['message'], 'Area Not Serviced')) {
             $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
             $enable_ans = $salesforceConfigData['enable_ans'];
             if ($enable_ans == TRUE) {
               $message = Markup::create($salesforceConfigData['ans_message']);
               $formState->setErrorByName('zip_code', $message);
+            }
+            else {
+              $formState->setErrorByName('zip_code', $response['message']);
             }
           }
         }
