@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import moment from "moment";
 import Accordion from "./Accordion";
+import nextBtnHandler from "./nextBtnHandler";
 export default function Slots(props) {
   // Array for available dates.
   let availableDates = [];
@@ -65,6 +66,9 @@ export default function Slots(props) {
     finshTimeField.value = finishValue.toString();
     pickUpField.value = pickUpValue.toString();
     arrivalTimeField.value = arrivalTimeValue.toString();
+
+    //Updating next button state.
+    nextBtnHandler();
   }
 
   // Loop through each timeslot and group them by date.
@@ -136,10 +140,12 @@ export default function Slots(props) {
 
   // Cleaning up on re-renders
   useEffect(() => {
-    startTimeField.value = "";
-    finshTimeField.value = "";
-    pickUpField.value = "";
-    arrivalTimeField.value = "";
+    return function cleanUp() {
+      startTimeField.value = "";
+      finshTimeField.value = "";
+      pickUpField.value = "";
+      arrivalTimeField.value = "";
+    };
   });
 
   return <div className="row fadein">{accordionGroup}</div>;
