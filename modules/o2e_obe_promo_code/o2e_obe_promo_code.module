@@ -69,8 +69,8 @@ function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, 
           break;
 
         case 'serviceId':
-          $serviceId = !empty(\Drupal::service('tempstore.private')->get('service_id')) ?? '';
-          $replacements[$original] = $serviceId;
+          $serviceId = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('response');
+          $replacements[$original] = $serviceId['service_id'];
           break;
       }
     }
