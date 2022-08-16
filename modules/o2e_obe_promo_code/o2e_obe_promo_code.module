@@ -26,11 +26,6 @@ function o2e_obe_promo_code_token_info() {
     'description' => t("Token will get the value for SameDay Promo code term stored in config form."),
   ];
 
-  $token['serviceId'] = [
-    'name' => t("Service ID"),
-    'description' => t("Gets the service ID for the O2E multistep webform.")
-  ];
-
   return [
     'types' => $token_type,
     'tokens' => [
@@ -66,11 +61,6 @@ function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, 
             $sameday_promo_term = $config['sameday_terms'];
           }
           $replacements[$original] = $sameday_promo_term;
-          break;
-
-        case 'serviceId':
-          $serviceId = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('response');
-          $replacements[$original] = $serviceId['service_id'];
           break;
       }
     }
