@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import moment from "moment";
 import Accordion from "./Accordion";
-import nextBtnHandler from "./nextBtnHandler";
+import RadioBtn from "./RadioBtn";
+
 export default function Slots(props) {
   // Array for available dates.
   let availableDates = [];
@@ -48,29 +49,6 @@ export default function Slots(props) {
     'input[data-drupal-selector="edit-arrival-time"]'
   );
 
-  // Function to keep the DOM values in sync.
-  function updateWebform(event) {
-    // fetching selected values.
-    let startValue = event.target.getAttribute("data-start");
-    let finishValue = event.target.getAttribute("data-finish");
-    let pickUpValue = moment(startValue).utc().format("ddd, MMM D, YYYY");
-    let arrivalTimeValue = `${moment(startValue)
-      .utc()
-      .format("hh:mm A")} - ${moment(startValue)
-      .utc()
-      .add(2, "hours")
-      .format("hh:mm A")}`;
-
-    // Updating the values.
-    startTimeField.value = startValue.toString();
-    finshTimeField.value = finishValue.toString();
-    pickUpField.value = pickUpValue.toString();
-    arrivalTimeField.value = arrivalTimeValue.toString();
-
-    //Updating next button state.
-    nextBtnHandler();
-  }
-
   // Loop through each timeslot and group them by date.
   for (let key in props.timeslots) {
     let { start, finish } = props.timeslots[key];
@@ -89,21 +67,7 @@ export default function Slots(props) {
     let slotHours = iMoment.clone().format("HH");
     let slotMinutes = iMoment.clone().format("mm");
     let radioBtnTemplate = (
-      <div>
-        <input
-          type="radio"
-          id={iMoment.clone().format()}
-          onChange={updateWebform}
-          name="timeSlot"
-          data-start={iMoment.clone().format()}
-          data-finish={endMoment.clone().format()}
-          value={iMoment.clone().format()}
-        ></input>
-        <label for={iMoment.clone().format()}>
-          {iMoment.format("hh:mm A")} -{" "}
-          {iMoment.clone().add(2, "hours").format("hh:mm A")}
-        </label>
-      </div>
+      <RadioBtn startMoment={iMoment} endMoment={endMoment} />
     );
 
     // Push the input radios into array based on their date and time.

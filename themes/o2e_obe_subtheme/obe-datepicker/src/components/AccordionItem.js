@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function AccordionItem({
   timeOfTheDay,
@@ -7,6 +7,27 @@ export default function AccordionItem({
 }) {
   // State for more button.
   const [isExpanded, setExpanded] = useState(false);
+
+  //DOM mutations for preset date and opening accordion .
+  useEffect(() => {
+    setExpanded(true);
+    setTimeout(() => {
+      if (jQuery(".pre-selected").length) {
+        jQuery(".pre-selected").find("input").prop("checked", "true");
+        let activeAccordion = jQuery(".pre-selected").parents(
+          ".accordion-item"
+        );
+        activeAccordion.find(".accordion-button").removeClass("collapsed");
+        activeAccordion.find(".accordion-collapse").addClass("show");
+        jQuery(".accordion-button.collapsed")
+          .parents(".accordion-item")
+          .find(".btn-expand")
+          .click();
+      } else {
+        setExpanded(false);
+      }
+    }, 100);
+  }, []);
 
   return (
     <div className="accordion-item">

@@ -12,9 +12,27 @@ import "react-datepicker/dist/react-datepicker.css";
 let data = {};
 
 function App() {
+  //Fetching hidden field.
+  let startTimeField = document.querySelector(
+    'input[data-drupal-selector="edit-start-date-time"]'
+  );
+
+  //Check if date is already set.
+  let currentDate;
+  if (startTimeField) {
+    if (startTimeField.value !== "") {
+      currentDate = moment(startTimeField.value).utc();
+    }
+    if (startTimeField.value === "") {
+      currentDate = moment().utc();
+    }
+  } else {
+    currentDate = moment().utc();
+  }
+
   //Initializing the startDate once per lifecycle.
   const startDate = useMemo(() => moment(), []);
-  const [selectedDate, setSelectedDate] = useState(startDate);
+  const [selectedDate, setSelectedDate] = useState(currentDate);
   const [isLoading, setLoader] = useState(true);
 
   // Disabling Next button if values not set.
@@ -52,10 +70,10 @@ function App() {
       <div className="col-lg-3 col-md-6 col-sm-12 datepicker-wrapper">
         {isLoading ? <Loader /> : ""}
         <DatePicker
-          selected={selectedDate.clone().toDate()}
-          onChange={(date: Date) => setSelectedDate(moment(date))}
-          minDate={startDate.clone().toDate()}
-          maxDate={startDate.clone().add(3, "months").toDate()}
+          selected={new Date(selectedDate.clone().format("YYYY-MM-D"))}
+          onChange={(date: Date) => setSelectedDate(moment(date).utc())}
+          minDate={new Date(startDate.clone().format("YYYY-MM-D"))}
+          maxDate={new Date(startDate.clone().add(4, "months").format("YYYY-MM-D"))}
           inline
         />
       </div>
