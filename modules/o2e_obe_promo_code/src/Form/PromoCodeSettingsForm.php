@@ -33,9 +33,12 @@ class PromoCodeSettingsForm extends ConfigFormBase {
     $config = $this->config('o2e_obe_promo_code.settings');
     $form['o2e_obe_promo_code']['sameday_status'] = [
       '#type' => 'radios',
-      '#title' =>  $this->t('Sameday promo notification status'),
+      '#title' => $this->t('Sameday promo notification status'),
       '#description' => $this->t('Activate or deactivate sameday booking promo notification.'),
-      '#options' => [TRUE => $this->t('Active'), FALSE => $this->t('Not-Active')],
+      '#options' => [
+        TRUE => $this->t('Active'),
+        FALSE => $this->t('Not-Active'),
+      ],
       '#default_value' => $config->get('o2e_obe_promo_code.sameday_status'),
       '#required' => TRUE,
     ];

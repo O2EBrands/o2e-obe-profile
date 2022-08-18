@@ -87,7 +87,7 @@ class ZipCodeValidation extends WebformHandlerBase {
     $this->validateZipCode($form_state);
   }
 
-   /**
+  /**
    * Validate phone.
    */
   private function validateZipCode(FormStateInterface $formState) {
@@ -107,7 +107,7 @@ class ZipCodeValidation extends WebformHandlerBase {
           ]);
           $currentTimeStamp = $this->timeService->getRequestTime();
           $this->tempStoreFactory->get('o2e_obe_salesforce')->set('currentLocalTime', [
-            'currentTimeStamp' => $currentTimeStamp
+            'currentTimeStamp' => $currentTimeStamp,
           ]);
           return TRUE;
         }
@@ -133,4 +133,5 @@ class ZipCodeValidation extends WebformHandlerBase {
       }
     }
   }
+
 }

@@ -67,14 +67,14 @@ class ContactInformation extends WebformHandlerBase {
 
   /**
    * State Manager.
-   * 
+   *
    * @var \Drupal\Core\State\State
    */
   protected $state;
 
   /**
    * Language Manager.
-   * 
+   *
    * @var \Drupal\Core\Language\LanguageManager
    */
   protected $languageManager;
@@ -125,7 +125,6 @@ class ContactInformation extends WebformHandlerBase {
 
   /**
    * Custom function to integrate BookJunkJob1 API.
-   *
    */
   private function validateCustomer(FormStateInterface $formState) {
     $current_page = $formState->get('current_page');
@@ -136,7 +135,7 @@ class ContactInformation extends WebformHandlerBase {
         $promo_response = $this->promoCodeService->getPromocode($promocode);
         if (!empty($promo_response)) {
           if (isset($promo_response['promotion_code'])) {
-            $this->_bookJobJunkCustomer($formState);
+            $this->bookJobJunkCustomer($formState);
           }
           if (isset($promo_response['program_code'])) {
             $query = [
@@ -147,7 +146,7 @@ class ContactInformation extends WebformHandlerBase {
               'additional_information_required' => $promo_response['additional_information_required'],
               'additional_information' => $promo_response['additional_information'],
             ];
-            $this->_bookJobJunkCustomer($formState, $query);
+            $this->bookJobJunkCustomer($formState, $query);
           }
         }
         else {
@@ -156,16 +155,15 @@ class ContactInformation extends WebformHandlerBase {
         }
       }
       else {
-        $this->_bookJobJunkCustomer($formState);
+        $this->bookJobJunkCustomer($formState);
       }
     }
   }
 
   /**
    * Custom function to execute BookJobJunkCustomerService.
-   *
    */
-  function _bookJobJunkCustomer(FormStateInterface $formState, $promo_query = []) {
+  private function bookJobJunkCustomer(FormStateInterface $formState, $promo_query = []) {
     // Get contact details from form.
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('bookJobJunkCustomer');
     $fname = !empty($formState->getValue('first_name')) ? Html::escape($formState->getValue('first_name')) : NULL;
@@ -210,7 +208,7 @@ class ContactInformation extends WebformHandlerBase {
 
     // Check Expiry.
     $currentTimeStamp = $this->timeService->getRequestTime();
-    $checkExpiry = checkLocalTimeExpiry($currentTimeStamp);
+    $checkExpiry = check_local_time_expiry($currentTimeStamp);
     if ($checkExpiry) {
       $response = $this->bookJobJunkService->bookJobJunkCustomer($query);
       if (!empty($response)) {
@@ -237,48 +235,58 @@ class ContactInformation extends WebformHandlerBase {
             $email_handler = $handlers->get('book_junk_customer_failure');
             // Get message.
             $message = $email_handler->getMessage($webform_submission);
-            $modify_text = '<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Customer Request: ' . $tempstore . '</p><p>Book Job Junk Customer Result: '. Json::encode($response) . ' </p>';
+            $modify_text = '<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Customer Request: ' . $tempstore . '</p><p>Book Job Junk Customer Result: ' . Json::encode($response) . ' </p>';
             // @todo Optional: Alter message before it is sent.
-            
             $modify_body = str_replace('[sf_failure_log]', $modify_text, $message['body']);
             $message['body'] = $modify_body;
             // Send message.
             $email_handler->sendMessage($webform_submission, $message);
-  
+
             switch ($response['code']) {
               case 102:
                 $formState->setErrorByName('first_name', $response['message']);
                 break;
+
               case 103:
                 $formState->setErrorByName('last_name', $response['message']);
                 break;
+
               case 104:
                 $formState->setErrorByName('phone', $response['message']);
                 break;
+
               case 105:
                 $formState->setErrorByName('email', $response['message']);
                 break;
+
               case 106:
                 $formState->setErrorByName('address][city', $response['message']);
                 break;
+
               case 107:
                 $formState->setErrorByName('address][country', $response['message']);
                 break;
+
               case 108:
                 $formState->setErrorByName('address][state_province', $response['message']);
                 break;
+
               case 109:
                 $formState->setErrorByName('address][address', $response['message']);
                 break;
+
               case 110:
                 $formState->setErrorByName('address][postal_code', $response['message']);
                 break;
+
               case 113:
                 $formState->setErrorByName('address][postal_code', $response['message']);
                 break;
+
               case 404:
                 $formState->setErrorByName('address][address', $this->t('Address is not correct.'));
                 break;
+
               default:
                 $formState->setErrorByName('', $this->t('Please enter correct data'));
                 return FALSE;
@@ -292,11 +300,12 @@ class ContactInformation extends WebformHandlerBase {
       }
     }
     else {
-      // Redirect to step 2
+      // Redirect to step 2.
       $pages = $formState->get('pages');
       goto_step('step2', $pages, $formState);
       $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
       return FALSE;
     }
   }
+
 }
