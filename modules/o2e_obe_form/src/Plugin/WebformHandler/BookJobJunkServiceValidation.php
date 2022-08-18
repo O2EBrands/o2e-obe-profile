@@ -49,7 +49,7 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
 
   /**
    * State Manager.
-   * 
+   *
    * @var \Drupal\Core\State\State
    */
   protected $state;
@@ -77,7 +77,7 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
 
   /**
    * HoldTimeService Manager.
-   * 
+   *
    * @var \Drupal\o2e_obe_salesforce\HoldTimeService
    */
   protected $holdTimeService;
@@ -104,7 +104,7 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
     $this->validateService($form_state);
   }
 
-   /**
+  /**
    * Validate phone.
    */
   private function validateService(FormStateInterface $formState) {
@@ -122,14 +122,16 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
       ];
       $query = $this->state->getMultiple($general_data);
       $bookJobCustom = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('bookJobCustomer');
-      $query+= $bookJobCustom;
+      $query += $bookJobCustom;
       // Check Expiry.
       $currentTimeStamp = $this->timeService->getRequestTime();
-      $checkExpiry = checkLocalTimeExpiry($currentTimeStamp);
+      $checkExpiry = check_local_time_expiry($currentTimeStamp);
       if ($checkExpiry) {
         // Registering service ID with HoldTimeAPI.
-        $hold_time_query_parameters = ['start_date_time',
-        'finish_date_time',];
+        $hold_time_query_parameters = [
+          'start_date_time',
+          'finish_date_time',
+        ];
         $options = $this->state->getMultiple($hold_time_query_parameters);
         $holdTimeResponse = $this->holdTimeService->holdtime($options);
         $response = $this->bookJobService->bookJobJunk($query);
@@ -146,8 +148,8 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
           $email_handler = $handlers->get('book_junk_service_failure');
           // Get message.
           $message = $email_handler->getMessage($webform_submission);
-          $modify_text = '<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Service Request: ' . $tempstore . '</p><p>Book Job Junk Service Result: '. Json::encode($response) . ' </p>';
-            // @todo Optional: Alter message before it is sent.
+          $modify_text = '<p>FULL PAYLOADS FOR DEBUGGING:</p><p>Book Job Junk Service Request: ' . $tempstore . '</p><p>Book Job Junk Service Result: ' . Json::encode($response) . ' </p>';
+          // @todo Optional: Alter message before it is sent.
           $modify_body = str_replace('[sf_failure_log]', $modify_text, $message['body']);
           $message['body'] = $modify_body;
           // Send message.
@@ -159,7 +161,7 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
         }
       }
       else {
-        // Redirect to step 2
+        // Redirect to step 2.
         $pages = $formState->get('pages');
         goto_step('step2', $pages, $formState);
         $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
@@ -167,4 +169,5 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
       }
     }
   }
+
 }
