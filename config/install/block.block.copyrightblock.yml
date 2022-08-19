@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - o2e_obe_common
+  theme:
+    - o2e_obe_subtheme
+id: copyrightblock
+theme: o2e_obe_subtheme
+region: footer_fifth
+weight: 0
+provider: null
+plugin: copy_right_block
+settings:
+  id: copy_right_block
+  label: 'Copy Right Block'
+  label_display: '0'
+  provider: o2e_obe_common
+  description: '© @year'
+visibility: {  }
