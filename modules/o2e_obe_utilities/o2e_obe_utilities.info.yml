@@ -1,5 +1,0 @@
-name: 'OBE Utilities'
-type: module
-description: 'OBE Utilities is use for common functionality.'
-core_version_requirement: ^9.3
-package: 'O2E OBE'

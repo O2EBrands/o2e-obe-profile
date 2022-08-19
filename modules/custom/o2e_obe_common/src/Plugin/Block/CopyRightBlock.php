@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\o2e_obe_utilities\Plugin\Block;
+namespace Drupal\o2e_obe_common\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
