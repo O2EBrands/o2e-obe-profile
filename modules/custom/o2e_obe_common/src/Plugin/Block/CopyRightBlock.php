@@ -49,8 +49,6 @@ class CopyRightBlock extends BlockBase implements ContainerFactoryPluginInterfac
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
     $description = $form_state->getValue('description')['value'];
-    $year = date('Y');
-    $description = str_replace('@year', $year, $description);
     $this->setConfigurationValue('description', $description);
   }
 
@@ -59,8 +57,10 @@ class CopyRightBlock extends BlockBase implements ContainerFactoryPluginInterfac
    */
   public function build() {
     $config = $this->getConfiguration();
+    $year = date('Y');
+    $copy_right_text = str_replace('@year', $year, $config['description']);
     return [
-      '#markup' => $config['description'],
+      '#markup' => $copy_right_text,
     ];
   }
 
