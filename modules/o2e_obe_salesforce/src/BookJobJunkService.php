@@ -83,7 +83,6 @@ class BookJobJunkService {
     $options += [
       'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
       'franchise_id' => $sf_response['franchise_id'],
-      'customer_type' => $this->authTokenManager->getSfConfig('sf_book_job_junk_customer.customer_type'),
       'service_id' => $sf_response['service_id'],
     ];
     $tempstore->set('bookJobJunkService', UrlHelper::buildQuery($options));
