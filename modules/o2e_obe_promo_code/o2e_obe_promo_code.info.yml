@@ -1,0 +1,8 @@
+name: 'Promo Code'
+type: module
+description: 'O2E Promo Code settings'
+core_version_requirement: ^9.3
+package: 'O2E OBE'
+dependencies:
+  - token:token
+  - o2e_obe_salesforce:o2e_obe_salesforce

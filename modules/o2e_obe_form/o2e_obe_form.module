@@ -1,0 +1,155 @@
+<?php
+
+/**
+ * @file
+ * Hooks for form alterations.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $current_page = $form_state->get('current_page');
+  // Populate Service ID in step 2.
+  if ($current_page === 'step2') {
+   $serviceId = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('response');
+   $form['elements']['step2']['service_id']['#default_value'] = $serviceId['service_id'];
+  }
+  // Add Custom Edit buttton to step 2 from step 3.
+  if ($current_page === 'step3') {
+    $tempstore_service = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce');
+    $form['calendar'] = [
+      "#type" => "submit",
+      "#value" => "Edit Slots",
+      "#webform_actions_button_custom" => FALSE,
+      "#submit" => ['_o2e_obe_form_calendar_redirect'],
+      "#weight" => 0,
+      "#attributes" => [
+        "formnovalidate" => "formnovalidate",
+      ],
+      "#validate" => ['::noValidate'],
+    ];
+    // Get Data related to postal code from tempstore.
+    $postal_code_data = $tempstore_service->get('postalCodeData');
+    // Auto Populate state code and postal code in Address field.
+    $form['elements']['step3']['address']['#default_value']['postal_code'] = $postal_code_data['zip_code'];
+    $form['elements']['step3']['address']['#default_value']['state_province'] = $postal_code_data['state'];
+    // Set the country name based on postal code.
+    $country = '';
+    $zip_code = $postal_code_data['zip_code'];
+    if (preg_match('#[0-9]{5}#', $zip_code)) {
+      $country = 'United States';
+      $tempstore_service->set('country_code', 'US');
+    }
+    elseif (preg_match('/^([a-zA-Z]\d[a-zA-Z])\ {0,1}(\d[a-zA-Z]\d)$/', $zip_code)) {
+      $country = 'Canada';
+      $tempstore_service->set('country_code', 'CA');
+    }
+    elseif (preg_match('#[0-9]{4}#', $zip_code)) {
+      $country = 'Australia';
+      $tempstore_service->set('country_code', 'AU');
+    }
+    $form['elements']['step3']['address']['#default_value']['country'] = $country;
+  }
+  // Add custom button to step 2 and step 3 from step 4.
+  if ($current_page === 'step4') {
+    $form['calendar'] = [
+      "#type" => "submit",
+      "#value" => "Edit Slots",
+      "#webform_actions_button_custom" => FALSE,
+      "#submit" => ['_o2e_obe_form_calendar_redirect'],
+      "#weight" => 0,
+      "#attributes" => [
+        "formnovalidate" => "formnovalidate",
+      ],
+      "#validate" => ['::noValidate'],
+    ];
+    $form['contact'] = [
+      "#type" => "submit",
+      "#value" => "Edit Contact Information",
+      "#webform_actions_button_custom" => FALSE,
+      "#submit" => ['_o2e_obe_form_contact_redirect'],
+      "#weight" => 0,
+      "#attributes" => [
+        "formnovalidate" => "formnovalidate",
+      ],
+      "#validate" => ['::noValidate'],
+    ];
+  }
+  if (isset($form['#webform_id']) && $form['#webform_id'] === 'o2e_webform') {
+    $form['elements']['step3']['address']['#after_build'][] = '_update_address';
+  }
+}
+
+/**
+ * Custom function to hide country field.
+ */
+function _update_address($element, FormStateInterface $form_state) {
+  $element['country']['#attributes']['hidden'] = TRUE;
+  return $element;
+}
+
+/**
+ * Custom Redirection of form after 15 mins expiry.
+ */
+function goto_step($page, $pages, FormStateInterface $form_state) {
+  // Convert associative array to index for easier manipulation.
+  $all_keys = array_keys($pages);
+  $goto_destination_page_index = array_search($page, $all_keys);
+  if ($goto_destination_page_index > 0) {
+    // The backend pointer for page will add 1 so to go our page we must -1.
+    $form_state->set('current_page', $all_keys[$goto_destination_page_index - 1]);
+    $form_state->setRebuild();
+  }
+}
+
+/**
+ * Function to check expiry of 900 seconds.
+ */
+function check_local_time_expiry($currentTime) {
+  $currentLocalTimeTemp = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('currentLocalTime');
+  $service_expiry = \Drupal::config('o2e_obe_salesforce.settings')->get('sf_verify_area')['service_expiry'];
+  if ($currentLocalTimeTemp['currentTimeStamp']) {
+    $timeDifference = $currentTime - $currentLocalTimeTemp['currentTimeStamp'];
+    if (abs($timeDifference) < $service_expiry) {
+      return TRUE;
+    }
+    else {
+      return FALSE;
+    }
+  }
+  else {
+    return FALSE;
+  }
+}
+
+/**
+ * Custom function to redirect to step 2 for data Update.
+ */
+function _o2e_obe_form_calendar_redirect(&$form, FormStateInterface $form_state) {
+  $pages = $form_state->get('pages');
+  goto_step_redirect('step2', $pages, $form_state);
+}
+
+/**
+ * Custom function to redirect to step 3 for data Update.
+ */
+function _o2e_obe_form_contact_redirect(&$form, FormStateInterface $form_state) {
+  $pages = $form_state->get('pages');
+  goto_step_redirect('step3', $pages, $form_state);
+}
+
+/**
+ * Custom function to redirect to page2 on click of custom edit button of form.
+ */
+function goto_step_redirect($page, $pages, FormStateInterface $form_state) {
+  // Convert associative array to index for easier manipulation.
+  $all_keys = array_keys($pages);
+  $goto_destination_page_index = array_search($page, $all_keys);
+  if ($goto_destination_page_index > 0) {
+    $form_state->set('current_page', $all_keys[$goto_destination_page_index]);
+    $form_state->setRebuild();
+  }
+}

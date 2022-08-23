@@ -1,20 +1,19 @@
-/* 
+/*
 Theme Name: Bootstrap 4 Sass
 Description: Bootstrap 4 with Sass
 */
 
 // import files
 @import "import";
+@import "react-datepicker";
 
 /* GENERAL STYLES
 -------------------------------------------------*/
-
 body {
   background: $white;
 }
 
-
-/* COLORS 
+/* COLORS
 --------------------------------------------------*/
 
 a {
@@ -48,13 +47,96 @@ a {
 }
 
 .card-group .field--type-image {
-  margin: 0
+  margin: 0;
 }
 
 .slick {
   width: 100%;
 }
 
-.slick>div {
+.slick > div {
   margin: 0 15px;
+}
+
+/* Global Loader
+--------------------------------------------------*/
+.fadein {
+  animation: fadein 0.5s ease;
+}
+
+.obe-loader {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  .loader-title {
+    width: 100%;
+    font-weight: 600;
+    text-align: center;
+    color: $accent-shade;
+  }
+  width: 100%;
+  height: 100%;
+  .obe-loader-circles {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    div {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: $accent-shade;
+      animation-timing-function: cubic-bezier(0, 1, 1, 0);
+      &:nth-child(1) {
+        animation: obe-loader1 0.6s infinite;
+      }
+      &:nth-child(2) {
+        animation: obe-loader2 0.6s infinite;
+      }
+      &:nth-child(3) {
+        animation: obe-loader2 0.6s infinite;
+      }
+      &:nth-child(4) {
+        left: 56px;
+        animation: obe-loader3 0.6s infinite;
+      }
+    }
+  }
+}
+@keyframes obe-loader1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes obe-loader3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes obe-loader2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

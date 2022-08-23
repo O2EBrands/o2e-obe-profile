@@ -46,6 +46,12 @@ o2e_obe_salesforce.settings:
         api_url_segment:
           type: text
           label: 'Api URL Segment'
+        enable_ans:
+          type: string
+          label: Enable ANS
+        ans_message:
+          type: text
+          label: ANS Message
     sf_available_time:
       type: mapping
       label: 'Fieldset for the fields'
@@ -63,7 +69,7 @@ o2e_obe_salesforce.settings:
         api_url_segment:
           type: text
           label: 'Api URL Segment'
-    sf_book_job_junk:
+    sf_book_job_junk_customer:
       type: mapping
       label: 'Fieldset for the fields'
       mapping:
@@ -73,3 +79,17 @@ o2e_obe_salesforce.settings:
         customer_type:
           type: text
           label: 'Customer Type'
+    sf_book_job_junk:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        api_url_segment:
+          type: text
+          label: 'Api URL Segment'
+    sf_hold_time:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        api_url_segment:
+          type: text
+          label: 'Api URL Segment'

@@ -7,7 +7,7 @@ use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
@@ -83,8 +83,10 @@ class AreaVerificationService {
       $endpoint_segment = '/' . $endpoint_segment;
     }
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
-    if ($result = $this->checkExpiry($currentTimeStamp)) {
-      return $result;
+    $sf_response = $tempstore->get('response');
+    $check_expiry = $this->checkExpiry($currentTimeStamp);
+    if ($check_expiry && $sf_response['from_postal_code'] == $zipcode) {
+      return $check_expiry;
     }
     $api_url = $this->state->get('sfUrl') . $endpoint_segment;
 
@@ -106,13 +108,20 @@ class AreaVerificationService {
         'franchise_id' => $result['franchise_id'],
         'job_duration' => $result['job_duration'],
         'lastServiceTime' => $currentTimeStamp,
+        'state' => $result['state'],
       ]);
 
       $this->loggerFactory->get('Salesforce - VerifyAreaServiced')->notice(UrlHelper::buildQuery($options['query']) . ' ' . Json::encode($result));
       return $result;
     }
-    catch (ClientException $e) {
+    catch (RequestException $e) {
       $this->loggerFactory->get('Salesforce - VerifyAreaServiced Fail')->error($e->getMessage());
+      if (!empty($e->getResponse())) {
+        return [
+          'code' => $e->getCode(),
+          'message' => $e->getResponseBodySummary($e->getResponse())
+        ];
+      }
     }
   }
 
@@ -123,11 +132,11 @@ class AreaVerificationService {
     /* If last authentication was in last 15 min (900 seconds),
      * return area response, else call again.
      */
-    $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
-    if ($tempstore->get('response')['lastServiceTime']) {
-      $timeDifference = $currentTimeStamp - $tempstore->get('response')['lastServiceTime'];
+    $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
+    if ($tempstore['lastServiceTime']) {
+      $timeDifference = $currentTimeStamp - $tempstore['lastServiceTime'];
       if ($timeDifference < $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
-        return $tempstore->get('response');
+        return $tempstore;
       }
       else {
         return FALSE;

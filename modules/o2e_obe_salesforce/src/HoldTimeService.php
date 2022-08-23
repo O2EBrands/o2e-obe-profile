@@ -6,14 +6,15 @@ use GuzzleHttp\Client;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ClientException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use GuzzleHttp\Exception\RequestException;
 
 /**
- * Promo Details Junk Service class is return the promo details.
+ * Hold Time Servicee class is hold the serviceid time .
  */
-class PromoDetailsJunkService {
+class HoldTimeService {
 
 
   /**
@@ -63,36 +64,36 @@ class PromoDetailsJunkService {
   }
 
   /**
-   * Return the promo code data.
+   * Holdtime method is hold the service id time.
    */
-  public function getPromocode(string $promocode) {
-    $options = [];
+  public function holdtime(array $options = []) {
     $auth_token = $this->authTokenManager->getToken();
-    $endpoint_segment = $this->authTokenManager->getSfConfig('sf_promo_details_junk.api_url_segment');
+    $endpoint_segment = $this->authTokenManager->getSfConfig('sf_hold_time.api_url_segment');
     if (substr($endpoint_segment, 0, 1) !== '/') {
       $endpoint_segment = '/' . $endpoint_segment;
     }
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
     $api_url = $this->state->get('sfUrl') . $endpoint_segment;
 
-    $options['headers'] = [
+    $headers = [
       'Authorization' => $auth_token,
       'content-type' => 'application/json',
     ];
 
-    $options['query'] = [
-      'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
-      'franchise_id' => $tempstore['franchise_id'],
-      'promotion_code' => $promocode,
+    $options += [
+      'service_id' => $tempstore['service_id'],
     ];
     try {
-      $response = $this->httpClient->request('GET', $api_url, $options);
+      $response = $this->httpClient->request('POST', $api_url, [
+        'headers' => $headers,
+        'json' => $options,
+      ]);
       $result = Json::decode($response->getBody(), TRUE);
-      $this->loggerFactory->get('Salesforce - Promo Details Junk')->notice(UrlHelper::buildQuery($options['query']) . ' ' . Json::encode($result));
-      return $result;
+      $this->loggerFactory->get('Salesforce - Hold Time')->notice(UrlHelper::buildQuery($options) . ' ' . $response->getStatusCode());
+      return $response->getStatusCode();
     }
     catch (RequestException $e) {
-      $this->loggerFactory->get('Salesforce - Promo Details Junk Fail')->error($e->getMessage());
+      $this->loggerFactory->get('Salesforce - Hold Time Fail')->error($e->getMessage());
     }
   }
 

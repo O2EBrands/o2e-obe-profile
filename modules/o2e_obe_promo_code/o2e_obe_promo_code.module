@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * Contains o2e_obe_promo_code.module.
+ */
+
+use Drupal\Core\Render\BubbleableMetadata;
+
+/**
+ * Implements hook_token_info().
+ */
+function o2e_obe_promo_code_token_info() {
+  $token_type['custom_token'] = [
+    'name' => t("Custom"),
+    'description' => t("Custom type grouping for tokens."),
+  ];
+
+  $token['same-day-promo-code-detail'] = [
+    'name' => t("Sameday Promo Code Detail"),
+    'description' => t("Token will get the value for SameDay Promo code detail stored in config form."),
+  ];
+
+  $token['same-day-promo-code-term'] = [
+    'name' => t("Sameday Promo Code Term"),
+    'description' => t("Token will get the value for SameDay Promo code term stored in config form."),
+  ];
+
+  return [
+    'types' => $token_type,
+    'tokens' => [
+      'custom_token' => $token,
+    ],
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+  if ($type === 'custom_token') {
+    foreach ($tokens as $name => $original) {
+      $config = \Drupal::config('o2e_obe_promo_code.settings')->get('o2e_obe_promo_code');
+      $promo_status = FALSE;
+      if ($config && !empty($config['sameday_status']) && $config['sameday_status'] == TRUE) {
+        $promo_status = TRUE;
+      }
+      switch ($name) {
+        case 'same-day-promo-code-detail':
+          $sameday_promo_detail = "";
+          if ($promo_status && !empty($config['sameday_details'])) {
+            $sameday_promo_detail = $config['sameday_details'];
+          }
+          $replacements[$original] = $sameday_promo_detail;
+          break;
+
+        case 'same-day-promo-code-term':
+          $sameday_promo_term = "";
+          if ($promo_status && !empty($config['sameday_terms'])) {
+            $sameday_promo_term = $config['sameday_terms'];
+          }
+          $replacements[$original] = $sameday_promo_term;
+          break;
+      }
+    }
+  }
+  return $replacements;
+}

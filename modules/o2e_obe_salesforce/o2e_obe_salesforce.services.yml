@@ -9,10 +9,16 @@ services:
    arguments: ['@http_client', '@logger.factory', '@datetime.time', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
  o2e_obe_salesforce.available_times_service:
    class: Drupal\o2e_obe_salesforce\AvailableTimesService
-   arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time','@o2e_obe_salesforce.area_verification_service']
+   arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time','@o2e_obe_salesforce.area_verification_service', '@request_stack']
  o2e_obe_salesforce.promo_details_junk_service:
    class: Drupal\o2e_obe_salesforce\PromoDetailsJunkService
    arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
+ o2e_obe_salesforce.book_job_junk_customer:
+   class: Drupal\o2e_obe_salesforce\BookJobJunkCustomerService
+   arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
  o2e_obe_salesforce.book_job_junk:
    class: Drupal\o2e_obe_salesforce\BookJobJunkService
+   arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
+ o2e_obe_salesforce.hold_time:
+   class: Drupal\o2e_obe_salesforce\HoldTimeService
    arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
