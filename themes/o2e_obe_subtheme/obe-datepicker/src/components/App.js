@@ -70,10 +70,12 @@ function App() {
       <div className="col-lg-3 col-md-6 col-sm-12 datepicker-wrapper">
         {isLoading ? <Loader /> : ""}
         <DatePicker
-          selected={new Date(selectedDate.clone().format("YYYY-MM-D"))}
+          selected={new Date(selectedDate.clone().format("YYYY, MM, D"))}
           onChange={(date: Date) => setSelectedDate(moment(date).utc())}
-          minDate={new Date(startDate.clone().format("YYYY-MM-D"))}
-          maxDate={new Date(startDate.clone().add(4, "months").format("YYYY-MM-D"))}
+          minDate={new Date(startDate.clone().format("YYYY, MM, D"))}
+          maxDate={
+            new Date(startDate.clone().add(4, "months").format("YYYY, MM, D"))
+          }
           inline
         />
       </div>
