@@ -102,6 +102,8 @@ class AvailableTimesService {
       $timeDifference = $currentTimeStamp - $sf_response['lastServiceTime'];
       if ($timeDifference > $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
         $this->areaVerification->verifyAreaCode($sf_response['from_postal_code']);
+        $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
+        $sf_response = $tempstore->get('response');
       }
     }
     $endpoint_segment = $this->authTokenManager->getSfConfig('sf_available_time.api_url_segment');
