@@ -70,7 +70,7 @@ abstract class ObeWebformHandlerBase extends WebformHandlerBase {
       '#title' => $this->t('Select the Wizard Page'),
       '#options' => $wizard_steps,
       '#required' => TRUE,
-      '#default_value' => $this->configuration['steps'],
+      '#default_value' => $this->configuration['steps'] ?? '',
     ];
     $form['redirect'] = [
       '#type' => 'details',
@@ -81,7 +81,7 @@ abstract class ObeWebformHandlerBase extends WebformHandlerBase {
       '#title' => $this->t('Select the Redirect To Page after Slot Expiry'),
       '#options' => $wizard_steps,
       '#required' => TRUE,
-      '#default_value' => $this->configuration['redirect_to_step'],
+      '#default_value' => $this->configuration['redirect_to_step'] ?? '',
     ];
     $form['target_fields'] = [
       '#type' => 'details',
@@ -91,7 +91,7 @@ abstract class ObeWebformHandlerBase extends WebformHandlerBase {
       '#type' => 'checkboxes',
       '#title' => $this->t('Select the Fields for the Handler'),
       '#options' => $allowed_fields,
-      '#default_value' => $this->configuration['contact_fields'],
+      '#default_value' => $this->configuration['contact_fields'] ?? [],
     ];
     return $this->setSettingsParents($form);
   }

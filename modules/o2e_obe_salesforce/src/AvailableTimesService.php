@@ -101,7 +101,7 @@ class AvailableTimesService {
     if ($sf_response['lastServiceTime']) {
       $timeDifference = $currentTimeStamp - $sf_response['lastServiceTime'];
       if ($timeDifference > $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
-        $this->areaVerification->verifyAreaCode($sf_response['from_postal_code']);
+        $this->areaVerification->verifyAreaCode(['from_postal_code' => $sf_response['from_postal_code']]);
         $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
         $sf_response = $tempstore->get('response');
       }
@@ -152,7 +152,10 @@ class AvailableTimesService {
     $start_date = $params->get('start_date');
     $end_date = $params->get('end_date');
     if ($start_date && $end_date) {
-      $response = $this->getAvailableTimes(['start_date' => $start_date, 'end_date' => $end_date]);
+      $response = $this->getAvailableTimes([
+        'start_date' => $start_date,
+        'end_date' => $end_date,
+      ]);
       return new JsonResponse($response);
     }
     else {
