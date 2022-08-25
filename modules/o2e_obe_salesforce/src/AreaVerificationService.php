@@ -74,7 +74,7 @@ class AreaVerificationService {
   /**
    * Verify the area on the basis of zip code.
    */
-  public function verifyAreaCode(string $zipcode) {
+  public function verifyAreaCode(array $zipcode) {
     $options = [];
     $currentTimeStamp = $this->timeService->getRequestTime();
     $auth_token = $this->authTokenManager->getToken();
@@ -85,7 +85,7 @@ class AreaVerificationService {
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
     $sf_response = $tempstore->get('response');
     $check_expiry = $this->checkExpiry($currentTimeStamp);
-    if ($check_expiry && $sf_response['from_postal_code'] == $zipcode) {
+    if ($check_expiry && $sf_response['from_postal_code'] == $zipcode['from_postal_code']) {
       return $check_expiry;
     }
     $api_url = $this->state->get('sfUrl') . $endpoint_segment;
@@ -97,7 +97,7 @@ class AreaVerificationService {
 
     $options['query'] = [
       'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
-      'from_postal_code' => $zipcode,
+      'from_postal_code' => $zipcode['from_postal_code'],
     ];
     try {
       $response = $this->httpClient->request('GET', $api_url, $options);
@@ -119,7 +119,7 @@ class AreaVerificationService {
       if (!empty($e->getResponse())) {
         return [
           'code' => $e->getCode(),
-          'message' => $e->getResponseBodySummary($e->getResponse())
+          'message' => $e->getResponseBodySummary($e->getResponse()),
         ];
       }
     }

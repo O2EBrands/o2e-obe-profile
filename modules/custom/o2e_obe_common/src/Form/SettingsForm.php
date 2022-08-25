@@ -35,9 +35,28 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'select',
       '#title' => $this->t('Brand'),
       '#description' => $this->t('Select your choice of brand.'),
-      '#options' => ['GJ NA' => $this->t('GJ NA'), 'GJ AU' => $this->t('GJ AU'), 'SSH' => $this->t('SSH'), 'W1D' => $this->t('W1D')],
+      '#options' => [
+        'GJ NA' => $this->t('GJ NA'),
+        'GJ AU' => $this->t('GJ AU'),
+        'SSH' => $this->t('SSH'),
+        'W1D' => $this->t('W1D'),
+      ],
       '#size' => 4,
       '#default_value' => $config->get('brand'),
+    ];
+    $form['slot_holdtime_expiry_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Slot HoldTime Expiry Message'),
+      '#description' => $this->t('Enter the message to be shown after Checktime Expiry.'),
+      '#default_value' => $config->get('slot_holdtime_expiry_message'),
+      '#required' => TRUE,
+    ];
+    $form['booking_error_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Global Booking Error Message'),
+      '#description' => $this->t('Enter the message to be shown if booking cannot be done.'),
+      '#default_value' => $config->get('booking_error_message'),
+      '#required' => TRUE,
     ];
     return parent::buildForm($form, $form_state);
   }
@@ -50,6 +69,8 @@ class SettingsForm extends ConfigFormBase {
 
     $this->config('o2e_obe_common.settings')
       ->set('brand', $form_state->getValue('brand'))
+      ->set('slot_holdtime_expiry_message', $form_state->getValue('slot_holdtime_expiry_message'))
+      ->set('booking_error_message', $form_state->getValue('booking_error_message'))
       ->save();
   }
 

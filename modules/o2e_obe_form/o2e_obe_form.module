@@ -12,14 +12,36 @@ use Drupal\Core\Form\FormStateInterface;
  */
 function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $current_page = $form_state->get('current_page');
+  $tempstore_service = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce');
   // Populate Service ID in step 2.
   if ($current_page === 'step2') {
    $serviceId = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('response');
    $form['elements']['step2']['service_id']['#default_value'] = $serviceId['service_id'];
+   // Check for Show/Hide Slot Hold Time Message Configurations.
+   $salesForceConfiguration = \Drupal::config('o2e_obe_salesforce.settings');
+   $slotHoldTimeConfigStatus = $salesForceConfiguration->get('sf_available_time')['show_holdtime_message'];
+   $slotHoldTimeTempStatus = $tempstore_service->get('slotHoldTime');
+   if ($slotHoldTimeConfigStatus == TRUE && $slotHoldTimeTempStatus == TRUE) {
+    // Get pick up date and arrival time.
+    if (!empty($form_state->getValue('pick_up_date'))) {
+      $pick_up_date = $form_state->getValue('pick_up_date');
+      $arrival_time = $form_state->getValue('arrival_time');
+    }
+    // Get Slot Hold Time Message and Slot Hold Time Sub Message.
+    if (!empty($salesForceConfiguration->get('sf_available_time.slot_holdtime_message'))) {
+      $slot_holdtime_message = $salesForceConfiguration->get('sf_available_time.slot_holdtime_message');
+      $slot_holdtime_sub_message = !empty($salesForceConfiguration->get('sf_available_time.slot_holdtime_sub_message'))
+        ? $salesForceConfiguration->get('sf_available_time.slot_holdtime_sub_message')
+        : '';
+      // Design the message.
+      $hold_time_message = '<div class="holdtime-section"><div class="holdtime-main">' . $slot_holdtime_message . '<span class="hold-slot">' . $pick_up_date . ' ' . $arrival_time . '</span></div><div class="holdtime-subtext">' . $slot_holdtime_sub_message . '</div></div>';
+      $form['elements']['step2']['holdtime_data']['#access'] = TRUE;
+      $form['elements']['step2']['holdtime_data']['#template'] = $hold_time_message;
+    }
+   }
   }
   // Add Custom Edit buttton to step 2 from step 3.
   if ($current_page === 'step3') {
-    $tempstore_service = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce');
     $form['calendar'] = [
       "#type" => "submit",
       "#value" => "Edit Slots",

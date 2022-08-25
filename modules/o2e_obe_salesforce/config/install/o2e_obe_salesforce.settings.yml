@@ -2,26 +2,29 @@ sf_brand:
   brand: ''
 sf_auth:
   login_url: ''
-  api_password: 
-  grant_type: 
-  client_id: 
+  api_password:
+  grant_type:
+  client_id:
   client_secret: ''
   api_username:
   token_expiry: '18000'
-sf_verify_area:  
+sf_verify_area:
   service_expiry: '900'
   api_url_segment:
   enable_ans: '0'
   ans_message: ''
-sf_available_time:  
+sf_available_time:
   services_type: ''
   api_url_segment:
-sf_promo_details_junk:  
+  show_holdtime_message: '0'
+  slot_holdtime_message: ''
+  slot_holdtime_sub_message: ''
+sf_promo_details_junk:
   api_url_segment:
-sf_book_job_junk_customer:  
+sf_book_job_junk_customer:
   api_url_segment:
   customer_type:
-sf_book_job_junk:  
+sf_book_job_junk:
   api_url_segment:
-sf_hold_time:  
+sf_hold_time:
   api_url_segment:

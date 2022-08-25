@@ -3,17 +3,11 @@
 namespace Drupal\o2e_obe_form\Plugin\WebformHandler;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\webform\Plugin\WebformHandlerBase;
-use Drupal\Component\Utility\Html;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\o2e_obe_salesforce\AreaVerificationService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\State\State;
 use Drupal\Core\Render\Markup;
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\o2e_obe_form\Plugin\ObeWebformHandlerBase;
 
 /**
  * Webform validate handler.
@@ -28,7 +22,7 @@ use Drupal\Core\TempStore\PrivateTempStoreFactory;
  *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_OPTIONAL,
  * )
  */
-class ZipCodeValidation extends WebformHandlerBase {
+class ZipCodeValidation extends ObeWebformHandlerBase {
 
   use StringTranslationTrait;
 
@@ -83,55 +77,70 @@ class ZipCodeValidation extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-    $this->validateZipCode($form_state);
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $elements = parent::buildConfigurationForm($form, $form_state);
+    unset($elements['redirect']);
+    return $elements;
   }
 
   /**
-   * Validate phone.
+   * {@inheritdoc}
    */
-  private function validateZipCode(FormStateInterface $formState) {
+  public function validateForm(array &$form, FormStateInterface $formState, WebformSubmissionInterface $webform_submission) {
     $current_page = $formState->get('current_page');
-    if ($current_page === 'step1') {
-      $zip_code = !empty($formState->getValue('zip_code')) ? Html::escape($formState->getValue('zip_code')) : NULL;
-      // Skip empty field.
-      if (empty($zip_code) || is_array($zip_code)) {
-        return;
-      }
-      $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
-      if (!empty($response)) {
-        if (isset($response['service_id']) && isset($response['state'])) {
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('postalCodeData', [
-            'state' => $response['state'],
-            'zip_code' => $zip_code,
-          ]);
-          $currentTimeStamp = $this->timeService->getRequestTime();
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('currentLocalTime', [
-            'currentTimeStamp' => $currentTimeStamp,
-          ]);
-          return TRUE;
+    $selected_step = $this->configuration['steps'];
+    if ($current_page === $selected_step) {
+      $selected_fields = $this->configuration['contact_fields'];
+      $query = [];
+      foreach ($selected_fields as $field_name) {
+        if (!empty($formState->getValue($field_name))) {
+          $query[$field_name] = $formState->getValue($field_name);
         }
-        elseif (isset($response['code']) && $response['code'] === 404) {
-          if (strpos($response['message'], 'Area Not Serviced')) {
-            $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
-            $enable_ans = $salesforceConfigData['enable_ans'];
-            if ($enable_ans == TRUE) {
-              $message = Markup::create($salesforceConfigData['ans_message']);
-              $formState->setErrorByName('zip_code', $message);
+      }
+      if (!empty($query)) {
+        $response = $this->areaVerificationManager->verifyAreaCode($query);
+        if (!empty($response)) {
+          if (isset($response['service_id']) && isset($response['state'])) {
+            $this->tempStoreFactory->get('o2e_obe_salesforce')->set('postalCodeData', [
+              'state' => $response['state'],
+              'zip_code' => $response['from_postal_code'],
+            ]);
+            $currentTimeStamp = $this->timeService->getRequestTime();
+            $this->tempStoreFactory->get('o2e_obe_salesforce')->set('currentLocalTime', [
+              'currentTimeStamp' => $currentTimeStamp,
+            ]);
+            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
+            return TRUE;
+          }
+          elseif (isset($response['code']) && $response['code'] === 404) {
+            if (strpos($response['message'], 'Area Not Serviced')) {
+              $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
+              $enable_ans = $salesforceConfigData['enable_ans'];
+              if ($enable_ans == TRUE) {
+                $message = Markup::create($salesforceConfigData['ans_message']);
+                $formState->setErrorByName('from_postal_code', $message);
+              }
+              else {
+                $formState->setErrorByName('from_postal_code', $response['message']);
+              }
             }
-            else {
-              $formState->setErrorByName('zip_code', $response['message']);
-            }
+          }
+          else {
+            $formState->setErrorByName('from_postal_code', $response['message']);
           }
         }
         else {
-          $formState->setErrorByName('zip_code', $this->t('Please enter valid zip code.'));
+          $booking_error_message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('booking_error_message');
+          $formState->setErrorByName('', $booking_error_message);
         }
       }
       else {
-        $formState->setErrorByName('zip_code', $this->t('Please enter valid zip code.'));
+        $booking_error_message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('booking_error_message');
+        $formState->setErrorByName('', $booking_error_message);
+        return FALSE;
       }
     }
+
   }
 
 }

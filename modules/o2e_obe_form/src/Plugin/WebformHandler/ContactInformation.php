@@ -3,22 +3,14 @@
 namespace Drupal\o2e_obe_form\Plugin\WebformHandler;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Locale\CountryManager;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
-use Drupal\o2e_obe_salesforce\PromoDetailsJunkService;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\o2e_obe_salesforce\BookJobJunkCustomerService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
-use Drupal\Core\State\State;
-use Drupal\Core\Language\LanguageManager;
 use Drupal\Component\Serialization\Json;
-use Drupal\o2e_obe_salesforce\AreaVerificationService;
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\o2e_obe_form\Plugin\ObeWebformHandlerBase;
 
 /**
  * Webform validate handler.
@@ -33,7 +25,7 @@ use Drupal\Core\TempStore\PrivateTempStoreFactory;
  *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_OPTIONAL,
  * )
  */
-class ContactInformation extends WebformHandlerBase {
+class ContactInformation extends ObeWebformHandlerBase {
 
   use StringTranslationTrait;
 
@@ -101,6 +93,13 @@ class ContactInformation extends WebformHandlerBase {
   protected $tempStoreFactory;
 
   /**
+   * A config object for the OBE Common Form configuration.
+   *
+   * @var \Drupal\Core\Config\Config
+   */
+  protected $config;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -113,6 +112,7 @@ class ContactInformation extends WebformHandlerBase {
     $instance->areaVerificationManager = $container->get('o2e_obe_salesforce.area_verification_service');
     $instance->timeService = $container->get('datetime.time');
     $instance->tempStoreFactory = $container->get('tempstore.private');
+    $instance->config = $container->get('config.factory');
     return $instance;
   }
 
@@ -120,44 +120,53 @@ class ContactInformation extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-    $this->validateCustomer($form_state);
+    $current_page = $form_state->get('current_page');
+    $selected_step = $this->configuration['steps'];
+    if ($current_page === $selected_step) {
+      $selected_fields = $this->configuration['contact_fields'];
+      $this->validateCustomer($form_state);
+    }
   }
 
   /**
    * Custom function to integrate BookJunkJob1 API.
    */
   private function validateCustomer(FormStateInterface $formState) {
-    $current_page = $formState->get('current_page');
-    if ($current_page === 'step3') {
-      // Promo Code Verification (if applicable).
-      $promocode = !empty($formState->getValue('promo_code')) ? $formState->getValue('promo_code') : NULL;
-      if (!empty($promocode)) {
-        $promo_response = $this->promoCodeService->getPromocode($promocode);
-        if (!empty($promo_response)) {
-          if (isset($promo_response['promotion_code'])) {
-            $this->bookJobJunkCustomer($formState);
-          }
-          if (isset($promo_response['program_code'])) {
-            $query = [
-              'program_code' => $promo_response['program_code'],
-              'nasa_program' => $promo_response['nasa_program'],
-              'pricebook_id' => $promo_response['pricebook_id'],
-              'loyalty_gift_card' => $promo_response['loyalty_gift_card'],
-              'additional_information_required' => $promo_response['additional_information_required'],
-              'additional_information' => $promo_response['additional_information'],
-            ];
-            $this->bookJobJunkCustomer($formState, $query);
-          }
+    // $current_page = $formState->get('current_page');
+    // if ($current_page === 'step3') {
+    // Promo Code Verification (if applicable).
+    $promocode = !empty($formState->getValue('promo_code')) ? $formState->getValue('promo_code') : NULL;
+    if (!empty($promocode)) {
+      $promo_response = $this->promoCodeService->getPromocode($promocode);
+      if (!empty($promo_response)) {
+        if (isset($promo_response['promotion_code'])) {
+          $query = [
+            'promo_code' => $promo_response['promotion_code'],
+            'additional_information_required' => FALSE,
+          ];
+          $this->bookJobJunkCustomer($formState, $query);
         }
-        else {
-          $formState->setErrorByName('promo_code', $this->t('Please enter correct Promo Code'));
-          return FALSE;
+        if (isset($promo_response['program_code'])) {
+          $query = [
+            'program_code' => $promo_response['program_code'],
+            'nasa_program' => $promo_response['nasa_program'],
+            'pricebook_id' => $promo_response['pricebook_id'],
+            'loyalty_gift_card' => $promo_response['loyalty_gift_card'],
+            'additional_information_required' => $promo_response['additional_information_required'],
+            'additional_information' => $promo_response['additional_information'],
+          ];
+          $this->bookJobJunkCustomer($formState, $query);
         }
       }
       else {
-        $this->bookJobJunkCustomer($formState);
+        $formState->setErrorByName('promo_code', $this->t('Please enter correct Promo Code'));
+        return FALSE;
       }
     }
+    else {
+      $this->bookJobJunkCustomer($formState);
+    }
+    // }
   }
 
   /**
@@ -210,6 +219,8 @@ class ContactInformation extends WebformHandlerBase {
     $currentTimeStamp = $this->timeService->getRequestTime();
     $checkExpiry = check_local_time_expiry($currentTimeStamp);
     if ($checkExpiry) {
+      // Set the slotHoldTime tempstore to TRUE.
+      $this->tempStoreFactory->get('o2e_obe_salesforce')->set('slotHoldTime', TRUE);
       $response = $this->bookJobJunkService->bookJobJunkCustomer($query);
       if (!empty($response)) {
         if (isset($response['service_type_id'])) {
@@ -295,15 +306,20 @@ class ContactInformation extends WebformHandlerBase {
         }
       }
       else {
-        $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
+        $booking_error_message = $this->config->get('o2e_obe_common.settings')->get('booking_error_message');
+        $formState->setErrorByName('', $booking_error_message);
         return FALSE;
       }
     }
     else {
       // Redirect to step 2.
+      $form['elements']['step2']['holdtime_data']['#access'] = FALSE;
+      $this->tempStoreFactory->get('o2e_obe_salesforce')->set('slotHoldTime', FALSE);
       $pages = $formState->get('pages');
       goto_step('step2', $pages, $formState);
-      $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
+      // Show slot expiry message.
+      $slot_expiry_message = $this->config->get('o2e_obe_common.settings')->get('slot_holdtime_expiry_message');
+      $formState->setErrorByName('', $slot_expiry_message);
       return FALSE;
     }
   }

@@ -110,11 +110,11 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('sf_verify_area.api_url_segment'),
       '#required' => TRUE,
     ];
-    $form['sf_verify_area']['enable_ans'] = array(
+    $form['sf_verify_area']['enable_ans'] = [
       '#type' => 'checkbox',
-      '#title' => t('Enable ANS'),
+      '#title' => $this->t('Enable ANS'),
       '#default_value' => $config->get('sf_verify_area.enable_ans'),
-    );
+    ];
     $form['sf_verify_area']['ans_message'] = [
       '#type' => 'textarea',
       '#title' => $this->t('ANS Message'),
@@ -141,6 +141,31 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('Api URL Segment'),
       '#default_value' => $config->get('sf_available_time.api_url_segment'),
       '#required' => TRUE,
+    ];
+    $form['sf_available_time']['show_holdtime_message'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show Slot Hold Time Message'),
+      '#default_value' => $config->get('sf_available_time.show_holdtime_message'),
+    ];
+    $form['sf_available_time']['slot_holdtime_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Slot HoldTime Message'),
+      '#default_value' => $config->get('sf_available_time.slot_holdtime_message'),
+      '#states' => [
+        'visible' => [
+          ':input[name="sf_available_time[show_holdtime_message]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+    $form['sf_available_time']['slot_holdtime_sub_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Slot HoldTime Sub Message'),
+      '#default_value' => $config->get('sf_available_time.slot_holdtime_sub_message'),
+      '#states' => [
+        'visible' => [
+          ':input[name="sf_available_time[show_holdtime_message]"]' => ['checked' => TRUE],
+        ],
+      ],
     ];
     $form['sf_promo_details_junk'] = [
       '#type' => 'fieldset',

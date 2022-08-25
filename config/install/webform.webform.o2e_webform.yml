@@ -29,13 +29,18 @@ elements: |-
       '#type': textfield
       '#title': 'Zip Code'
       '#required': true
-      '#pattern': '^([0-9]{4})$'
   step2:
     '#type': webform_wizard_page
     '#title': 'Page 2'
     pick_a_date_and_time:
       '#type': label
       '#title': 'Pick a Date and Time'
+    holdtime_data:
+      '#type': webform_computed_twig
+      '#title': 'HoldTime Data'
+      '#title_display': invisible
+      '#access': false
+      '#template': abc
     react_datepicker_component:
       '#type': container
     start_date_time:
@@ -49,6 +54,7 @@ elements: |-
     service_id:
       '#type': hidden
       '#title': 'Service ID'
+      '#default_value': '[custom_token:serviceId]'
     pick_up_date:
       '#type': hidden
       '#title': 'Pick-Up Date'
@@ -63,7 +69,6 @@ elements: |-
     pick_up_date_edit_section:
       '#type': webform_computed_twig
       '#title': 'Pick Up Date'
-      '#title_display': invisible
       '#template': |-
         <div class="pickup-edit-data-container">
         <div class="date-time-data">
@@ -316,15 +321,6 @@ handlers:
     conditions: {  }
     weight: -50
     settings: {  }
-  contact_information_validator:
-    id: o2e_obe_form_contact_validator
-    handler_id: contact_information_validator
-    label: 'Contact Information Validator'
-    notes: ''
-    status: true
-    conditions: {  }
-    weight: -49
-    settings: {  }
   service_validator:
     id: o2e_obe_form_service_validator
     handler_id: service_validator
@@ -408,4 +404,22 @@ handlers:
       theme_name: ''
       parameters: {  }
       debug: false
+  available_times_validator:
+    id: o2e_obe_form_available_times_validator
+    handler_id: available_times_validator
+    label: 'Available Times Validator'
+    notes: ''
+    status: true
+    conditions: {  }
+    weight: 0
+    settings: {  }
+  contact_information_validator:
+    id: o2e_obe_form_contact_validator
+    handler_id: contact_information_validator
+    label: 'Contact Information Validator'
+    notes: ''
+    status: true
+    conditions: {  }
+    weight: -49
+    settings: {  }
 variants: {  }

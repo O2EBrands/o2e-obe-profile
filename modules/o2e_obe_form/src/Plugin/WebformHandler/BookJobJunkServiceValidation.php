@@ -3,18 +3,12 @@
 namespace Drupal\o2e_obe_form\Plugin\WebformHandler;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\o2e_obe_salesforce\BookJobJunkService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
-use Drupal\o2e_obe_salesforce\AreaVerificationService;
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\TempStore\PrivateTempStoreFactory;
-use Drupal\o2e_obe_salesforce\HoldTimeService;
+use Drupal\o2e_obe_form\Plugin\ObeWebformHandlerBase;
 
 /**
  * Webform validate handler.
@@ -29,7 +23,7 @@ use Drupal\o2e_obe_salesforce\HoldTimeService;
  *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_OPTIONAL,
  * )
  */
-class BookJobJunkServiceValidation extends WebformHandlerBase {
+class BookJobJunkServiceValidation extends ObeWebformHandlerBase {
 
   use StringTranslationTrait;
 
@@ -83,6 +77,13 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
   protected $holdTimeService;
 
   /**
+   * A config object for the OBE Common Form configuration.
+   *
+   * @var \Drupal\Core\Config\Config
+   */
+  protected $config;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -94,6 +95,7 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
     $instance->timeService = $container->get('datetime.time');
     $instance->tempStoreFactory = $container->get('tempstore.private');
     $instance->holdTimeService = $container->get('o2e_obe_salesforce.hold_time');
+    $instance->config = $container->get('config.factory');
     return $instance;
   }
 
@@ -127,6 +129,8 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
       $currentTimeStamp = $this->timeService->getRequestTime();
       $checkExpiry = check_local_time_expiry($currentTimeStamp);
       if ($checkExpiry) {
+        // Set the slotHoldTime tempstore to TRUE.
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('slotHoldTime', TRUE);
         // Registering service ID with HoldTimeAPI.
         $hold_time_query_parameters = [
           'start_date_time',
@@ -156,15 +160,20 @@ class BookJobJunkServiceValidation extends WebformHandlerBase {
           $email_handler->sendMessage($webform_submission, $message);
         }
         else {
-          $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
+          $booking_error_message = $this->config->get('o2e_obe_common.settings')->get('booking_error_message');
+          $formState->setErrorByName('', $booking_error_message);
           return FALSE;
         }
       }
       else {
         // Redirect to step 2.
+        $form['elements']['step2']['holdtime_data']['#access'] = FALSE;
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('slotHoldTime', FALSE);
         $pages = $formState->get('pages');
         goto_step('step2', $pages, $formState);
-        $formState->setErrorByName('', $this->t('We are unable to continue with the booking. Please Try Again'));
+        // Show slot expiry message.
+        $slot_expiry_message = $this->config->get('o2e_obe_common.settings')->get('slot_holdtime_expiry_message');
+        $formState->setErrorByName('', $slot_expiry_message);
         return FALSE;
       }
     }
