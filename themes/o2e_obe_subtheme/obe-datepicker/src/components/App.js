@@ -11,6 +11,15 @@ import "react-datepicker/dist/react-datepicker.css";
 //Initialize object for response
 let data = {};
 
+// Current date string.
+let today = new Date();
+let curDateString =
+  today.getFullYear() +
+  "-" +
+  ("0" + (today.getMonth() + 1)).slice(-2) +
+  "-" +
+  ("0" + today.getDate()).slice(-2);
+
 function App() {
   //Fetching hidden field.
   let startTimeField = document.querySelector(
@@ -19,15 +28,16 @@ function App() {
 
   //Check if date is already set.
   let currentDate;
+
   if (startTimeField) {
     if (startTimeField.value !== "") {
       currentDate = moment(startTimeField.value).utc();
     }
     if (startTimeField.value === "") {
-      currentDate = moment().utc();
+      currentDate = moment.utc(curDateString);
     }
   } else {
-    currentDate = moment().utc();
+    currentDate = moment.utc(curDateString);
   }
 
   //Initializing the startDate once per lifecycle.
@@ -71,7 +81,15 @@ function App() {
         {isLoading ? <Loader /> : ""}
         <DatePicker
           selected={new Date(selectedDate.clone().format("YYYY, MM, D"))}
-          onChange={(date: Date) => setSelectedDate(moment(date).utc())}
+          onChange={(date: Date) => {
+            let calDateString =
+              date.getFullYear() +
+              "-" +
+              ("0" + (date.getMonth() + 1)).slice(-2) +
+              "-" +
+              ("0" + date.getDate()).slice(-2);
+            setSelectedDate(moment.utc(calDateString));
+          }}
           minDate={new Date(startDate.clone().format("YYYY, MM, D"))}
           maxDate={
             new Date(startDate.clone().add(4, "months").format("YYYY, MM, D"))
