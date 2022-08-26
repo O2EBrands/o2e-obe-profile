@@ -100,4 +100,12 @@ div[data-drupal-selector="edit-react-datepicker-component"] {
       background: rgba($white, 0.7);
     }
   }
+
+  .timeslot-wrapper {
+    @media screen and (max-width: $md) {
+      .accordion:not(:nth-child(1)) {
+        display: none;
+      }
+    }
+  }
 }
