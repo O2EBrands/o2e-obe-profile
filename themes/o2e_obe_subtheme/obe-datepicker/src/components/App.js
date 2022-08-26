@@ -77,7 +77,7 @@ function App() {
 
   return (
     <div className="row fadein">
-      <div className="col-lg-3 col-md-6 col-sm-12 datepicker-wrapper">
+      <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12 datepicker-wrapper">
         {isLoading ? <Loader /> : ""}
         <DatePicker
           selected={new Date(selectedDate.clone().format("YYYY, MM, D"))}
@@ -97,7 +97,7 @@ function App() {
           inline
         />
       </div>
-      <div className="col-lg-9 col-md-6 col-sm-12">
+      <div className="col-xl-9 col-lg-8 col-md-6 col-sm-12 timeslot-wrapper">
         {isLoading ? (
           <SlotLoader />
         ) : (
