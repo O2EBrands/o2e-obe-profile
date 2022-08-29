@@ -107,10 +107,6 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
               'job_duration' => $response['job_duration'],
               'drivetime_adjustment' => $response['drivetime_adjustment'],
             ]);
-            $currentTimeStamp = $this->timeService->getRequestTime();
-            $this->tempStoreFactory->get('o2e_obe_salesforce')->set('currentLocalTime', [
-              'currentTimeStamp' => $currentTimeStamp,
-            ]);
             $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
             return TRUE;
           }

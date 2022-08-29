@@ -73,11 +73,11 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
     $selected_step = $this->configuration['steps'];
     if ($current_page === $selected_step) {
       // Check Expiry.
-      $currentTimeStamp = $this->timeService->getRequestTime();
-      $checkExpiry = check_local_time_expiry($currentTimeStamp);
+      $checkExpiry = check_local_time_expiry();
       if ($checkExpiry) {
         // Set the slotHoldTime tempstore to TRUE.
         $this->tempStoreFactory->get('o2e_obe_salesforce')->set('slotHoldTime', TRUE);
+        return TRUE;
       }
       else {
         // Redirect to selected redirected step.

@@ -71,6 +71,12 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
           $form['elements'][$current_page]['address']['#default_value']['country'] = $country;
         }
       }
+      // 15 mins slot booking time starts from step 2 for all brands.
+      if ($current_page === 'step2') {
+        $current_time = \Drupal::service('datetime.time')->getRequestTime();
+        \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->set('currentLocalTime', [
+            'currentTimeStamp' => $current_time,
+          ]);
     }
   }
 }
@@ -100,7 +106,8 @@ function goto_step($page, $pages, FormStateInterface $form_state) {
 /**
  * Function to check expiry of 900 seconds.
  */
-function check_local_time_expiry($currentTime) {
+function check_local_time_expiry() {
+  $currentTime = \Drupal::service('datetime.time')->getRequestTime();
   $currentLocalTimeTemp = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('currentLocalTime');
   $service_expiry = \Drupal::config('o2e_obe_salesforce.settings')->get('sf_verify_area')['service_expiry'];
   $service_expiry = (int)($service_expiry);
