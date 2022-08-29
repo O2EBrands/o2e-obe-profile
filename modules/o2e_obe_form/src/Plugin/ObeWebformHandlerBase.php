@@ -88,11 +88,11 @@ abstract class ObeWebformHandlerBase extends WebformHandlerBase {
       '#type' => 'details',
       '#title' => $this->t('Target Fields'),
     ];
-    $form['target_fields']['contact_fields'] = [
+    $form['target_fields']['handler_fields'] = [
       '#type' => 'checkboxes',
       '#title' => $this->t('Select the Fields for the Handler'),
       '#options' => $allowed_fields,
-      '#default_value' => $this->configuration['contact_fields'] ?? [],
+      '#default_value' => $this->configuration['handler_fields'] ?? [],
     ];
     return $this->setSettingsParents($form);
   }
@@ -129,7 +129,7 @@ abstract class ObeWebformHandlerBase extends WebformHandlerBase {
         }
       }
     }
-    $this->configuration['contact_fields'] = $fields;
+    $this->configuration['handler_fields'] = $fields;
   }
 
 }

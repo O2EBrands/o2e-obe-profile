@@ -47,6 +47,13 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
   protected $config;
 
   /**
+   * Messenger Object.
+   *
+   * @var Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -54,6 +61,7 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
     $instance->timeService = $container->get('datetime.time');
     $instance->tempStoreFactory = $container->get('tempstore.private');
     $instance->config = $container->get('config.factory');
+    $instance->messenger = $container->get('messenger');
     return $instance;
   }
 
@@ -80,7 +88,7 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
         goto_step($redirect_to_step, $pages, $formState);
         // Show slot expiry message.
         $slot_expiry_message = $this->config->get('o2e_obe_common.settings')->get('slot_holdtime_expiry_message');
-        $formState->setErrorByName('', $slot_expiry_message);
+        $this->messenger()->addError($slot_expiry_message);
         return FALSE;
       }
     }

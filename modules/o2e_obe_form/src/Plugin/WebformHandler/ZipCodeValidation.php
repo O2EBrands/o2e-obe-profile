@@ -90,7 +90,7 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
     $current_page = $formState->get('current_page');
     $selected_step = $this->configuration['steps'];
     if ($current_page === $selected_step) {
-      $selected_fields = $this->configuration['contact_fields'];
+      $selected_fields = $this->configuration['handler_fields'];
       $query = [];
       foreach ($selected_fields as $field_name) {
         if (!empty($formState->getValue($field_name))) {
@@ -104,6 +104,8 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
             $this->tempStoreFactory->get('o2e_obe_salesforce')->set('postalCodeData', [
               'state' => $response['state'],
               'zip_code' => $response['from_postal_code'],
+              'job_duration' => $response['job_duration'],
+              'drivetime_adjustment' => $response['drivetime_adjustment'],
             ]);
             $currentTimeStamp = $this->timeService->getRequestTime();
             $this->tempStoreFactory->get('o2e_obe_salesforce')->set('currentLocalTime', [
