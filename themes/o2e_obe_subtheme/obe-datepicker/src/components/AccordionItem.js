@@ -47,15 +47,13 @@ export default function AccordionItem({
           >
             <p>
               <strong>{timeOfTheDay}</strong>
-              <span>
-                {itemsArray[timeOfTheDay].length} timeslots available.
-              </span>
+              <span>{itemsArray[timeOfTheDay].length} available</span>
             </p>
           </button>
         ) : (
           <p className="accordion-button collapsed">
             <strong>{timeOfTheDay}</strong>
-            <span>{itemsArray[timeOfTheDay].length} timeslots available.</span>
+            <span>{itemsArray[timeOfTheDay].length} available</span>
           </p>
         )}
       </h3>
