@@ -10,7 +10,7 @@ o2e_obe_salesforce.settings:
       mapping:
         brand:
           type: text
-          label: 'Brand'  
+          label: 'Brand'
     sf_auth:
       type: mapping
       label: 'Fieldset for the fields'
@@ -62,6 +62,15 @@ o2e_obe_salesforce.settings:
         api_url_segment:
           type: text
           label: 'Api URL Segment'
+        show_holdtime_message:
+          type: string
+          label: Show Hold Time Message
+        slot_holdtime_message:
+          type: text
+          label: HoldTime Message
+        slot_holdtime_sub_message:
+          type: text
+          label: HoldTime Sub Message
     sf_promo_details_junk:
       type: mapping
       label: 'Fieldset for the fields'

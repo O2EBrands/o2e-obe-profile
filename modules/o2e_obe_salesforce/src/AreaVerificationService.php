@@ -119,7 +119,7 @@ class AreaVerificationService {
       if (!empty($e->getResponse())) {
         return [
           'code' => $e->getCode(),
-          'message' => $e->getResponseBodySummary($e->getResponse())
+          'message' => $e->getResponseBodySummary($e->getResponse()),
         ];
       }
     }

@@ -152,7 +152,10 @@ class AvailableTimesService {
     $start_date = $params->get('start_date');
     $end_date = $params->get('end_date');
     if ($start_date && $end_date) {
-      $response = $this->getAvailableTimes(['start_date' => $start_date, 'end_date' => $end_date]);
+      $response = $this->getAvailableTimes([
+        'start_date' => $start_date,
+        'end_date' => $end_date,
+      ]);
       return new JsonResponse($response);
     }
     else {
