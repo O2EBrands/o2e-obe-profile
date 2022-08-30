@@ -75,8 +75,9 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
       if ($current_page === 'step2') {
         $current_time = \Drupal::service('datetime.time')->getRequestTime();
         \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->set('currentLocalTime', [
-            'currentTimeStamp' => $current_time,
-          ]);
+          'currentTimeStamp' => $current_time,
+        ]);
+      }
     }
   }
 }
