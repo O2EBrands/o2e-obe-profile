@@ -68,6 +68,15 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
   /**
    * {@inheritdoc}
    */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $elements = parent::buildConfigurationForm($form, $form_state);
+    unset($elements['target_fields']);
+    return $elements;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function validateForm(array &$form, FormStateInterface $formState, WebformSubmissionInterface $webform_submission) {
     $current_page = $formState->get('current_page');
     $selected_step = $this->configuration['steps'];
