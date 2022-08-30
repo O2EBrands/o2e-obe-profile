@@ -80,6 +80,7 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $elements = parent::buildConfigurationForm($form, $form_state);
     unset($elements['redirect']);
+    unset($elements['target_fields']);
     return $elements;
   }
 
@@ -90,46 +91,38 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
     $current_page = $formState->get('current_page');
     $selected_step = $this->configuration['steps'];
     if ($current_page === $selected_step) {
-      $selected_fields = $this->configuration['handler_fields'];
-      $query = [];
-      foreach ($selected_fields as $field_name) {
-        if (!empty($formState->getValue($field_name))) {
-          $query[$field_name] = $formState->getValue($field_name);
-        }
+      $zip_code = !empty($formState->getValue('from_postal_code')) ? $formState->getValue('from_postal_code') : NULL;
+      // Skip empty field.
+      if (empty($zip_code) || is_array($zip_code)) {
+        return;
       }
-      if (!empty($query)) {
-        $response = $this->areaVerificationManager->verifyAreaCode($query);
-        if (!empty($response)) {
-          if (isset($response['service_id']) && isset($response['state'])) {
-            $this->tempStoreFactory->get('o2e_obe_salesforce')->set('postalCodeData', [
-              'state' => $response['state'],
-              'zip_code' => $response['from_postal_code'],
-              'job_duration' => $response['job_duration'],
-              'drivetime_adjustment' => $response['drivetime_adjustment'],
-            ]);
-            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
-            return TRUE;
-          }
-          elseif (isset($response['code']) && $response['code'] === 404) {
-            if (strpos($response['message'], 'Area Not Serviced')) {
-              $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
-              $enable_ans = $salesforceConfigData['enable_ans'];
-              if ($enable_ans == TRUE) {
-                $message = Markup::create($salesforceConfigData['ans_message']);
-                $formState->setErrorByName('from_postal_code', $message);
-              }
-              else {
-                $formState->setErrorByName('from_postal_code', $response['message']);
-              }
+      $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
+      if (!empty($response)) {
+        if (isset($response['service_id']) && isset($response['state'])) {
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('postalCodeData', [
+            'state' => $response['state'],
+            'zip_code' => $response['from_postal_code'],
+            'job_duration' => $response['job_duration'],
+            'drivetime_adjustment' => $response['drivetime_adjustment'],
+          ]);
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
+          return TRUE;
+        }
+        elseif (isset($response['code']) && $response['code'] === 404) {
+          if (strpos($response['message'], 'Area Not Serviced')) {
+            $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
+            $enable_ans = $salesforceConfigData['enable_ans'];
+            if ($enable_ans == TRUE) {
+              $message = Markup::create($salesforceConfigData['ans_message']);
+              $formState->setErrorByName('from_postal_code', $message);
             }
-          }
-          else {
-            $formState->setErrorByName('from_postal_code', $response['message']);
+            else {
+              $formState->setErrorByName('from_postal_code', $response['message']);
+            }
           }
         }
         else {
-          $booking_error_message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('booking_error_message');
-          $formState->setErrorByName('', $booking_error_message);
+          $formState->setErrorByName('from_postal_code', $response['message']);
         }
       }
       else {

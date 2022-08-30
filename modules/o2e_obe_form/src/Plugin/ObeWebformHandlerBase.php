@@ -120,12 +120,14 @@ abstract class ObeWebformHandlerBase extends WebformHandlerBase {
     }
 
     // Cleanup target fields.
-    $target_fields = array_values(array_filter($values['target_fields']));
-    $fields = [];
-    foreach ($target_fields as $configurations) {
-      foreach ($configurations as $name => $value) {
-        if (!empty($value)) {
-          $fields[] = $name;
+    if (!empty($values['target_fields'])) {
+      $target_fields = array_values(array_filter($values['target_fields']));
+      $fields = [];
+      foreach ($target_fields as $configurations) {
+        foreach ($configurations as $name => $value) {
+          if (!empty($value)) {
+            $fields[] = $name;
+          }
         }
       }
     }
