@@ -42,11 +42,11 @@ export default function RadioBtn(props) {
   }
   return (
     <div
-      className={
+      className={`slot-item ${
         startTimeField.value === props.startMoment.clone().format().toString()
           ? "pre-selected"
           : ""
-      }
+      }`}
     >
       <input
         type="radio"
@@ -58,7 +58,7 @@ export default function RadioBtn(props) {
         value={props.startMoment.clone().format()}
       ></input>
       <label for={radioId}>
-        {props.startMoment.format("hh:mm A")} -{" "}
+        {props.startMoment.format("hh:mm")} -{" "}
         {props.startMoment.clone().add(2, "hours").format("hh:mm A")}
       </label>
     </div>
