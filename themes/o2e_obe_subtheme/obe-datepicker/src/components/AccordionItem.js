@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from "react";
 
+// function for collapsing other accordion-items.
+function collapseOthers(event) {
+  // Target collapse element.
+  let currentCollapse = jQuery(event.currentTarget)
+    .parent(".accordion-item")
+    .find(".accordion-collapse");
+
+  // Close all other accordion-items except current.
+  jQuery(".accordion-collapse").not(currentCollapse).collapse("hide");
+}
+
 export default function AccordionItem({
   timeOfTheDay,
   accordionId,
@@ -37,7 +48,10 @@ export default function AccordionItem({
       >
         {itemsArray[timeOfTheDay].length ? (
           <button
-            onClick={() => setExpanded(false)}
+            onClick={(event) => {
+              setExpanded(false);
+              collapseOthers(event);
+            }}
             className={`accordion-button ${timeOfTheDay ? "collapsed" : ""}`}
             type="button"
             data-bs-toggle="collapse"
