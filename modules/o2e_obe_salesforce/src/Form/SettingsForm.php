@@ -4,6 +4,8 @@ namespace Drupal\o2e_obe_salesforce\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\State\State;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * SettingsForm class creates the OBE Salesforce configuration form.
@@ -13,6 +15,13 @@ use Drupal\Core\Form\FormStateInterface;
  * 'submit' button is used to submit the form.
  */
 class SettingsForm extends ConfigFormBase {
+
+  /**
+   * The object State.
+   *
+   * @var \Drupal\Core\State\State
+   */
+  protected $state;
 
   /**
    * {@inheritdoc}
@@ -33,8 +42,25 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
+  public function __construct(State $state) {
+    $this->state = $state;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('state')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('o2e_obe_salesforce.settings');
+    $sf_state_data = $this->state->get('sf_data');
     $form['sf_brand'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Site Brand'),
@@ -118,7 +144,7 @@ class SettingsForm extends ConfigFormBase {
     $form['sf_verify_area']['ans_message'] = [
       '#type' => 'textarea',
       '#title' => $this->t('ANS Message'),
-      '#default_value' => $config->get('sf_verify_area.ans_message'),
+      '#default_value' => $sf_state_data['ans_message'] ?? $config->get('sf_verify_area.ans_message'),
       '#states' => [
         'visible' => [
           ':input[name="sf_verify_area[enable_ans]"]' => ['checked' => TRUE],
@@ -150,7 +176,7 @@ class SettingsForm extends ConfigFormBase {
     $form['sf_available_time']['slot_holdtime_message'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Slot HoldTime Message'),
-      '#default_value' => $config->get('sf_available_time.slot_holdtime_message'),
+      '#default_value' => $sf_state_data['slot_holdtime_message'] ?? $config->get('sf_available_time.slot_holdtime_message'),
       '#states' => [
         'visible' => [
           ':input[name="sf_available_time[show_holdtime_message]"]' => ['checked' => TRUE],
@@ -160,7 +186,7 @@ class SettingsForm extends ConfigFormBase {
     $form['sf_available_time']['slot_holdtime_sub_message'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Slot HoldTime Sub Message'),
-      '#default_value' => $config->get('sf_available_time.slot_holdtime_sub_message'),
+      '#default_value' => $sf_state_data['slot_holdtime_sub_message'] ?? $config->get('sf_available_time.slot_holdtime_sub_message'),
       '#states' => [
         'visible' => [
           ':input[name="sf_available_time[show_holdtime_message]"]' => ['checked' => TRUE],
@@ -235,6 +261,14 @@ class SettingsForm extends ConfigFormBase {
       ->set('sf_book_job_junk', $form_state->getValue('sf_book_job_junk'))
       ->set('sf_hold_time', $form_state->getValue('sf_hold_time'))
       ->save();
+    // Salesforce config data to be stored in STATE.
+    $sf_data = [
+      'ans_message' => $form_state->getValue('sf_verify_area')['ans_message'],
+      'slot_holdtime_message' => $form_state->getValue('sf_available_time')['slot_holdtime_message'],
+      'slot_holdtime_sub_message' => $form_state->getValue('sf_available_time')['slot_holdtime_sub_message'],
+    ];
+    // Set confirm message in state to store the value.
+    $this->state->set('sf_data', $sf_data);
   }
 
 }
