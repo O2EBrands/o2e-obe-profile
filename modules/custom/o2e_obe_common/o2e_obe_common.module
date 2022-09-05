@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Render\Markup;
 
 /**
  * Implements hook_help().
@@ -21,4 +23,48 @@ function o2e_obe_common_help($route_name, RouteMatchInterface $route_match) {
 
     default:
   }
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function o2e_obe_common_token_info() {
+  $token_type['custom_webform_token'] = [
+    'name' => t("Custom Webform Token"),
+    'description' => t("Custom type grouping for webform tokens."),
+  ];
+
+  $token['confirmation-message'] = [
+    'name' => t("Webform Confirmation Message"),
+    'description' => t("This will show the webform confirmation message containing images."),
+  ];
+
+  return [
+    'types' => $token_type,
+    'tokens' => [
+      'custom_webform_token' => $token,
+    ],
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function o2e_obe_common_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+  if ($type === 'custom_webform_token') {
+    foreach ($tokens as $name => $original) {
+      $config = \Drupal::state()->get('obe_common_data');
+      switch ($name) {
+        case 'confirmation-message':
+          $wf_confirm_message = '';
+          if ($config && !empty($config['obe_confirmation_message'])) {
+            $wf_confirm_message = Markup::create($config['obe_confirmation_message']);
+          }
+          $replacements[$original] = $wf_confirm_message;
+          break;
+      }
+    }
+  }
+  return $replacements;
 }

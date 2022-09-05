@@ -4,11 +4,20 @@ namespace Drupal\o2e_obe_promo_code\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\State\State;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class SettingsForm.
  */
 class PromoCodeSettingsForm extends ConfigFormBase {
+
+  /**
+   * The object State.
+   *
+   * @var \Drupal\Core\State\State
+   */
+  protected $state;
 
   /**
    * {@inheritdoc}
@@ -29,8 +38,25 @@ class PromoCodeSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
+  public function __construct(State $state) {
+    $this->state = $state;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('state')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('o2e_obe_promo_code.settings');
+    $obe_promo_state_data = $this->state->get('obe_promo_data');
     $form['o2e_obe_promo_code']['sameday_status'] = [
       '#type' => 'radios',
       '#title' => $this->t('Sameday promo notification status'),
@@ -39,7 +65,7 @@ class PromoCodeSettingsForm extends ConfigFormBase {
         TRUE => $this->t('Active'),
         FALSE => $this->t('Not-Active'),
       ],
-      '#default_value' => $config->get('o2e_obe_promo_code.sameday_status'),
+      '#default_value' => $obe_promo_state_data['sameday_status'] ?? $config->get('o2e_obe_promo_code.sameday_status'),
       '#required' => TRUE,
     ];
     $form['o2e_obe_promo_code']['sameday_details'] = [
@@ -48,7 +74,7 @@ class PromoCodeSettingsForm extends ConfigFormBase {
       '#description' => $this->t('Example: Save $13 on a same day service—enter promo code SAMEDAY13 in the next step to redeem.'),
       '#rows' => 1,
       '#maxlength' => 255,
-      '#default_value' => $config->get('o2e_obe_promo_code.sameday_details'),
+      '#default_value' => $obe_promo_state_data['sameday_details'] ?? $config->get('o2e_obe_promo_code.sameday_details'),
     ];
     $form['o2e_obe_promo_code']['sameday_terms'] = [
       '#type' => 'textarea',
@@ -56,7 +82,7 @@ class PromoCodeSettingsForm extends ConfigFormBase {
       '#description' => $this->t('Example: Valid for same day bookings only. No cash value. Cannot be combined with any other promotion. Not applicable to booked or scheduled jobs.'),
       '#rows' => 1,
       '#maxlength' => 255,
-      '#default_value' => $config->get('o2e_obe_promo_code.sameday_terms'),
+      '#default_value' => $obe_promo_state_data['sameday_terms'] ?? $config->get('o2e_obe_promo_code.sameday_terms'),
     ];
     return parent::buildForm($form, $form_state);
   }
@@ -72,6 +98,9 @@ class PromoCodeSettingsForm extends ConfigFormBase {
       ->set('o2e_obe_promo_code.sameday_details', $form_state->getValue('sameday_details'))
       ->set('o2e_obe_promo_code.sameday_terms', $form_state->getValue('sameday_terms'))
       ->save();
+
+    // Set confirm message in state to store the value.
+    $this->state->set('obe_promo_data', $this->config('o2e_obe_promo_code.settings')->get('o2e_obe_promo_code'));
   }
 
 }
