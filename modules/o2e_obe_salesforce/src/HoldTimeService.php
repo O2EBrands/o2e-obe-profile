@@ -6,7 +6,6 @@ use GuzzleHttp\Client;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
-use GuzzleHttp\Exception\ClientException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use GuzzleHttp\Exception\RequestException;

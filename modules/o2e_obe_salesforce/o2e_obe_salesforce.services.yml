@@ -22,3 +22,6 @@ services:
  o2e_obe_salesforce.hold_time:
    class: Drupal\o2e_obe_salesforce\HoldTimeService
    arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
+ o2e_obe_salesforce.create_lead:
+   class: Drupal\o2e_obe_salesforce\CreateLead
+   arguments: ['@http_client', '@logger.factory', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
