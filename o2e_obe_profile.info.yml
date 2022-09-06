@@ -39,6 +39,7 @@ install:
   - text
   - toolbar
   - webform_ui
+  - config_ignore
 
 # Required modules
 # Note that any dependencies of the modules listed here will be installed automatically.
