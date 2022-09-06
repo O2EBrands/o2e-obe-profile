@@ -28,3 +28,5 @@ sf_book_job_junk:
   api_url_segment:
 sf_hold_time:
   api_url_segment:
+create_lead:
+  api_url_segment:
