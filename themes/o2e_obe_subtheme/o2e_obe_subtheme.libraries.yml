@@ -9,6 +9,7 @@ global-styling:
       css/style.css: {}
   dependencies:
     - core/jquery
+    - core/once
     - core/drupal
     - core/popperjs
 
