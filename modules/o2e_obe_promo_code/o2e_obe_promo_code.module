@@ -6,24 +6,25 @@
  */
 
 use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Render\Markup;
 
 /**
  * Implements hook_token_info().
  */
 function o2e_obe_promo_code_token_info() {
   $token_type['custom_token'] = [
-    'name' => t("Custom"),
-    'description' => t("Custom type grouping for tokens."),
+    'name' => t('Custom'),
+    'description' => t('Custom type grouping for tokens.'),
   ];
 
   $token['same-day-promo-code-detail'] = [
-    'name' => t("Sameday Promo Code Detail"),
-    'description' => t("Token will get the value for SameDay Promo code detail stored in config form."),
+    'name' => t('Sameday Promo Code Detail'),
+    'description' => t('Token will get the value for SameDay Promo code detail stored in config form.'),
   ];
 
   $token['same-day-promo-code-term'] = [
-    'name' => t("Sameday Promo Code Term"),
-    'description' => t("Token will get the value for SameDay Promo code term stored in config form."),
+    'name' => t('Sameday Promo Code Term'),
+    'description' => t('Token will get the value for SameDay Promo code term stored in config form.'),
   ];
 
   return [
@@ -50,7 +51,7 @@ function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, 
         case 'same-day-promo-code-detail':
           $sameday_promo_detail = "";
           if ($promo_status && !empty($config['sameday_details'])) {
-            $sameday_promo_detail = $config['sameday_details'];
+            $sameday_promo_detail = Markup::create($config['sameday_details']);
           }
           $replacements[$original] = $sameday_promo_detail;
           break;
@@ -58,7 +59,7 @@ function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, 
         case 'same-day-promo-code-term':
           $sameday_promo_term = "";
           if ($promo_status && !empty($config['sameday_terms'])) {
-            $sameday_promo_term = $config['sameday_terms'];
+            $sameday_promo_term = Markup::create($config['sameday_terms']);
           }
           $replacements[$original] = $sameday_promo_term;
           break;
