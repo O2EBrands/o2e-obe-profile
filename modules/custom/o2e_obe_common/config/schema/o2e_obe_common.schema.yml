@@ -1,0 +1,7 @@
+block.settings.copy_right_block:
+  type: block_settings
+  label: 'configurable text block configuration'
+  mapping:
+    description:
+      type: text
+      label: 'Copyright statement text'
