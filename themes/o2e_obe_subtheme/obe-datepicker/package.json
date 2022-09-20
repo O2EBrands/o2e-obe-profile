@@ -31,7 +31,8 @@
     "globals": {
       "Drupal": true,
       "jQuery": true,
-      "once": true
+      "once": true,
+      "drupalSettings": true
     }
   },
   "browserslist": {

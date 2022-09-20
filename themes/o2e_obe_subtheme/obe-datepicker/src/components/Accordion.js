@@ -26,7 +26,7 @@ export default function Accordion(props) {
   return (
     <div className="col-lg-4 accordion" id={`accordion${accordionId}`}>
       <h3 className="slot-day-title">
-        {props.dayInfo.date},&nbsp;{props.dayInfo.day}
+        {`${props.dayInfo.day}, ${props.dayInfo.month} ${props.dayInfo.date}`}
       </h3>
       {timesOfTheDay.map((timeOfTheDay) => {
         return (

@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
 
+var availableString = Drupal.t("available");
+var lessString = Drupal.t("Less");
+var moreString = Drupal.t("More");
+var morningString = Drupal.t("morning");
+var eveningString = Drupal.t("evening");
+var afternoonString = Drupal.t("afternoon");
+
 // function for collapsing other accordion-items.
 function collapseOthers(event) {
   // Target collapse element.
@@ -60,14 +67,34 @@ export default function AccordionItem({
             aria-controls={`collapseOne${accordionId}${timeOfTheDay}`}
           >
             <p>
-              <strong>{timeOfTheDay}</strong>
-              <span>{itemsArray[timeOfTheDay].length} available</span>
+              <strong>
+                {timeOfTheDay === "morning"
+                  ? morningString
+                  : timeOfTheDay === "evening"
+                  ? eveningString
+                  : timeOfTheDay === "afternoon"
+                  ? afternoonString
+                  : ""}
+              </strong>
+              <small>
+                {itemsArray[timeOfTheDay].length} {availableString}
+              </small>
             </p>
           </button>
         ) : (
           <p className="accordion-button collapsed">
-            <strong>{timeOfTheDay}</strong>
-            <span>{itemsArray[timeOfTheDay].length} available</span>
+            <strong>
+              {timeOfTheDay === "morning"
+                ? morningString
+                : timeOfTheDay === "evening"
+                ? eveningString
+                : timeOfTheDay === "afternoon"
+                ? afternoonString
+                : ""}
+            </strong>
+            <small>
+              {itemsArray[timeOfTheDay].length} {availableString}
+            </small>
           </p>
         )}
       </h3>
@@ -90,7 +117,7 @@ export default function AccordionItem({
                 className="btn-expand"
                 onClick={() => setExpanded(!isExpanded)}
               >
-                {isExpanded ? "Less" : "More"}
+                {isExpanded ? lessString : moreString}
               </span>
             ) : (
               ""

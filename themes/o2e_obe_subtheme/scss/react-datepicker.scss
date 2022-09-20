@@ -51,6 +51,7 @@ div[data-drupal-selector="edit-react-datepicker-component"] {
   .slot-day-title {
     background: $gray-300;
     font-weight: 800;
+    text-transform: capitalize;
     text-align: center;
     font-size: 1.25rem;
     padding: 15px;

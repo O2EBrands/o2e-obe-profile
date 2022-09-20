@@ -2,27 +2,38 @@ import React, { useEffect } from "react";
 import moment from "moment";
 import Accordion from "./Accordion";
 import RadioBtn from "./RadioBtn";
+import "moment/locale/fr";
+
+// import currentLanguage handler.
+import currentLangHandler from "./currentLangHandler";
+let currentLanguage = currentLangHandler();
 
 export default function Slots(props) {
   // Array for available dates.
   let availableDates = [];
 
-  //This will updated from calendar.
+  // This will updated from calendar.
   let currentMoment = moment(props.selectedDate);
+
+  // Change language of moment to currentLanguage.
+  currentMoment.locale(currentLanguage);
 
   // Setting up 3 days from today.
   let optionsDay = 0;
   let day1 = {
       date: parseInt(currentMoment.clone().format("DD")),
       day: currentMoment.clone().format("ddd"),
+      month: currentMoment.clone().format("MMM"),
     },
     day2 = {
       date: parseInt(currentMoment.clone().add(1, "days").format("DD")),
       day: currentMoment.clone().add(1, "days").format("ddd"),
+      month: currentMoment.clone().add(1, "days").format("MMM"),
     },
     day3 = {
       date: parseInt(currentMoment.clone().add(2, "days").format("DD")),
       day: currentMoment.clone().add(2, "days").format("ddd"),
+      month: currentMoment.clone().add(2, "days").format("MMM"),
     };
 
   availableDates.push(day1, day2, day3);
