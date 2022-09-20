@@ -40,7 +40,7 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
               ? $salesForceConfiguration->get('sf_available_time.slot_holdtime_sub_message')
               : '';
               // Design the message.
-              $hold_time_message = '<div class="holdtime-section"><div class="holdtime-main">' . $slot_holdtime_message . '<span class="hold-slot">' . $pick_up_date . ' ' . $arrival_time . '</span></div><div class="holdtime-subtext">' . $slot_holdtime_sub_message . '</div></div>';
+              $hold_time_message = '<div class="holdtime-section"><div class="holdtime-main">' . t($slot_holdtime_message) . '<span class="hold-slot">' . $pick_up_date . ' ' . $arrival_time . '</span></div><div class="holdtime-subtext">' . t($slot_holdtime_sub_message) . '</div></div>';
               $form['elements'][$current_page]['holdtime_data']['#access'] = TRUE;
               $form['elements'][$current_page]['holdtime_data']['#template'] = $hold_time_message;
             }
