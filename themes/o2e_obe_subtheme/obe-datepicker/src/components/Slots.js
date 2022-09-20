@@ -14,6 +14,7 @@ export default function Slots(props) {
 
   // This will updated from calendar.
   let currentMoment = moment(props.selectedDate);
+  let isToday = currentMoment.isSame(moment(), "day");
 
   // Change language of moment to currentLanguage.
   currentMoment.locale(currentLanguage);
@@ -108,6 +109,7 @@ export default function Slots(props) {
           items={option}
           dayInfo={availableDates[index - 1]}
           index={index}
+          today={index == 1 ? isToday : false}
         />
       );
     }
