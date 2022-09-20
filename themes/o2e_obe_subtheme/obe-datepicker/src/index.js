@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./components/App";
 import reportWebVitals from "./reportWebVitals";
 
-(function ($, Drupal) {
+(function ($, Drupal, once, drupalSettings) {
   Drupal.behaviors.reactDatepicker = {
     attach: function (context, settings) {
       let reactMountPoint = document.querySelector(
@@ -26,4 +26,4 @@ import reportWebVitals from "./reportWebVitals";
       });
     },
   };
-})(jQuery, Drupal, once);
+})(jQuery, Drupal, once, drupalSettings);

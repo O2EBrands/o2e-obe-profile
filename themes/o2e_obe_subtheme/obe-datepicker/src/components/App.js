@@ -1,12 +1,22 @@
 import React, { useState, useMemo, useEffect } from "react";
 import moment from "moment";
 import DatePicker from "react-datepicker";
+import { registerLocale } from "react-datepicker";
 import Loader from "./Loader";
 import Slots from "./Slots";
 import SlotLoader from "./SlotLoader";
 import nextBtnHandler from "./nextBtnHandler";
+import { fr } from "date-fns/locale";
+
 // import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import "react-datepicker/dist/react-datepicker.css";
+
+// import currentLanguage handler.
+import currentLangHandler from "./currentLangHandler";
+let currentLanguage = currentLangHandler();
+
+// Translation language registration for datepicker to Canada_Francis.
+registerLocale("fr", fr);
 
 //Initialize object for response
 let data = {};
@@ -80,6 +90,7 @@ function App() {
       <div className="col-lg-5 col-md-6 col-sm-12 datepicker-wrapper">
         {isLoading ? <Loader /> : ""}
         <DatePicker
+          locale={currentLanguage}
           selected={new Date(selectedDate.clone().format("YYYY, MM, D"))}
           onChange={(date: Date) => {
             let calDateString =
