@@ -89,7 +89,8 @@ class SettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
     $form['o2e_obe_common']['obe_confirmation_message'] = [
-      '#type' => 'textarea',
+      '#type' => 'text_format',
+      '#format' => "full_html",
       '#title' => $this->t('OBE Confirmation Message'),
       '#description' => $this->t('Enter the message to be shown with image.'),
       '#default_value' => $obe_common_state_data['obe_confirmation_message'] ?? $config->get('o2e_obe_common.obe_confirmation_message'),
@@ -103,12 +104,11 @@ class SettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
-
     $this->config('o2e_obe_common.settings')
       ->set('o2e_obe_common.brand', $form_state->getValue('brand'))
       ->set('o2e_obe_common.slot_holdtime_expiry_message', $form_state->getValue('slot_holdtime_expiry_message'))
       ->set('o2e_obe_common.booking_error_message', $form_state->getValue('booking_error_message'))
-      ->set('o2e_obe_common.obe_confirmation_message', $form_state->getValue('obe_confirmation_message'))
+      ->set('o2e_obe_common.obe_confirmation_message', $form_state->getValue('obe_confirmation_message')['value'])
       ->save();
     // Set confirm message in state to store the value.
     $this->state->set('obe_common_data', $this->config('o2e_obe_common.settings')->get('o2e_obe_common'));
