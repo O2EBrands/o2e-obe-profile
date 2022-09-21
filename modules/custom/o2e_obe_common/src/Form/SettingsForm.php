@@ -74,6 +74,12 @@ class SettingsForm extends ConfigFormBase {
       '#size' => 4,
       '#default_value' => $obe_common_state_data['brand'] ?? $config->get('o2e_obe_common.brand'),
     ];
+    $form['o2e_obe_common']['logo_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Logo URL'),
+      '#description' => $this->t('Override the URL used for the site logo.'),
+      '#default_value' => $obe_common_state_data['logo_url'] ?? $config->get('o2e_obe_common.logo_url'),
+    ];
     $form['o2e_obe_common']['slot_holdtime_expiry_message'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Slot HoldTime Expiry Message'),
@@ -106,6 +112,7 @@ class SettingsForm extends ConfigFormBase {
     parent::submitForm($form, $form_state);
     $this->config('o2e_obe_common.settings')
       ->set('o2e_obe_common.brand', $form_state->getValue('brand'))
+      ->set('o2e_obe_common.logo_url', $form_state->getValue('logo_url'))
       ->set('o2e_obe_common.slot_holdtime_expiry_message', $form_state->getValue('slot_holdtime_expiry_message'))
       ->set('o2e_obe_common.booking_error_message', $form_state->getValue('booking_error_message'))
       ->set('o2e_obe_common.obe_confirmation_message', $form_state->getValue('obe_confirmation_message')['value'])

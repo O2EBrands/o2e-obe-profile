@@ -1,5 +1,6 @@
 o2e_obe_common:
-  brand: "GJ NA"
+  brand: ''
+  logo_url: ''
   slot_holdtime_expiry_message: "Your session has expired. You need to complete your booking within 15 minutes."
   booking_error_message: "We are unable to continue with the booking. Please Try Again."
   obe_confirmation_message: ""
