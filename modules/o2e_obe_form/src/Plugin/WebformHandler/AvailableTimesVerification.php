@@ -96,7 +96,7 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
         $redirect_to_step = $this->configuration['redirect_to_step'];
         goto_step($redirect_to_step, $pages, $formState);
         // Show slot expiry message.
-        $slot_expiry_message = $this->config->get('o2e_obe_common.settings')->get('slot_holdtime_expiry_message');
+        $slot_expiry_message = $this->config->get('o2e_obe_common.settings')->get('o2e_obe_common')['slot_holdtime_expiry_message'];
         $this->messenger()->addError($slot_expiry_message);
         return FALSE;
       }

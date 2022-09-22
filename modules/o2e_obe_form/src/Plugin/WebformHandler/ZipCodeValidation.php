@@ -126,7 +126,7 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
         }
       }
       else {
-        $booking_error_message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('booking_error_message');
+        $booking_error_message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('o2e_obe_common')['booking_error_message'];
         $formState->setErrorByName('', $booking_error_message);
         return FALSE;
       }
