@@ -5,3 +5,26 @@ block.settings.copy_right_block:
     description:
       type: text
       label: 'Copyright statement text'
+
+o2e_obe_common.settings:
+  type: config_object
+  label: 'OBE Settings Form'
+  mapping:
+    o2e_obe_common:
+      type: mapping
+      mapping:
+        brand:
+          type: text
+          label: 'Brand'
+        logo_url:
+          type: text
+          label: 'Logo URL'
+        slot_holdtime_expiry_message:
+          type: text
+          label: 'Slot HoldTime Expiry Message'
+        booking_error_message:
+          type: text
+          label: 'Global Booking Error Message'
+        obe_confirmation_message:
+          type: text
+          label: 'OBE Confirmation Message'
