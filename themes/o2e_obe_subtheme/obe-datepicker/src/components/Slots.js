@@ -157,6 +157,25 @@ export default function Slots(props) {
     }
   });
 
+  // DatePicker scroll on submit.
+  useEffect(() => {
+    if (jQuery(".webform-submission-o2e-webform-form .slot-item").length) {
+      jQuery(".webform-submission-o2e-webform-form .slot-item")
+        .once("reactDatepicker")
+        .on("click", function () {
+          jQuery("html, body").animate(
+            {
+              scrollTop:
+                jQuery(
+                  ".webform-submission-o2e-webform-form div[data-drupal-selector='edit-actions']"
+                ).offset().top - 100,
+            },
+            200
+          );
+        });
+    }
+  }, []);
+
   // Cleaning up on re-renders
   useEffect(() => {
     return function cleanUp() {
