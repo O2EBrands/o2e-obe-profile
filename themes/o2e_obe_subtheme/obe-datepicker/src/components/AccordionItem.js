@@ -26,6 +26,30 @@ export default function AccordionItem({
   // State for more button.
   const [isExpanded, setExpanded] = useState(false);
 
+  // DatePicker scroll on submit.
+  useEffect(() => {
+    let timeSlot = jQuery(
+      ".webform-submission-o2e-webform-form .slot-item"
+    ).once("reactDatepicker");
+    if (timeSlot.length) {
+      // Remove click event listeners.
+      timeSlot.off("click");
+
+      // Add Event listeners
+      timeSlot.on("click", function () {
+        jQuery("html, body").animate(
+          {
+            scrollTop:
+              jQuery(
+                ".webform-submission-o2e-webform-form div[data-drupal-selector='edit-actions']"
+              ).offset().top - 100,
+          },
+          200
+        );
+      });
+    }
+  }, [isExpanded]);
+
   //DOM mutations for preset date and opening accordion .
   useEffect(() => {
     setExpanded(true);
