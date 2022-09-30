@@ -106,6 +106,7 @@ class AreaVerificationService {
         'service_id' => $result['service_id'],
         'from_postal_code' => $result['from_postal_code'],
         'franchise_id' => $result['franchise_id'],
+        'franchise_name' => $result['franchise_name'],
         'job_duration' => $result['job_duration'],
         'lastServiceTime' => $currentTimeStamp,
         'state' => $result['state'],

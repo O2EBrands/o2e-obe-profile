@@ -104,12 +104,16 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
             'zip_code' => $response['from_postal_code'],
             'job_duration' => $response['job_duration'],
             'drivetime_adjustment' => $response['drivetime_adjustment'],
+            'franchise_id' => $response['franchise_id'],
+            'franchise_name' => $response['franchise_name'],
           ]);
           $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
           return TRUE;
         }
         elseif (isset($response['code']) && $response['code'] === 404) {
           if (strpos($response['message'], 'Area Not Serviced')) {
+            $this->tempStoreFactory->get('o2e_obe_salesforce')->set('ans_zip', $zip_code);
             $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
             $enable_ans = $salesforceConfigData['enable_ans'];
             if ($enable_ans == TRUE) {
@@ -123,11 +127,13 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
         }
         else {
           $formState->setErrorByName('from_postal_code', $response['message']);
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
         }
       }
       else {
         $booking_error_message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('o2e_obe_common')['booking_error_message'];
         $formState->setErrorByName('', $booking_error_message);
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
         return FALSE;
       }
     }
