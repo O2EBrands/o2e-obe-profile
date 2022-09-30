@@ -91,6 +91,7 @@ function App() {
         {isLoading ? <Loader /> : ""}
         <DatePicker
           locale={currentLanguage}
+          dateFormatCalendar="MMMM"
           selected={new Date(selectedDate.clone().format("YYYY, MM, D"))}
           onChange={(date: Date) => {
             let calDateString =
