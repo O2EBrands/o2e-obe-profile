@@ -23,7 +23,7 @@ export default function RadioBtn(props) {
     // fetching selected values.
     let startValue = event.target.getAttribute("data-start");
     let finishValue = event.target.getAttribute("data-finish");
-    let pickUpValue = moment(startValue).utc().format("ddd, MMM D, YYYY");
+    let pickUpValue = moment(startValue).utc().format("dddd, MMM D, YYYY");
     let arrivalTimeValue = `${moment(startValue)
       .utc()
       .format("hh:mm A")} - ${moment(startValue)
