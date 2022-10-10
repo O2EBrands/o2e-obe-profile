@@ -151,7 +151,7 @@ export default function Slots(props) {
           items={option}
           dayInfo={availableDates[index - 1]}
           index={index}
-          today={index == 1 ? isToday : false}
+          today={index === 1 ? isToday : false}
         />
       );
     }
