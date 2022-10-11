@@ -44,7 +44,7 @@ export default function AccordionItem({
                 ".webform-submission-o2e-webform-form div[data-drupal-selector='edit-actions']"
               ).offset().top - 100,
           },
-          200
+          500
         );
       });
     }
@@ -59,8 +59,7 @@ export default function AccordionItem({
         let activeAccordion = jQuery(".pre-selected").parents(
           ".accordion-item"
         );
-        activeAccordion.find(".accordion-button").removeClass("collapsed");
-        activeAccordion.find(".accordion-collapse").addClass("show");
+        activeAccordion.find(".accordion-collapse").collapse("show");
         jQuery(".accordion-button.collapsed")
           .parents(".accordion-item")
           .find(".btn-expand")

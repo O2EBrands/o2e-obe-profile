@@ -40,6 +40,22 @@ export default function RadioBtn(props) {
     //Updating next button state.
     nextBtnHandler();
   }
+
+  // default formatted timeslot
+  let formattedTimeSlot = `${props.startMoment.format(
+    "hh:mm"
+  )} - ${props.startMoment.clone().add(2, "hours").format("hh:mm A")}`;
+
+  // Updating timeslots based on Site.
+  switch (drupalSettings.brand_name) {
+    // Setting format for GJ NA.
+    case "GJ NA":
+      formattedTimeSlot = `${props.startMoment.format(
+        "hh:mm"
+      )} - ${props.startMoment.clone().add(2, "hours").format("hh:mm A")}`;
+      break;
+  }
+
   return (
     <div
       className={`slot-item ${
@@ -57,10 +73,7 @@ export default function RadioBtn(props) {
         data-finish={props.endMoment.clone().format()}
         value={props.startMoment.clone().format()}
       ></input>
-      <label for={radioId}>
-        {props.startMoment.format("hh:mm")} -{" "}
-        {props.startMoment.clone().add(2, "hours").format("hh:mm A")}
-      </label>
+      <label for={radioId}>{formattedTimeSlot}</label>
     </div>
   );
 }
