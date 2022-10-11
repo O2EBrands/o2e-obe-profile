@@ -26,10 +26,10 @@ export default function RadioBtn(props) {
     let pickUpValue = moment(startValue).utc().format("dddd, MMM D, YYYY");
     let arrivalTimeValue = `${moment(startValue)
       .utc()
-      .format("hh:mm A")} - ${moment(startValue)
+      .format("hh:mma")} - ${moment(startValue)
       .utc()
       .add(2, "hours")
-      .format("hh:mm A")}`;
+      .format("hh:mma")}`;
 
     // Updating the values.
     startTimeField.value = startValue.toString();
