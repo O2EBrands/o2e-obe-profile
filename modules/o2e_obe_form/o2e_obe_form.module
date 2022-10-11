@@ -79,6 +79,11 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
         ]);
       }
     }
+
+    // Brand name attached to drupalSettings.
+    $brand_name = \Drupal::config('o2e_obe_common.settings')
+    ->get('o2e_obe_common.brand');
+    $form['#attached']['drupalSettings']['brand_name'] = (!empty($brand_name)) ? $brand_name : 'default';
   }
 }
 

@@ -85,14 +85,24 @@ function App() {
       );
   }, [selectedDate]);
 
+  // Min date and Max date for Calendar.
+  let minDate = startDate.clone();
+  let maxDate = startDate.clone().add(4, "months");
+
   return (
     <div className="row fadein">
-      <div className="col-lg-5 col-md-6 col-sm-12 datepicker-wrapper">
+      <div className="col-lg-5 col-sm-7 col-xs-12 datepicker-wrapper">
         {isLoading ? <Loader /> : ""}
         <DatePicker
           locale={currentLanguage}
           dateFormatCalendar="MMMM"
-          selected={new Date(selectedDate.clone().format("YYYY, MM, D"))}
+          selected={
+            new Date(
+              selectedDate.year(),
+              selectedDate.month(),
+              selectedDate.date()
+            )
+          }
           onChange={(date: Date) => {
             let calDateString =
               date.getFullYear() +
@@ -102,14 +112,12 @@ function App() {
               ("0" + date.getDate()).slice(-2);
             setSelectedDate(moment.utc(calDateString));
           }}
-          minDate={new Date(startDate.clone().format("YYYY, MM, D"))}
-          maxDate={
-            new Date(startDate.clone().add(4, "months").format("YYYY, MM, D"))
-          }
+          minDate={new Date(minDate.year(), minDate.month(), minDate.date())}
+          maxDate={new Date(maxDate.year(), maxDate.month(), maxDate.date())}
           inline
         />
       </div>
-      <div className="col-lg-7 col-md-6 col-sm-12 timeslot-wrapper">
+      <div className="col-lg-7 col-sm-5 col-xs-12 timeslot-wrapper">
         {isLoading ? (
           <SlotLoader />
         ) : (
