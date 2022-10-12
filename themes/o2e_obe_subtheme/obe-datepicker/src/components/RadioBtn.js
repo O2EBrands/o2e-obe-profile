@@ -1,6 +1,5 @@
 import React from "react";
 import moment from "moment";
-import nextBtnHandler from "./nextBtnHandler";
 
 export default function RadioBtn(props) {
   // Getting dom objects for selecting values.
@@ -36,9 +35,6 @@ export default function RadioBtn(props) {
     finshTimeField.value = finishValue.toString();
     pickUpField.value = pickUpValue.toString();
     arrivalTimeField.value = arrivalTimeValue.toString();
-
-    //Updating next button state.
-    nextBtnHandler();
   }
 
   // default formatted timeslot
