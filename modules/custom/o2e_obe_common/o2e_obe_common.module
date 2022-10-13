@@ -54,7 +54,7 @@ function o2e_obe_common_tokens($type, $tokens, array $data, array $options, Bubb
   $replacements = [];
   if ($type === 'custom_webform_token') {
     foreach ($tokens as $name => $original) {
-      $config = \Drupal::state()->get('obe_common_data');
+      $config = \Drupal::config('o2e_obe_common.settings')->get('o2e_obe_common');
       switch ($name) {
         case 'confirmation-message':
           $wf_confirm_message = '';
