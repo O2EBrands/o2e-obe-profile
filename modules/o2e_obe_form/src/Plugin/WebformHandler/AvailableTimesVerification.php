@@ -94,6 +94,11 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
       $start_form_date = $formState->getValue('start_date_time');
       $end_form_date = $formState->getValue('finish_date_time');
       $holdSlotTime = $sfresponse->get('holdSlotTime');
+      if (empty($start_form_date) || empty($end_form_date)) {
+        $slot_empty_message = $this->config->get('o2e_obe_common.settings')->get('o2e_obe_common.slot_holdtime_empty_message');
+        $formState->setErrorByName('start_date_time', $slot_empty_message);
+        return FALSE;
+      }
       if ($hotd_time_success == TRUE && (isset($holdSlotTime['start_date_time']) && isset($holdSlotTime['start_date_time'])) && ($holdSlotTime['start_date_time'] == $start_form_date && $holdSlotTime['finish_date_time'] == $end_form_date)) {
         // Check Expiry.
         $checkExpiry = check_local_time_expiry();
@@ -132,24 +137,14 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
   private function display_expiry_message(array &$form, FormStateInterface $formState, $sfresponse) {
     $selected_step = $this->configuration['steps'];
     $form['elements'][$selected_step]['holdtime_data']['#access'] = FALSE;
-    $start_form_date = $formState->getValue('start_date_time');
-    $end_form_date = $formState->getValue('finish_date_time');
     $sfresponse->set('slotHoldTime', FALSE);
     $sfresponse->set('slotHoldTimesuccess', FALSE);
     $pages = $formState->get('pages');
     $redirect_to_step = $this->configuration['redirect_to_step'];
-    $config_messages = $this->config->get('o2e_obe_common.settings');
     goto_step($redirect_to_step, $pages, $formState);
-    if (empty($start_form_date) && empty($end_form_date)) {
-      $slot_empty_message = $config_messages->get('o2e_obe_common.slot_holdtime_empty_message');
-      $this->messenger()->addError($slot_empty_message);
-      return FALSE;
-    }
-    else {
-      // Show slot expiry message.
-      $slot_expiry_message = $config_messages->get('o2e_obe_common')['slot_holdtime_expiry_message'];
-      $this->messenger()->addError($slot_expiry_message);
-      return FALSE;
-    }
+    // Show slot expiry message.
+    $slot_expiry_message = $this->config->get('o2e_obe_common.settings')->get('o2e_obe_common')['slot_holdtime_expiry_message'];
+    $this->messenger()->addError($slot_expiry_message);
+    return FALSE;
   }
 }

@@ -67,11 +67,15 @@ class CreateLead {
    */
   public function create_lead(array $options = []) {
     $auth_token = $this->authTokenManager->getToken();
-    $endpoint_segment = $this->authTokenManager->getSfConfig('create_lead.api_url_segment');
-    if (substr($endpoint_segment, 0, 1) !== '/') {
-      $endpoint_segment = '/' . $endpoint_segment;
+    $api_url = $this->authTokenManager->getSfConfig('create_lead.api_url_segment');
+    if (strpos($api_url, 'https://') !== 0 && strpos($api_url, 'http://') !== 0) {
+      if (substr($api_url, 0, 1) !== '/') {
+        $api_url = $this->state->get('sfUrl') . '/' . $api_url;
+      }
+      else {
+        $api_url = $this->state->get('sfUrl') . $api_url;
+      }
     }
-    $api_url = $this->state->get('sfUrl') . $endpoint_segment;
 
     $headers = [
       'Authorization' => $auth_token,
