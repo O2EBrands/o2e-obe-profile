@@ -102,6 +102,14 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $obe_common_state_data['obe_confirmation_message'] ?? $config->get('o2e_obe_common.obe_confirmation_message'),
       '#required' => TRUE,
     ];
+    $form['o2e_obe_common']['slot_holdtime_empty_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Slot HoldTime Empty Message'),
+      '#description' => $this->t('Enter the message to be shown after time slot empty.'),
+      '#default_value' => $obe_common_state_data['slot_holdtime_empty_message'] ?? $config->get('o2e_obe_common.slot_holdtime_empty_message'),
+      '#required' => TRUE,
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -114,6 +122,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('o2e_obe_common.brand', $form_state->getValue('brand'))
       ->set('o2e_obe_common.logo_url', $form_state->getValue('logo_url'))
       ->set('o2e_obe_common.slot_holdtime_expiry_message', $form_state->getValue('slot_holdtime_expiry_message'))
+      ->set('o2e_obe_common.slot_holdtime_empty_message', $form_state->getValue('slot_holdtime_empty_message'))
       ->set('o2e_obe_common.booking_error_message', $form_state->getValue('booking_error_message'))
       ->set('o2e_obe_common.obe_confirmation_message', $form_state->getValue('obe_confirmation_message')['value'])
       ->save();

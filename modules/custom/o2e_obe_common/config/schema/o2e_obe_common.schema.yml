@@ -28,3 +28,6 @@ o2e_obe_common.settings:
         obe_confirmation_message:
           type: text
           label: 'OBE Confirmation Message'
+        slot_holdtime_empty_message:
+          type: text
+          label: 'Slot HoldTime Empty Message'
