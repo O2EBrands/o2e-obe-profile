@@ -4,3 +4,4 @@ o2e_obe_common:
   slot_holdtime_expiry_message: "Your session has expired. You need to complete your booking within 15 minutes."
   booking_error_message: "We are unable to continue with the booking. Please Try Again."
   obe_confirmation_message: ""
+  slot_holdtime_empty_message: "The system was unable to reserve the selected time. Please try again or contact us at 1-800-468-5865."
