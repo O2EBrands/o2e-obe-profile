@@ -95,6 +95,7 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
       $booking_error_message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('o2e_obe_common')['booking_error_message'];
       // Skip empty field.
       if (!empty($zip_code)) {
+        $zip_code = str_replace(' ', '', $zip_code);
         $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
         if (!empty($response)) {
           if (isset($response['service_id'])) {
@@ -102,10 +103,10 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
               'state' => $response['state'],
               'zip_code' => $response['from_postal_code'],
               'job_duration' => $response['job_duration'],
-              'drivetime_adjustment' => $response['drivetime_adjustment'],
+              'drivetime_adjustment' => $response['drivetime_adjustment'] ?? '',
               'franchise_id' => $response['franchise_id'],
               'franchise_name' => $response['franchise_name'],
-              'geolocation' => $response['geolocation'],
+              'geolocation' => $response['geolocation'] ?? '',
             ]);
             $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
             $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
