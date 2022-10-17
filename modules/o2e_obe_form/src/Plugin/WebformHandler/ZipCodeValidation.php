@@ -105,6 +105,7 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
               'drivetime_adjustment' => $response['drivetime_adjustment'],
               'franchise_id' => $response['franchise_id'],
               'franchise_name' => $response['franchise_name'],
+              'geolocation' => $response['geolocation'],
             ]);
             $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
             $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
