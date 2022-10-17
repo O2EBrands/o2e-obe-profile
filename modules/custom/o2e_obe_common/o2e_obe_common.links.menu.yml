@@ -1,7 +1,7 @@
 o2e_obe_common.o2e_obe_config:
   title: OBE Configuration
   route_name: o2e_obe_common.o2e_obe_config
-  parent: system.admin_config
+  parent: system.admin
   description: 'OBE Configuration'
   position: left
   weight: 20
