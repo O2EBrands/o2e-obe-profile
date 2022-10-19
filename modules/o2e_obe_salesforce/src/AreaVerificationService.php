@@ -134,7 +134,7 @@ class AreaVerificationService {
      * return area response, else call again.
      */
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
-    if (array_key_exists('lastServiceTime', $tempstore) && !empty($tempstore)) {
+    if (!empty($tempstore) && array_key_exists('lastServiceTime', $tempstore)) {
       $timeDifference = $currentTimeStamp - $tempstore['lastServiceTime'];
       if ($timeDifference < $this->authTokenManager->getSfConfig('sf_verify_area.service_expiry')) {
         return $tempstore;
