@@ -67,13 +67,17 @@ class BookJobJunkService {
    */
   public function bookJobJunk(array $options = []) {
     $auth_token = $this->authTokenManager->getToken();
-    $endpoint_segment = $this->authTokenManager->getSfConfig('sf_book_job_junk.api_url_segment');
-    if (substr($endpoint_segment, 0, 1) !== '/') {
-      $endpoint_segment = '/' . $endpoint_segment;
+    $api_url = $this->authTokenManager->getSfConfig('sf_book_job_junk.api_url_segment');
+    if (strpos($api_url, 'https://') !== 0 && strpos($api_url, 'http://') !== 0) {
+      if (substr($api_url, 0, 1) !== '/') {
+        $api_url = $this->state->get('sfUrl') . '/' . $api_url;
+      }
+      else {
+        $api_url = $this->state->get('sfUrl') . $api_url;
+      }
     }
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
     $sf_response = $tempstore->get('response');
-    $api_url = $this->state->get('sfUrl') . $endpoint_segment;
 
     $headers = [
       'Authorization' => $auth_token,
