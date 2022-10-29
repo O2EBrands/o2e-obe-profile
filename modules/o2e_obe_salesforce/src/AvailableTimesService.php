@@ -106,12 +106,16 @@ class AvailableTimesService {
         $sf_response = $tempstore->get('response');
       }
     }
-    $endpoint_segment = $this->authTokenManager->getSfConfig('sf_available_time.api_url_segment');
+    $api_url = $this->authTokenManager->getSfConfig('sf_available_time.api_url_segment');
     if (!empty($auth_token)) {
-      if (substr($endpoint_segment, 0, 1) !== '/') {
-        $endpoint_segment = '/' . $endpoint_segment;
+      if (strpos($api_url, 'https://') !== 0 && strpos($api_url, 'http://') !== 0) {
+        if (substr($api_url, 0, 1) !== '/') {
+          $api_url = $this->state->get('sfUrl') . '/' . $api_url;
+        }
+        else {
+          $api_url = $this->state->get('sfUrl') . $api_url;
+        }
       }
-      $endpoint = $this->state->get('sfUrl') . $endpoint_segment;
       $job_duration = $sf_response['job_duration'];
       $job_duration = str_replace([' hours', ' hour'], '', $job_duration);
       if (strpos($job_duration, "min") > 0 || strpos($job_duration, "Minutes") > 0 || strpos($job_duration, "minutes")) {
@@ -130,7 +134,7 @@ class AvailableTimesService {
         "job_duration" => $job_duration,
       ];
       try {
-        $res = $this->httpClient->request('POST', $endpoint, [
+        $res = $this->httpClient->request('POST', $api_url, [
           'headers' => $headers,
           'json' => $options,
         ])->getBody();

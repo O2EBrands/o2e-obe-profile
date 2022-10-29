@@ -78,9 +78,14 @@ class AreaVerificationService {
     $options = [];
     $currentTimeStamp = $this->timeService->getRequestTime();
     $auth_token = $this->authTokenManager->getToken();
-    $endpoint_segment = $this->authTokenManager->getSfConfig('sf_verify_area.api_url_segment');
-    if (substr($endpoint_segment, 0, 1) !== '/') {
-      $endpoint_segment = '/' . $endpoint_segment;
+    $api_url = $this->authTokenManager->getSfConfig('sf_verify_area.api_url_segment');
+    if (strpos($api_url, 'https://') !== 0 && strpos($api_url, 'http://') !== 0) {
+      if (substr($api_url, 0, 1) !== '/') {
+        $api_url = $this->state->get('sfUrl') . '/' . $api_url;
+      }
+      else {
+        $api_url = $this->state->get('sfUrl') . $api_url;
+      }
     }
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
     $sf_response = $tempstore->get('response');
@@ -88,7 +93,6 @@ class AreaVerificationService {
     if ($check_expiry && $sf_response['from_postal_code'] == $zipcode) {
       return $check_expiry;
     }
-    $api_url = $this->state->get('sfUrl') . $endpoint_segment;
 
     $options['headers'] = [
       'Authorization' => $auth_token,
