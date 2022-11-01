@@ -111,9 +111,9 @@ class AreaVerificationService {
         'from_postal_code' => $result['from_postal_code'],
         'franchise_id' => $result['franchise_id'],
         'franchise_name' => $result['franchise_name'],
-        'job_duration' => $result['job_duration'],
+        'job_duration' => $result['job_duration'] ?? '',
         'lastServiceTime' => $currentTimeStamp,
-        'state' => $result['state'],
+        'state' => $result['state'] ?? '',
       ]);
 
       $this->loggerFactory->get('Salesforce - VerifyAreaServiced')->notice(UrlHelper::buildQuery($options['query']) . ' ' . Json::encode($result));
