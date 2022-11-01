@@ -31,6 +31,8 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
             // Get pick up date and arrival time.
             if (!empty($form_state->getValue('pick_up_date'))) {
               $pick_up_date = $form_state->getValue('pick_up_date');
+              $date = date_create($pick_up_date);
+              $formatted_pickup_date = date_format($date, 'D, M d, Y');
               $arrival_time = $form_state->getValue('arrival_time');
             }
             // Get Slot Hold Time Message and Slot Hold Time Sub Message.
@@ -40,7 +42,7 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
               ? $salesForceConfiguration->get('sf_available_time.slot_holdtime_sub_message')
               : '';
               // Design the message.
-              $hold_time_message = '<div class="holdtime-section"><div class="holdtime-main">' . t($slot_holdtime_message) . '<span class="hold-slot">' . $pick_up_date . ' ' . $arrival_time . '</span></div><div class="holdtime-subtext">' . t($slot_holdtime_sub_message) . '</div></div>';
+              $hold_time_message = '<div class="holdtime-section"><div class="holdtime-main">' . t($slot_holdtime_message) . '<span class="hold-slot">' . $formatted_pickup_date . ' ' . $arrival_time . '</span></div><div class="holdtime-subtext">' . t($slot_holdtime_sub_message) . '</div></div>';
               $form['elements'][$current_page]['holdtime_data']['#access'] = TRUE;
               $form['elements'][$current_page]['holdtime_data']['#template'] = $hold_time_message;
             }
