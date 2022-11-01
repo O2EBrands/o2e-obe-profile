@@ -52,7 +52,9 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
           $postal_code_data = $tempstore_service->get('postalCodeData');
           // Auto Populate state code and postal code in Address field.
           $form['elements'][$current_page]['address']['#default_value']['postal_code'] = $postal_code_data['zip_code'];
-          $form['elements'][$current_page]['address']['#default_value']['state_province'] = $postal_code_data['state'];
+          if (!empty($postal_code_data['state']) && empty($form['elements'][$current_page]['address']['#default_value']['state_province'])) {
+            $form['elements'][$current_page]['address']['#default_value']['state_province'] = $postal_code_data['state'];
+          }
           // Set the country name based on postal code.
           $country = '';
           $zip_code = $postal_code_data['zip_code'];
