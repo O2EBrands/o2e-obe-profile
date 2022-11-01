@@ -82,6 +82,11 @@ function App() {
   let minDate = startDate.clone();
   let maxDate = startDate.clone().subtract(2, "days").add(4, "months");
 
+  // Set the datepicker selectedDate to maxDate if currentDate is ahead of maxdate.
+  if (selectedDate.isAfter(maxDate)) {
+    setSelectedDate(maxDate.clone());
+  }
+
   return (
     <div className="row fadein">
       <div className="col-lg-5 col-sm-7 col-xs-12 datepicker-wrapper">
@@ -114,7 +119,7 @@ function App() {
         {isLoading ? (
           <SlotLoader />
         ) : (
-          <Slots {...data} selectedDate={selectedDate} />
+          <Slots {...data} selectedDate={selectedDate} maxDate={maxDate} />
         )}
       </div>
     </div>
