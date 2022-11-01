@@ -53,6 +53,11 @@ export default function Slots(props) {
   let currentMoment = moment(props.selectedDate);
   let isToday = currentMoment.isSame(moment(), "day");
 
+  // Set the timeslot selectedDate to maxDate if currentDate is ahead of maxdate.
+  currentMoment = currentMoment.isAfter(props.maxDate)
+    ? props.maxDate
+    : currentMoment;
+
   // Setting up 3 days from today.
   let optionsDay = 0;
   let day1 = {
