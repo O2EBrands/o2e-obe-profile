@@ -139,6 +139,12 @@ class AvailableTimesService {
           'json' => $options,
         ])->getBody();
         $result = Json::decode($res, TRUE);
+        $current_time = \Drupal::service('datetime.time')->getRequestTime();
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('currentLocalTime');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('currentLocalTime', [
+          'currentTimeStamp' => $current_time,
+        ]);
+        $this->loggerFactory->get('Salesforce - current time set')->notice($current_time);
         $this->loggerFactory->get('Salesforce - GetAvailableTimes')->notice(UrlHelper::buildQuery($options) . ' ' . Json::encode($result));
         return $result;
       }

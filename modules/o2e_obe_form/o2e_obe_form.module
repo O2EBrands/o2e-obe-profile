@@ -33,7 +33,16 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
               $pick_up_date = $form_state->getValue('pick_up_date');
               $date = date_create($pick_up_date);
               $formatted_pickup_date = date_format($date, 'D, M d, Y');
-              $arrival_time = $form_state->getValue('arrival_time');
+              $arrival_time = $form_state->getValue('start_date_time');
+            }
+            if (!empty($form_state->getValue('start_date_time'))) {
+              $appointment_date = $form_state->getValue('start_date_time');
+              $converted_date = str_replace(":00.000Z", "",$appointment_date);
+              $converted_date_group = explode("T", $converted_date) ;
+              $formatted_time = date("g:ia", strtotime($converted_date_group[1]));
+              $windowEndTime = strtotime($formatted_time) + 120*60;
+              $windowEndTime = date('g:ia', $windowEndTime);
+              $arrival_time =  $formatted_time . ' - ' . $windowEndTime;
             }
             // Get Slot Hold Time Message and Slot Hold Time Sub Message.
             if (!empty($salesForceConfiguration->get('sf_available_time.slot_holdtime_message'))) {
@@ -110,6 +119,7 @@ function goto_step($page, $pages, FormStateInterface $form_state) {
  */
 function check_local_time_expiry() {
   $currentTime = \Drupal::service('datetime.time')->getRequestTime();
+  \Drupal::logger('check_local_time_expiry')->notice($currentTime);
   $currentLocalTimeTemp = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('currentLocalTime');
   $service_expiry = \Drupal::config('o2e_obe_salesforce.settings')->get('sf_verify_area')['service_expiry'];
   $service_expiry = (int)($service_expiry);
