@@ -99,41 +99,40 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
         $formState->setErrorByName('start_date_time', $slot_empty_message);
         return FALSE;
       }
-      if ($hotd_time_success == TRUE && (isset($holdSlotTime['start_date_time']) && isset($holdSlotTime['start_date_time'])) && ($holdSlotTime['start_date_time'] == $start_form_date && $holdSlotTime['finish_date_time'] == $end_form_date)) {
-        // Check Expiry.
-        $checkExpiry = check_local_time_expiry();
-        if ($checkExpiry) {
+      $checkExpiry = check_local_time_expiry();
+      if ($checkExpiry) {
+        if ($hotd_time_success == TRUE && (isset($holdSlotTime['start_date_time']) && isset($holdSlotTime['start_date_time'])) && ($holdSlotTime['start_date_time'] == $start_form_date && $holdSlotTime['finish_date_time'] == $end_form_date)) {
+          // Check Expiry.
           $sfresponse->set('slotHoldTime', TRUE);
           return TRUE;
         }
         else {
-          $this->display_expiry_message($form, $formState, $sfresponse);
+          $options = [
+            'start_date_time' => $start_form_date,
+            'finish_date_time' => $end_form_date,
+          ];
+          $holdTimeResponse = $this->holdTimeService->holdtime($options);
+          if ($holdTimeResponse == TRUE) {
+            $sfresponse->set('holdSlotTime', $options);
+            $sfresponse->set('slotHoldTimesuccess', TRUE);
+            $sfresponse->set('slotHoldTime', TRUE);
+
+          }
+          else {
+            $sfresponse->delete('holdSlotTime');
+            $this->display_expiry_message($form, $formState, $sfresponse);
+          }
         }
       }
       else {
-        $options = [
-          'start_date_time' => $start_form_date,
-          'finish_date_time' => $end_form_date,
-        ];
-        $holdTimeResponse = $this->holdTimeService->holdtime($options);
-        if ($holdTimeResponse == TRUE) {
-          $sfresponse->set('holdSlotTime', $options);
-          $sfresponse->set('slotHoldTimesuccess', TRUE);
-          $sfresponse->set('slotHoldTime', TRUE);
-
-        }
-        else {
-          $sfresponse->delete('holdSlotTime');
-          $this->display_expiry_message($form, $formState, $sfresponse);
-        }
+        $this->display_expiry_message($form, $formState, $sfresponse);
       }
-
     }
   }
 
   /**
-  * Redirect to selected redirected step.
-  */
+   * Redirect to selected redirected step.
+   */
   private function display_expiry_message(array &$form, FormStateInterface $formState, $sfresponse) {
     $selected_step = $this->configuration['steps'];
     $form['elements'][$selected_step]['holdtime_data']['#access'] = FALSE;
@@ -147,4 +146,5 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
     $this->messenger()->addError($slot_expiry_message);
     return FALSE;
   }
+
 }

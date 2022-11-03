@@ -96,6 +96,10 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
       // Skip empty field.
       if (!empty($zip_code)) {
         $zip_code = str_replace(' ', '', $zip_code);
+        $postalData = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('postalCodeData');
+        if (!empty($postalData) && $postalData['zip_code'] !== $zip_code) {
+          $webform_submission->delete();
+        }
         $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
         if (!empty($response)) {
           if (isset($response['service_id'])) {
