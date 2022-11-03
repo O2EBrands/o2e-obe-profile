@@ -25,10 +25,10 @@ export default function RadioBtn(props) {
     let pickUpValue = moment(startValue).utc().format("dddd, MMM D, YYYY");
     let arrivalTimeValue = `${moment(startValue)
       .utc()
-      .format("hh:mma")} - ${moment(startValue)
+      .format("h:mma")} - ${moment(startValue)
       .utc()
       .add(2, "hours")
-      .format("hh:mma")}`;
+      .format("h:mma")}`;
 
     // Updating the values.
     startTimeField.value = startValue.toString();
@@ -39,16 +39,16 @@ export default function RadioBtn(props) {
 
   // default formatted timeslot
   let formattedTimeSlot = `${props.startMoment.format(
-    "hh:mm"
-  )} - ${props.startMoment.clone().add(2, "hours").format("hh:mm A")}`;
+    "h:mm"
+  )} - ${props.startMoment.clone().add(2, "hours").format("h:mm A")}`;
 
   // Updating timeslots based on Site.
   switch (drupalSettings.brand_name) {
     // Setting format for GJ NA.
     case "GJ NA":
       formattedTimeSlot = `${props.startMoment.format(
-        "hh:mm"
-      )} - ${props.startMoment.clone().add(2, "hours").format("hh:mm A")}`;
+        "h:mm"
+      )} - ${props.startMoment.clone().add(2, "hours").format("h:mm A")}`;
       break;
   }
 
