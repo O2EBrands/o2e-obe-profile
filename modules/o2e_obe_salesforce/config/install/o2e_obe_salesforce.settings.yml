@@ -30,3 +30,6 @@ sf_hold_time:
   api_url_segment:
 create_lead:
   api_url_segment:
+unsubscribe:
+  api_url_segment:
+

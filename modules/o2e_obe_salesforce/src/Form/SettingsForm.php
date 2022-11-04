@@ -254,6 +254,17 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('create_lead.api_url_segment'),
       '#required' => TRUE,
     ];
+    $form['unsubscribe'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Salesforce Unsubscribe'),
+      '#tree' => TRUE,
+    ];
+    $form['unsubscribe']['api_url_segment'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Api URL Segment'),
+      '#default_value' => $config->get('unsubscribe.api_url_segment'),
+      '#required' => TRUE,
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -272,6 +283,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('sf_book_job_junk', $form_state->getValue('sf_book_job_junk'))
       ->set('sf_hold_time', $form_state->getValue('sf_hold_time'))
       ->set('create_lead', $form_state->getValue('create_lead'))
+      ->set('unsubscribe', $form_state->getValue('unsubscribe'))
       ->save();
     // Salesforce config data to be stored in STATE.
     $sf_data = [

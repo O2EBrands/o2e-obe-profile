@@ -109,3 +109,10 @@ o2e_obe_salesforce.settings:
         api_url_segment:
           type: text
           label: 'Api URL Segment'
+    unsubscribe:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        api_url_segment:
+          type: text
+          label: 'Api URL Segment'
