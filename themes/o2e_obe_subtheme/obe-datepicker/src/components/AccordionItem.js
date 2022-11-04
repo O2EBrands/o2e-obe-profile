@@ -41,7 +41,7 @@ export default function AccordionItem({
           {
             scrollTop:
               jQuery(
-                ".webform-submission-o2e-webform-form div[data-drupal-selector='edit-actions']"
+                ".webform-submission-o2e-webform-form .webform-actions"
               ).offset().top - 100,
           },
           500
