@@ -99,10 +99,23 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
         $postalData = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('postalCodeData');
         if (!empty($postalData) && $postalData['zip_code'] !== $zip_code) {
           $webform_submission->delete();
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('postalCodeData');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('currentLocalTime');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('lead_id');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTimesuccess');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('bookJobJunkService');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('bookJobJunkCustomer');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('bookJobCustomer');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('country_code');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('holdSlotTime');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
         }
         $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
         if (!empty($response)) {
           if (isset($response['service_id'])) {
+            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
             $this->tempStoreFactory->get('o2e_obe_salesforce')->set('postalCodeData', [
               'state' => $response['state'],
               'zip_code' => $response['from_postal_code'],
@@ -117,6 +130,7 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
             return TRUE;
           }
           elseif (isset($response['code']) && $response['code'] === 404) {
+            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
             if (strpos($response['message'], 'Area Not Serviced')) {
               $this->tempStoreFactory->get('o2e_obe_salesforce')->set('ans_zip', $zip_code);
               $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
@@ -131,6 +145,7 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
             }
           }
           else {
+            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
             if (!empty($response['message'])) {
               $formState->setErrorByName('from_postal_code', $response['message']);
             }
@@ -142,7 +157,7 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
         }
       }
       else {
-        $formState->setErrorByName('', $booking_error_message);
+        $formState->setErrorByName('', $this->t('Invalid ZIP/Postal code format'));
         $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
         return FALSE;
       }
