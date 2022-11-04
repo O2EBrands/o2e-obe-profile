@@ -119,12 +119,13 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
 
           }
           else {
-            $sfresponse->delete('holdSlotTime');
+            $this->deleteTempstore();
             $this->display_expiry_message($form, $formState, $sfresponse);
           }
         }
       }
       else {
+        $this->deleteTempstore();
         $this->display_expiry_message($form, $formState, $sfresponse);
       }
     }
@@ -145,6 +146,21 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
     $slot_expiry_message = $this->config->get('o2e_obe_common.settings')->get('o2e_obe_common')['slot_holdtime_expiry_message'];
     $this->messenger()->addError($slot_expiry_message);
     return FALSE;
+  }
+
+  /**
+   * Custom function to delete tempstore collections.
+   */
+  private function deleteTempstore() {
+    $sfresponse = $this->tempStoreFactory->get('o2e_obe_salesforce');
+    $sfresponse->delete('holdSlotTime');
+    $sfresponse->delete('slotHoldTimesuccess');
+    $sfresponse->delete('slotHoldTime');
+    $sfresponse->delete('country_code');
+    $sfresponse->delete('bookJobJunkCustomer');
+    $sfresponse->delete('bookJobCustomer');
+    $sfresponse->delete('lead_id');
+    $sfresponse->delete('bookJobJunkService');
   }
 
 }
