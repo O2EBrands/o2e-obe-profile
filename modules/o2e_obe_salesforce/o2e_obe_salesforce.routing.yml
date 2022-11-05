@@ -12,3 +12,10 @@ o2e_obe_salesforce.available_time_slots:
     _title: 'Get Available Time data'
   requirements:
     _permission: 'access content'
+o2e_obe_salesforce.unsubscribe:
+  path: '/unsubscribe'
+  defaults:
+    _form: '\Drupal\o2e_obe_salesforce\Form\UnsubscribeForm'
+    _title: 'Unsubscribe Form'
+  requirements:
+   _permission: 'access content'
