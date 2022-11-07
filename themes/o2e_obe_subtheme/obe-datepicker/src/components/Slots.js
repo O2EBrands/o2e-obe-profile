@@ -150,6 +150,22 @@ export default function Slots(props) {
 
   //Pushing accordions in the array.
   optionsByDay.forEach((option, index) => {
+    // Check if selected date is today and all slots are empty for GJ NA and GJ AU.
+    if (
+      index === 1 &&
+      (drupalSettings.brand_name === "GJ NA" || "GJ AU") &&
+      isToday
+    ) {
+      if (
+        optionsByDay[index].morning.length ||
+        optionsByDay[index].evening.length ||
+        optionsByDay[index].afternoon.length
+      ) {
+        jQuery(".promo-data").show();
+      }
+    }
+
+    // Generate accordion for each day.
     if (index > 0) {
       accordionGroup.push(
         <Accordion
