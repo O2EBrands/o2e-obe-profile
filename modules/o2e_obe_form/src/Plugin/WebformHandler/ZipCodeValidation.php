@@ -98,7 +98,6 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
         $zip_code = str_replace(' ', '', $zip_code);
         $postalData = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('postalCodeData');
         if (!empty($postalData) && $postalData['zip_code'] !== $zip_code) {
-          $webform_submission->delete();
           $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
           $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('postalCodeData');
           $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('currentLocalTime');
