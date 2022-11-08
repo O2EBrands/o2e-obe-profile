@@ -91,7 +91,7 @@ class CreateLead {
         'json' => $options,
       ]);
       $result = Json::decode($response->getBody(), TRUE);
-      $this->loggerFactory->get('Salesforce - Create Lead')->notice(UrlHelper::buildQuery($options) . ' ' . $response->getStatusCode());
+      $this->loggerFactory->get('Salesforce - Create Lead')->notice(UrlHelper::buildQuery($options) . ' ---- ' . $response->getStatusCode() .' ---- '. Json::encode($result));
       return $result;
     }
     catch (RequestException $e) {
