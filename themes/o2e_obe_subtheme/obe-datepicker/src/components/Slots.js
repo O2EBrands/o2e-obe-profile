@@ -162,7 +162,15 @@ export default function Slots(props) {
         optionsByDay[index].afternoon.length
       ) {
         jQuery(".promo-data").show();
+        sessionStorage.setItem("isPromoCode", 1);
+      } else {
+        sessionStorage.removeItem("isPromoCode");
       }
+    }
+
+    // if session variable is set then show promocode.
+    if (sessionStorage.getItem("isPromoCode") == 1) {
+      jQuery(".promo-data").show();
     }
 
     // Generate accordion for each day.
