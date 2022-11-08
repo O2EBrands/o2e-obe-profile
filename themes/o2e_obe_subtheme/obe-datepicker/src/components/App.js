@@ -80,7 +80,7 @@ function App() {
 
   // Min date and Max date for Calendar.
   let minDate = startDate.clone();
-  let maxDate = startDate.clone().subtract(2, "days").add(4, "months");
+  let maxDate = startDate.clone().add(4, "months").subtract(2, "days");
 
   // Set the datepicker selectedDate to maxDate if currentDate is ahead of maxdate.
   if (selectedDate.isAfter(maxDate)) {
