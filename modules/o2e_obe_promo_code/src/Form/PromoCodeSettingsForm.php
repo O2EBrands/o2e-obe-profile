@@ -57,6 +57,20 @@ class PromoCodeSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('o2e_obe_promo_code.settings');
     $obe_promo_state_data = $this->state->get('obe_promo_data');
+    $form['o2e_obe_promo_code']['sameday_days'] = [
+      '#type' => 'checkboxes',
+      '#options' => [
+        'Sunday' => 'Sunday',
+        'Monday' => 'Monday',
+        'Tuesday' => 'Tuesday',
+        'Wednesday' => 'Wednesday',
+        'Thursday' => 'Thursday',
+        'Friday' => 'Friday',
+        'Saturday' => 'Saturday'
+      ],
+      '#title' => $this->t('Promo Code Days'),
+      '#default_value' => $obe_promo_state_data['sameday_days'] ?? $config->get('o2e_obe_promo_code.sameday_days'),
+    ];
     $form['o2e_obe_promo_code']['sameday_status'] = [
       '#type' => 'radios',
       '#title' => $this->t('Sameday promo notification status'),
@@ -97,6 +111,7 @@ class PromoCodeSettingsForm extends ConfigFormBase {
       ->set('o2e_obe_promo_code.sameday_status', $form_state->getValue('sameday_status'))
       ->set('o2e_obe_promo_code.sameday_details', $form_state->getValue('sameday_details'))
       ->set('o2e_obe_promo_code.sameday_terms', $form_state->getValue('sameday_terms'))
+      ->set('o2e_obe_promo_code.sameday_days', $form_state->getValue('sameday_days'))
       ->save();
 
     // Set confirm message in state to store the value.

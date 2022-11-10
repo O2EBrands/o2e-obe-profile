@@ -45,7 +45,12 @@ function o2e_obe_promo_code_tokens($type, $tokens, array $data, array $options, 
       $config = \Drupal::config('o2e_obe_promo_code.settings')->get('o2e_obe_promo_code');
       $promo_status = FALSE;
       if ($config && !empty($config['sameday_status']) && $config['sameday_status'] == TRUE) {
-        $promo_status = TRUE;
+        if ($config['sameday_days'][date("l")] == 0) {
+          $promo_status = FALSE;
+        }
+        else {
+          $promo_status = TRUE;
+        }
       }
       switch ($name) {
         case 'same-day-promo-code-detail':
