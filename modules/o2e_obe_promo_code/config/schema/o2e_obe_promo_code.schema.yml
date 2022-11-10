@@ -8,6 +8,12 @@ o2e_obe_promo_code.settings:
       type: mapping
       label: 'Fieldset for the fields'
       mapping:
+        sameday_days:
+          type: sequence
+          label: 'Promo Code Days'
+          sequence:
+            type: string
+            label: 'Promo Code Days'
         sameday_status:
           type: Boolean
           label: 'Sameday Status'

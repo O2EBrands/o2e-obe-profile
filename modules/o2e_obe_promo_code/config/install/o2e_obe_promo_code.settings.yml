@@ -2,3 +2,11 @@ o2e_obe_promo_code:
   sameday_status: '0'
   sameday_details: 'Save $13 on a same day service—enter promo code SAMEDAY13 in the next step to redeem.'
   sameday_terms: '*Valid for same day bookings only. No cash value. Cannot be combined with any other promotion. Not applicable to booked or scheduled jobs.'
+  sameday_days:
+    Sunday: Sunday
+    Monday: Monday
+    Tuesday: Tuesday
+    Wednesday: Wednesday
+    Thursday: Thursday
+    Friday: Friday
+    Saturday: Saturday
