@@ -100,6 +100,8 @@ function goto_step($page, $pages, FormStateInterface $form_state) {
   $goto_destination_page_index = array_search($page, $all_keys);
   if ($goto_destination_page_index > 0) {
     // The backend pointer for page will add 1 so to go our page we must -1.
+    $submission = $form_state->getFormObject()->getEntity();
+    $submission->setCurrentPage($all_keys[$goto_destination_page_index])->save();
     $form_state->set('current_page', $all_keys[$goto_destination_page_index]);
     $form_state->setRebuild();
   }
