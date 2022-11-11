@@ -54,9 +54,11 @@ export default function Slots(props) {
   let isToday = currentMoment.isSame(moment(), "day");
 
   // Set the timeslot selectedDate to maxDate if currentDate is ahead of maxdate.
-  currentMoment = currentMoment.isAfter(props.maxDate)
-    ? props.maxDate
-    : currentMoment;
+  if (props.maxDate) {
+    currentMoment = currentMoment.isAfter(props.maxDate)
+      ? props.maxDate
+      : currentMoment;
+  }
 
   // Setting up 3 days from today.
   let optionsDay = 0;
@@ -153,7 +155,8 @@ export default function Slots(props) {
     // Check if selected date is today and all slots are empty for GJ NA and GJ AU.
     if (
       index === 1 &&
-      (drupalSettings.brand_name === "GJ NA" || "GJ AU") &&
+      (drupalSettings.brand_name === "GJ NA" ||
+        drupalSettings.brand_name === "GJ AU") &&
       isToday
     ) {
       if (
