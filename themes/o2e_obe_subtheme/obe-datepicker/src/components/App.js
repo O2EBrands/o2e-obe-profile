@@ -80,12 +80,35 @@ function App() {
 
   // Min date and Max date for Calendar.
   let minDate = startDate.clone();
-  let maxDate = startDate.clone().add(4, "months").subtract(2, "days");
+  let maxDate =
+    drupalSettings.brand_name === "GJ NA" ||
+    drupalSettings.brand_name === "GJ AU"
+      ? startDate.clone().add(4, "months").subtract(2, "days")
+      : drupalSettings.brand_name === "W1D"
+      ? startDate.clone().endOf("year").startOf("day")
+      : drupalSettings.brand_name === "SSH"
+      ? startDate.clone().endOf("year").startOf("day").add(3, "years")
+      : undefined;
 
+  // input for datepicker maxDate.
+  let datePickerMaxDateInput;
   // Set the datepicker selectedDate to maxDate if currentDate is ahead of maxdate.
-  if (selectedDate.isAfter(maxDate)) {
-    setSelectedDate(maxDate.clone());
+  if (typeof maxDate == "undefined") {
+    datePickerMaxDateInput = undefined;
+  } else {
+    if (maxDate && selectedDate.isAfter(maxDate)) {
+      setSelectedDate(maxDate.clone());
+    }
+    datePickerMaxDateInput = new Date(
+      maxDate.year(),
+      maxDate.month(),
+      maxDate.date()
+    );
   }
+
+  // Datepicker header formater according to brand.
+  let reactDateFormat =
+    drupalSettings.brand_name === "SSH" ? "MMMM yyyy" : "MMMM";
 
   return (
     <div className="row fadein">
@@ -93,7 +116,7 @@ function App() {
         {isLoading ? <Loader /> : ""}
         <DatePicker
           locale={currentLanguage}
-          dateFormatCalendar="MMMM"
+          dateFormatCalendar={reactDateFormat}
           selected={
             new Date(
               selectedDate.year(),
@@ -111,7 +134,7 @@ function App() {
             setSelectedDate(moment.utc(calDateString));
           }}
           minDate={new Date(minDate.year(), minDate.month(), minDate.date())}
-          maxDate={new Date(maxDate.year(), maxDate.month(), maxDate.date())}
+          maxDate={datePickerMaxDateInput}
           inline
         />
       </div>

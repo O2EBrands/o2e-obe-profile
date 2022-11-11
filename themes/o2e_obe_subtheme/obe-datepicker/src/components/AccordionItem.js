@@ -28,25 +28,30 @@ export default function AccordionItem({
 
   // DatePicker scroll on submit.
   useEffect(() => {
-    let timeSlot = jQuery(
-      ".webform-submission-o2e-webform-form .slot-item"
-    ).once("reactDatepicker");
-    if (timeSlot.length) {
-      // Remove click event listeners.
-      timeSlot.off("click");
+    if (
+      drupalSettings.brand_name === "GJ NA" ||
+      drupalSettings.brand_name === "GJ AU"
+    ) {
+      let timeSlot = jQuery(
+        ".webform-submission-o2e-webform-form .slot-item"
+      ).once("reactDatepicker");
+      if (timeSlot.length) {
+        // Remove click event listeners.
+        timeSlot.off("click");
 
-      // Add Event listeners
-      timeSlot.on("click", function () {
-        jQuery("html, body").animate(
-          {
-            scrollTop:
-              jQuery(
-                ".webform-submission-o2e-webform-form .webform-actions"
-              ).offset().top - 100,
-          },
-          500
-        );
-      });
+        // Add Event listeners
+        timeSlot.on("click", function () {
+          jQuery("html, body").animate(
+            {
+              scrollTop:
+                jQuery(
+                  ".webform-submission-o2e-webform-form .webform-actions"
+                ).offset().top - 100,
+            },
+            500
+          );
+        });
+      }
     }
   }, [isExpanded]);
 

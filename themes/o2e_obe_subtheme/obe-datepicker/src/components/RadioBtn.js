@@ -50,6 +50,9 @@ export default function RadioBtn(props) {
         "h:mm"
       )} - ${props.startMoment.clone().add(2, "hours").format("h:mm A")}`;
       break;
+    default:
+      formattedTimeSlot = props.startMoment.format("h:mm a");
+      break;
   }
 
   return (
