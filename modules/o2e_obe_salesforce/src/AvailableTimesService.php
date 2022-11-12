@@ -125,14 +125,28 @@ class AvailableTimesService {
         'Authorization' => $auth_token,
         'content-type' => 'application/json',
       ];
-      $options += [
-        "franchise_id" => $sf_response['franchise_id'],
-        "brand" => $this->authTokenManager->getSfConfig('sf_brand.brand'),
-        "service_type" => $this->authTokenManager->getSfConfig('sf_available_time.services_type'),
-        "postal_code" => $sf_response['from_postal_code'],
-        "service_id" => $sf_response['service_id'],
-        "job_duration" => $job_duration,
-      ];
+      $brand = $this->authTokenManager->getSfConfig('sf_brand.brand');
+      if (!empty($brand)) {
+        if ($brand === '1-800-GOT-JUNK?') {
+          $options += [
+            "franchise_id" => $sf_response['franchise_id'],
+            "brand" => $this->authTokenManager->getSfConfig('sf_brand.brand'),
+            "service_type" => $this->authTokenManager->getSfConfig('sf_available_time.services_type'),
+            "postal_code" => $sf_response['from_postal_code'],
+            "service_id" => $sf_response['service_id'],
+            "job_duration" => $job_duration,
+          ];
+        }
+        if ($brand === 'Shack Shine') {
+          $options += [
+            'opportunity_id' => $this->tempStoreFactory->get('o2e_obe_salesforce')->get('getPrice')['opportunity_id'] ?? '',
+            'postal_code' => $sf_response['from_postal_code'],
+            'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
+            'service_type' => $this->tempStoreFactory->get('o2e_obe_salesforce')->get('service_type') ?? $this->authTokenManager->getSfConfig('sf_available_time.services_type'),
+            'service_id' => $sf_response['service_id'],
+          ];
+        }
+      }
       try {
         $res = $this->httpClient->request('POST', $api_url, [
           'headers' => $headers,
@@ -145,7 +159,7 @@ class AvailableTimesService {
           'currentTimeStamp' => $current_time,
         ]);
         $this->loggerFactory->get('Salesforce - current time set')->notice($current_time);
-        $this->loggerFactory->get('Salesforce - GetAvailableTimes')->notice(UrlHelper::buildQuery($options) . ' ' . Json::encode($result));
+        $this->loggerFactory->get('Salesforce - GetAvailableTimes')->notice(UrlHelper::buildQuery($options) . ' ---- ' . Json::encode($result));
         return $result;
       }
       catch (RequestException $e) {
