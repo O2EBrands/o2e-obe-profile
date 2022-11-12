@@ -117,6 +117,10 @@ function App() {
         <DatePicker
           locale={currentLanguage}
           dateFormatCalendar={reactDateFormat}
+          minDate={new Date(minDate.year(), minDate.month(), minDate.date())}
+          maxDate={datePickerMaxDateInput}
+          inline
+          calendarStartDay={0}
           selected={
             new Date(
               selectedDate.year(),
@@ -133,9 +137,6 @@ function App() {
               ("0" + date.getDate()).slice(-2);
             setSelectedDate(moment.utc(calDateString));
           }}
-          minDate={new Date(minDate.year(), minDate.month(), minDate.date())}
-          maxDate={datePickerMaxDateInput}
-          inline
         />
       </div>
       <div className="col-lg-7 col-sm-5 col-xs-12 timeslot-wrapper">
