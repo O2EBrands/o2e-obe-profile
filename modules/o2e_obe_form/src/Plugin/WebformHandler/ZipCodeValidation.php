@@ -95,7 +95,10 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
       $booking_error_message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('o2e_obe_common')['booking_error_message'];
       // Skip empty field.
       if (!empty($zip_code)) {
+        $delete_val = ["!", "~", "`", "@", "#", "$", ",", " ", "%", "^", "*", "(", ")", "+", ".", "\\", "&gt", "&lt", ";", "{", "}", "[", "]", ":", "=", "|", "?", '"', "&amp", '“', '”', "‘", "’", "'", "_", "-", "/"];
         $zip_code = str_replace(' ', '', $zip_code);
+        $zip_code = preg_replace('/\s+/', '', $zip_code);
+        $zip_code = str_replace($delete_val, '', $zip_code);
         $postalData = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('postalCodeData');
         if (!empty($postalData) && $postalData['zip_code'] !== $zip_code) {
           $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
