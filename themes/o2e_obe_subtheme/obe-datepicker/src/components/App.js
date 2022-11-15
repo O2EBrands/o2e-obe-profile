@@ -85,7 +85,7 @@ function App() {
     drupalSettings.brand_name === "GJ AU"
       ? startDate.clone().add(4, "months").subtract(2, "days")
       : drupalSettings.brand_name === "W1D"
-      ? startDate.clone().endOf("year").startOf("day")
+      ? startDate.clone().add(1, "years")
       : drupalSettings.brand_name === "SSH"
       ? startDate.clone().endOf("year").startOf("day").add(3, "years")
       : undefined;

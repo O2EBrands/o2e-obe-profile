@@ -100,6 +100,8 @@ div[data-drupal-selector="edit-react-datepicker-component"] {
       z-index: 1;
       position: absolute;
       cursor: not-allowed;
+      left: 0;
+      top: 0;
       background: rgba($white, 0.7);
     }
   }
