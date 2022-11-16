@@ -3,7 +3,6 @@
 namespace Drupal\o2e_obe_salesforce;
 
 use GuzzleHttp\Client;
-use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\UrlHelper;
@@ -31,11 +30,11 @@ class CreateLead {
   protected $httpClient;
 
   /**
-   * Logger Factory.
+   * Obe Sf Logger.
    *
-   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   * @var \Drupal\o2e_obe_salesforce\ObeSfLogger
    */
-  protected $loggerFactory;
+  protected $obeSfLogger;
 
   /**
    * The object State.
@@ -53,9 +52,9 @@ class CreateLead {
   /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, LoggerChannelFactory $logger_factory, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager) {
     $this->httpClient = $http_client;
-    $this->loggerFactory = $logger_factory;
+    $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
     $this->tempStoreFactory = $temp_store_factory;
     $this->authTokenManager = $auth_token_manager;
@@ -91,11 +90,17 @@ class CreateLead {
         'json' => $options,
       ]);
       $result = Json::decode($response->getBody(), TRUE);
-      $this->loggerFactory->get('Salesforce - Create Lead')->notice(UrlHelper::buildQuery($options) . ' ---- ' . $response->getStatusCode() .' ---- '. Json::encode($result));
+      $data = UrlHelper::buildQuery($options) . ' ---- ' . $response->getStatusCode() . ' ---- ' . Json::encode($result);
+      $this->obeSfLogger->log('Salesforce - Create Lead', 'notice', $data, [
+        'request_url' => $api_url,
+        'type' => 'POST',
+        'payload' => $options['query'],
+        'response' => $result,
+      ]);
       return $result;
     }
     catch (RequestException $e) {
-      $this->loggerFactory->get('Salesforce - Create Lead Fail')->error($e->getMessage());
+      $this->obeSfLogger->log('Salesforce - Create Lead Fail', 'error', $e->getMessage(), NULL, NULL);
     }
   }
 

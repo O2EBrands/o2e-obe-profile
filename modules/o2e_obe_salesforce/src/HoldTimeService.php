@@ -3,7 +3,6 @@
 namespace Drupal\o2e_obe_salesforce;
 
 use GuzzleHttp\Client;
-use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\UrlHelper;
@@ -31,11 +30,11 @@ class HoldTimeService {
   protected $httpClient;
 
   /**
-   * Logger Factory.
+   * Obe Sf Logger.
    *
-   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   * @var \Drupal\o2e_obe_salesforce\ObeSfLogger
    */
-  protected $loggerFactory;
+  protected $obeSfLogger;
 
   /**
    * The object State.
@@ -53,9 +52,9 @@ class HoldTimeService {
   /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, LoggerChannelFactory $logger_factory, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager) {
     $this->httpClient = $http_client;
-    $this->loggerFactory = $logger_factory;
+    $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
     $this->tempStoreFactory = $temp_store_factory;
     $this->authTokenManager = $auth_token_manager;
@@ -92,11 +91,17 @@ class HoldTimeService {
         'json' => $options,
       ]);
       $result = Json::decode($response->getBody(), TRUE);
-      $this->loggerFactory->get('Salesforce - Hold Time')->notice(UrlHelper::buildQuery($options) . ' ' . $response->getStatusCode());
+      $data = UrlHelper::buildQuery($options) . '  -----  ' . Json::encode($result);
+      $this->obeSfLogger->log('Salesforce - Hold Time', 'notice', $data, [
+        'request_url' => $api_url,
+        'type' => 'POST',
+        'payload' => $options['query'],
+        'response' => $result,
+      ]);
       return $response->getStatusCode();
     }
     catch (RequestException $e) {
-      $this->loggerFactory->get('Salesforce - Hold Time Fail')->error($e->getMessage());
+      $this->obeSfLogger->log('Salesforce - Hold Time Fail', 'error', $e->getMessage(), NULL, NULL);
     }
   }
 
