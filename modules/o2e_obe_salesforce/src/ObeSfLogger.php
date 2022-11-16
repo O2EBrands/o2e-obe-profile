@@ -24,7 +24,7 @@ class ObeSfLogger {
   }
 
   /**
-   *
+   * This function is calling for logging.
    */
   public function log(string $channel = NULL, string $error_type = NULL, string $error_msg = NULL, string $endpoint = NULL, string $endpointType = NULL, string $payload = NULL, string $result = NULL) {
     if ($error_type == 'error') {
