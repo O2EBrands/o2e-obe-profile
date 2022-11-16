@@ -92,11 +92,16 @@ class PromoDetailsJunkService {
       $response = $this->httpClient->request('GET', $api_url, $options);
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options['query']) . ' ' . Json::encode($result);
-      $this->obeSfLogger->log('Salesforce - Promo Details Junk', 'notice', NULL, $api_url, 'GET', NULL, $data);
+      $this->obeSfLogger->log('Salesforce - Promo Details Junk', 'notice', $data, [
+        'request_url' => $api_url,
+        'type' => 'GET',
+        'payload' => $options['query'],
+        'response' => $result,
+      ]);
       return $result;
     }
     catch (RequestException $e) {
-      $this->obeSfLogger->log('Salesforce - Promo Details Junk Fail', 'error', $e->getMessage());
+      $this->obeSfLogger->log('Salesforce - Promo Details Junk Fail', 'error', $e->getMessage(), NULL, NULL);
     }
   }
 

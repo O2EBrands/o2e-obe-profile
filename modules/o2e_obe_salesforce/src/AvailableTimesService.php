@@ -158,12 +158,17 @@ class AvailableTimesService {
           'currentTimeStamp' => $current_time,
         ]);
         $data = UrlHelper::buildQuery($options) . '  -----  ' . Json::encode($result);
-        $this->obeSfLogger->log('Salesforce - current time set', 'notice', NULL, NULL, NULL, NULL, $current_time);
-        $this->obeSfLogger->log('Salesforce - GetAvailableTimes', 'notice', NULL, $api_url, 'POST', NULL, $data);
+        $this->obeSfLogger->log('Salesforce - current time set', 'notice', $current_time);
+        $this->obeSfLogger->log('Salesforce - GetAvailableTimes', 'notice', $data, [
+          'request_url' => $api_url,
+          'type' => 'POST',
+          'payload' => $options['query'],
+          'response' => $result,
+        ]);
         return $result;
       }
       catch (RequestException $e) {
-        $this->obeSfLogger->log('Salesforce - GetAvailableTimes Fail', 'error', $e->getMessage());
+        $this->obeSfLogger->log('Salesforce - GetAvailableTimes Fail', 'error', $e->getMessage(), NULL, NULL);
       }
     }
   }

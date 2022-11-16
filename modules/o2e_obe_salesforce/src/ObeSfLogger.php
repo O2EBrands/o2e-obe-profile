@@ -26,13 +26,8 @@ class ObeSfLogger {
   /**
    *
    */
-  public function log(string $channel = NULL, string $error_type = NULL, string $error_msg = NULL, string $endpoint = NULL, string $endpointType = NULL, string $payload = NULL, string $result = NULL) {
-    if ($error_type == 'error') {
-      $this->loggerFactory->get($channel)->error($error_msg);
-    }
-    elseif ($error_type == 'notice') {
-      $this->loggerFactory->get($channel)->notice($result);
-    }
+  public function log(string $channel, string $severity, string $message, array $context = [], array $request_info = []) {
+    $this->loggerFactory->get($channel)->log($severity, $message, $context);
   }
 
 }

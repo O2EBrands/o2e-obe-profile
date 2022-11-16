@@ -91,11 +91,16 @@ class CreateLead {
       ]);
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options) . ' ---- ' . $response->getStatusCode() . ' ---- ' . Json::encode($result);
-      $this->obeSfLogger->log('Salesforce - Create Lead', 'notice', NULL, $api_url, 'POST', NULL, $data);
+      $this->obeSfLogger->log('Salesforce - Create Lead', 'notice', $data, [
+        'request_url' => $api_url,
+        'type' => 'POST',
+        'payload' => $options['query'],
+        'response' => $result,
+      ]);
       return $result;
     }
     catch (RequestException $e) {
-      $this->obeSfLogger->log('Salesforce - Create Lead Fail', 'error', $e->getMessage());
+      $this->obeSfLogger->log('Salesforce - Create Lead Fail', 'error', $e->getMessage(), NULL, NULL);
     }
   }
 

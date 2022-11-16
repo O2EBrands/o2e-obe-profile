@@ -115,11 +115,16 @@ class AreaVerificationService {
         'state' => $result['state'] ?? '',
       ]);
       $data = UrlHelper::buildQuery($options['query']) . '  -----  ' . Json::encode($result);
-      $this->obeSfLogger->log('Salesforce - VerifyAreaServiced', 'notice', NULL, $api_url, 'GET', NULL, $data);
+      $this->obeSfLogger->log('Salesforce - VerifyAreaServiced', 'notice', $data, [
+        'request_url' => $api_url,
+        'type' => 'GET',
+        'payload' => $options['query'],
+        'response' => $result,
+      ]);
       return $result;
     }
     catch (RequestException $e) {
-      $this->obeSfLogger->log('Salesforce - VerifyAreaServiced Fail', 'error', $e->getMessage());
+      $this->obeSfLogger->log('Salesforce - VerifyAreaServiced Fail', 'error', $e->getMessage(), NULL, NULL);
       if (!empty($e->getResponse())) {
         return [
           'code' => $e->getCode(),

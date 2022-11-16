@@ -92,11 +92,16 @@ class HoldTimeService {
       ]);
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options) . '  -----  ' . Json::encode($result);
-      $this->obeSfLogger->log('Salesforce - Hold Time', 'notice', NULL, $api_url, 'POST', NULL, $data);
+      $this->obeSfLogger->log('Salesforce - Hold Time', 'notice', $data, [
+        'request_url' => $api_url,
+        'type' => 'POST',
+        'payload' => $options['query'],
+        'response' => $result,
+      ]);
       return $response->getStatusCode();
     }
     catch (RequestException $e) {
-      $this->obeSfLogger->log('Salesforce - Hold Time Fail', 'error', $e->getMessage());
+      $this->obeSfLogger->log('Salesforce - Hold Time Fail', 'error', $e->getMessage(), NULL, NULL);
     }
   }
 

@@ -94,11 +94,16 @@ class BookJobJunkCustomerService {
       ]);
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options) . ' ' . Json::encode($result);
-      $this->obeSfLogger->log('Salesforce - Book Job Junk Customer', 'notice', NULL, $api_url, 'POST', NULL, $data);
+      $this->obeSfLogger->log('Salesforce - Book Job Junk Customer', 'notice', $data, [
+        'request_url' => $api_url,
+        'type' => 'POST',
+        'payload' => $options['query'],
+        'response' => $result,
+      ]);
       return $result;
     }
     catch (RequestException $e) {
-      $this->obeSfLogger->log('Salesforce - Book Job Junk Fail Customer', 'error', $e->getMessage());
+      $this->obeSfLogger->log('Salesforce - Book Job Junk Fail Customer', 'error', $e->getMessage(), NULL, NULL);
       if (!empty($e->getResponse())) {
         return [
           'code' => $e->getCode(),
