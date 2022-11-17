@@ -3,7 +3,6 @@
 namespace Drupal\o2e_obe_salesforce;
 
 use GuzzleHttp\Client;
-use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
 use GuzzleHttp\Exception\RequestException;
@@ -31,11 +30,11 @@ class PromoDetailsJunkService {
   protected $httpClient;
 
   /**
-   * Logger Factory.
+   * Obe Sf Logger.
    *
-   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   * @var \Drupal\o2e_obe_salesforce\ObeSfLogger
    */
-  protected $loggerFactory;
+  protected $obeSfLogger;
 
   /**
    * The object State.
@@ -53,9 +52,9 @@ class PromoDetailsJunkService {
   /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, LoggerChannelFactory $logger_factory, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager) {
     $this->httpClient = $http_client;
-    $this->loggerFactory = $logger_factory;
+    $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
     $this->tempStoreFactory = $temp_store_factory;
     $this->authTokenManager = $auth_token_manager;
@@ -92,11 +91,17 @@ class PromoDetailsJunkService {
     try {
       $response = $this->httpClient->request('GET', $api_url, $options);
       $result = Json::decode($response->getBody(), TRUE);
-      $this->loggerFactory->get('Salesforce - Promo Details Junk')->notice(UrlHelper::buildQuery($options['query']) . ' ' . Json::encode($result));
+      $data = UrlHelper::buildQuery($options['query']) . ' ' . Json::encode($result);
+      $this->obeSfLogger->log('Salesforce - Promo Details Junk', 'notice', $data, [
+        'request_url' => $api_url,
+        'type' => 'GET',
+        'payload' => $options['query'],
+        'response' => $result,
+      ]);
       return $result;
     }
     catch (RequestException $e) {
-      $this->loggerFactory->get('Salesforce - Promo Details Junk Fail')->error($e->getMessage());
+      $this->obeSfLogger->log('Salesforce - Promo Details Junk Fail', 'error', $e->getMessage());
     }
   }
 
