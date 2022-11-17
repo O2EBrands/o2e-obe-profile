@@ -3,7 +3,6 @@
 namespace Drupal\o2e_obe_salesforce;
 
 use GuzzleHttp\Client;
-use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\UrlHelper;
@@ -34,11 +33,11 @@ class AvailableTimesService {
   protected $httpClient;
 
   /**
-   * Logger Factory.
+   * Obe Sf Logger.
    *
-   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   * @var \Drupal\o2e_obe_salesforce\ObeSfLogger
    */
-  protected $loggerFactory;
+  protected $obeSfLogger;
 
   /**
    * The object State.
@@ -78,9 +77,9 @@ class AvailableTimesService {
   /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, LoggerChannelFactory $logger_factory, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification, RequestStack $request_stack) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification, RequestStack $request_stack) {
     $this->httpClient = $http_client;
-    $this->loggerFactory = $logger_factory;
+    $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
     $this->tempStoreFactory = $temp_store_factory;
     $this->authTokenManager = $auth_token_manager;
@@ -158,12 +157,18 @@ class AvailableTimesService {
         $this->tempStoreFactory->get('o2e_obe_salesforce')->set('currentLocalTime', [
           'currentTimeStamp' => $current_time,
         ]);
-        $this->loggerFactory->get('Salesforce - current time set')->notice($current_time);
-        $this->loggerFactory->get('Salesforce - GetAvailableTimes')->notice(UrlHelper::buildQuery($options) . ' ---- ' . Json::encode($result));
+        $data = UrlHelper::buildQuery($options) . '  -----  ' . Json::encode($result);
+        $this->obeSfLogger->log('Salesforce - current time set', 'notice', $current_time);
+        $this->obeSfLogger->log('Salesforce - GetAvailableTimes', 'notice', $data, [
+          'request_url' => $api_url,
+          'type' => 'POST',
+          'payload' => $options['query'],
+          'response' => $result,
+        ]);
         return $result;
       }
       catch (RequestException $e) {
-        $this->loggerFactory->get('Salesforce - GetAvailableTimes Fail')->error($e->getMessage());
+        $this->obeSfLogger->log('Salesforce - GetAvailableTimes Fail', 'error', $e->getMessage());
       }
     }
   }
