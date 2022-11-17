@@ -129,7 +129,7 @@ function check_local_time_expiry() {
   $currentLocalTimeTemp = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('currentLocalTime');
   $service_expiry = \Drupal::config('o2e_obe_salesforce.settings')->get('sf_verify_area')['service_expiry'];
   $service_expiry = (int)($service_expiry);
-  if ($currentLocalTimeTemp['currentTimeStamp']) {
+  if (!empty($currentLocalTimeTemp) && $currentLocalTimeTemp['currentTimeStamp']) {
     $timeDifference = $currentTime - $currentLocalTimeTemp['currentTimeStamp'];
     if (abs($timeDifference) < $service_expiry) {
       return TRUE;
