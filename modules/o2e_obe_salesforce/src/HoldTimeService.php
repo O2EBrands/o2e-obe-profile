@@ -95,7 +95,7 @@ class HoldTimeService {
       $this->obeSfLogger->log('Salesforce - Hold Time', 'notice', $data, [
         'request_url' => $api_url,
         'type' => 'POST',
-        'payload' => $options['query'],
+        'payload' => $options,
         'response' => $result,
       ]);
       return $response->getStatusCode();

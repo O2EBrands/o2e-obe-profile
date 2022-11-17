@@ -162,7 +162,7 @@ class AvailableTimesService {
         $this->obeSfLogger->log('Salesforce - GetAvailableTimes', 'notice', $data, [
           'request_url' => $api_url,
           'type' => 'POST',
-          'payload' => $options['query'],
+          'payload' => $options,
           'response' => $result,
         ]);
         return $result;
