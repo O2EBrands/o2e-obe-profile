@@ -33,8 +33,8 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
             if (!empty($form_state->getValue('start_date_time'))) {
               $pick_up_date = $form_state->getValue('start_date_time');
               $date_formatter = \Drupal::service('date.formatter');
-              $date = strtotime($pick_up_date);
-              $formatted_pickup_date = $date_formatter->format($date, 'custom', 'D, M d, Y');;
+              $date = strtotime($pick_up_date, FALSE);
+              $formatted_pickup_date = $date_formatter->format($date, 'custom', 'D, M d, Y');
               $arrival_time = $form_state->getValue('arrival_time');
             }
             if (empty($formatted_pickup_date) || empty($arrival_time)) {
