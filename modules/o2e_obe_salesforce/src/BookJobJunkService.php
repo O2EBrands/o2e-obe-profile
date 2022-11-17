@@ -99,7 +99,7 @@ class BookJobJunkService {
       $this->obeSfLogger->log('Salesforce - Book Job Junk', 'notice', $data, [
         'request_url' => $api_url,
         'type' => 'POST',
-        'payload' => $options['query'],
+        'payload' => $options,
         'response' => $result,
       ]);
       return $response->getStatusCode();
