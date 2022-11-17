@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-var availableString = Drupal.t("available");
+var availableString = Drupal.t("Available");
 var lessString = Drupal.t("Less");
 var moreString = Drupal.t("More");
 var morningString = Drupal.t("morning");
