@@ -120,6 +120,23 @@ function App() {
           minDate={new Date(minDate.year(), minDate.month(), minDate.date())}
           maxDate={datePickerMaxDateInput}
           inline
+          dayClassName={(date: Date) => {
+            // day Date string
+            let dateString =
+              date.getFullYear() +
+              "-" +
+              ("0" + (date.getMonth() + 1)).slice(-2) +
+              "-" +
+              ("0" + date.getDate()).slice(-2);
+
+            // days difference.
+            let daysDiff = selectedDate.diff(dateString, "days", true);
+
+            // add class to day.
+            if (daysDiff >= -2 && daysDiff < 0) {
+              return "datepicker-selected-group";
+            }
+          }}
           calendarStartDay={0}
           selected={
             new Date(
