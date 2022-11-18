@@ -46,6 +46,7 @@ export default function RadioBtn(props) {
   switch (drupalSettings.brand_name) {
     // Setting format for GJ NA.
     case "GJ NA":
+    case "GJ AU":
       formattedTimeSlot = `${props.startMoment.format(
         "h:mm"
       )} - ${props.startMoment.clone().add(2, "hours").format("h:mm A")}`;
