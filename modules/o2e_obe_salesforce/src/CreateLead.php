@@ -101,6 +101,12 @@ class CreateLead {
     }
     catch (RequestException $e) {
       $this->obeSfLogger->log('Salesforce - Create Lead Fail', 'error', $e->getMessage());
+      if (!empty($e->getResponse())) {
+        return [
+          'code' => $e->getCode(),
+          'message' => $e->getResponseBodySummary($e->getResponse()),
+        ];
+      }
     }
   }
 
