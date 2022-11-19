@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 var availableString = Drupal.t("Available");
+var bookedString = Drupal.t("Booked");
 var lessString = Drupal.t("Less");
 var moreString = Drupal.t("More");
 var morningString = Drupal.t("morning");
@@ -110,7 +111,7 @@ export default function AccordionItem({
             </p>
           </button>
         ) : (
-          <p className="accordion-button collapsed">
+          <p className="accordion-button collapsed not-available">
             <strong>
               {timeOfTheDay === "morning"
                 ? morningString
@@ -121,7 +122,9 @@ export default function AccordionItem({
                 : ""}
             </strong>
             <small>
-              {itemsArray[timeOfTheDay].length} {availableString}
+              {drupalSettings.brand_name === "W1D"
+                ? `${bookedString}`
+                : `${itemsArray[timeOfTheDay].length} ${availableString}`}
             </small>
           </p>
         )}
