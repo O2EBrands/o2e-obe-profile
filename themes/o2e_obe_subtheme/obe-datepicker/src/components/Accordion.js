@@ -2,6 +2,7 @@ import React from "react";
 import AccordionItem from "./AccordionItem";
 
 const timesOfTheDay = ["morning", "afternoon", "evening"];
+var todayString = Drupal.t("today");
 
 export default function Accordion(props) {
   // Initializing All slots for a single day.
@@ -26,7 +27,11 @@ export default function Accordion(props) {
   return (
     <div className="col-lg-4 accordion" id={`accordion${accordionId}`}>
       <h3 className="slot-day-title">
-        {`${props.dayInfo.day}, ${props.dayInfo.month} ${props.dayInfo.date}`}
+        {props.today &&
+        (drupalSettings.brand_name === "GJ NA" ||
+          drupalSettings.brand_name === "GJ AU")
+          ? todayString
+          : `${props.dayInfo.day}, ${props.dayInfo.month} ${props.dayInfo.date}`}
       </h3>
       {timesOfTheDay.map((timeOfTheDay) => {
         return (
