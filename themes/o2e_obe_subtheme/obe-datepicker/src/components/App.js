@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import moment from "moment";
+import moment from "moment-timezone";
 import DatePicker from "react-datepicker";
 import { registerLocale } from "react-datepicker";
 import Loader from "./Loader";
@@ -37,10 +37,14 @@ function App() {
 
   //Check if date is already set.
   let currentDate;
-
   if (startTimeField) {
-    if (startTimeField.value !== "") {
-      currentDate = moment(startTimeField.value).utc();
+    // If already date is selected then convert it into UTC.
+    if (startTimeField.value !== "" && sessionStorage.getItem("timeZone")) {
+      let tempDate = moment
+        .tz(startTimeField.value, sessionStorage.getItem("timeZone"))
+        .tz("utc", true)
+        .format();
+      currentDate = moment(tempDate).utc();
     }
     if (startTimeField.value === "") {
       currentDate = moment.utc(curDateString);
@@ -70,6 +74,9 @@ function App() {
       .then(
         (result) => {
           data = result;
+          if (data.time_zone) {
+            sessionStorage.setItem("timeZone", data.time_zone);
+          }
           setLoader(false);
         },
         (error) => {
