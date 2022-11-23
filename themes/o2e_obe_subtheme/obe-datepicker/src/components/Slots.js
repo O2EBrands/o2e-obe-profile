@@ -49,9 +49,18 @@ export default function Slots(props) {
   // Array for available dates.
   let availableDates = [];
 
+  // Current date string.
+  let today = new Date();
+  let curDateString =
+    today.getFullYear() +
+    "-" +
+    ("0" + (today.getMonth() + 1)).slice(-2) +
+    "-" +
+    ("0" + today.getDate()).slice(-2);
+
   // This will updated from calendar.
   let currentMoment = moment(props.selectedDate);
-  let isToday = currentMoment.isSame(moment(), "day");
+  let isToday = currentMoment.isSame(moment.utc(curDateString), "day");
 
   // Set the timeslot selectedDate to maxDate if currentDate is ahead of maxdate.
   if (props.maxDate) {
@@ -128,7 +137,11 @@ export default function Slots(props) {
     let slotHours = iMoment.clone().format("HH");
     let slotMinutes = iMoment.clone().format("mm");
     let radioBtnTemplate = (
-      <RadioBtn startMoment={iMoment} endMoment={endMoment} />
+      <RadioBtn
+        startMoment={iMoment}
+        endMoment={endMoment}
+        timeZone={props.time_zone}
+      />
     );
 
     // Push the input radios into array based on their date and time.
