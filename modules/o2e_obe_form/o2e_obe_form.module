@@ -19,47 +19,8 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
       if ($current_page === $page) {
         if (isset($form['elements'][$current_page]['service_id'])) {
           // Populate Service ID.
-          $serviceId = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('response');
+          $serviceId = $tempstore_service->get('response');
           $form['elements'][$current_page]['service_id']['#default_value'] = $serviceId['service_id'];
-        }
-        if (isset($form['elements'][$current_page]['holdtime_data'])) {
-          // Check for Show/Hide Slot Hold Time Message Configurations.
-          $salesForceConfiguration = \Drupal::config('o2e_obe_salesforce.settings');
-          $slotHoldTimeConfigStatus = $salesForceConfiguration->get('sf_available_time')['show_holdtime_message'];
-          $slotHoldTimeTempStatus = $tempstore_service->get('slotHoldTime');
-          if ($slotHoldTimeConfigStatus == TRUE && $slotHoldTimeTempStatus == TRUE) {
-            $formatted_pickup_date = $arrival_time = '';
-            // Get pick up date and arrival time.
-            if (!empty($form_state->getValue('start_date_time'))) {
-              $pick_up_date = $form_state->getValue('start_date_time');
-              $date_formatter = \Drupal::service('date.formatter');
-              $date = strtotime($pick_up_date, FALSE);
-              $formatted_pickup_date = $date_formatter->format($date, 'custom', 'D, M d, Y');
-              $arrival_time = $form_state->getValue('arrival_time');
-            }
-            if (empty($formatted_pickup_date) || empty($arrival_time)) {
-              if (!empty($tempstore_service->get('holdtimeInformation'))) {
-                $formatted_pickup_date = $tempstore_service->get('holdtimeInformation')['formatted_pickup_date'];
-                $arrival_time = $tempstore_service->get('holdtimeInformation')['arrival_time'];
-              }
-            }
-            $tempstore_service->delete('holdtimeInformation');
-            $tempstore_service->set('holdtimeInformation', [
-              'formatted_pickup_date' => $formatted_pickup_date,
-              'arrival_time' => $arrival_time,
-            ]);
-            // Get Slot Hold Time Message and Slot Hold Time Sub Message.
-            if (!empty($salesForceConfiguration->get('sf_available_time.slot_holdtime_message'))) {
-              $slot_holdtime_message = $salesForceConfiguration->get('sf_available_time.slot_holdtime_message');
-              $slot_holdtime_sub_message = !empty($salesForceConfiguration->get('sf_available_time.slot_holdtime_sub_message'))
-              ? $salesForceConfiguration->get('sf_available_time.slot_holdtime_sub_message')
-              : '';
-              // Design the message.
-              $hold_time_message = '<div class="holdtime-section"><div class="holdtime-main">' . t($slot_holdtime_message) . '<span class="hold-slot">' . $formatted_pickup_date . ' ' . $arrival_time . '</span></div><div class="holdtime-subtext">' . t($slot_holdtime_sub_message) . '</div></div>';
-              $form['elements'][$current_page]['holdtime_data']['#access'] = TRUE;
-              $form['elements'][$current_page]['holdtime_data']['#template'] = $hold_time_message;
-            }
-          }
         }
         if (isset($form['elements'][$current_page]['address'])) {
           $form['elements'][$current_page]['address']['#after_build'][] = '_update_address';
@@ -125,7 +86,6 @@ function goto_step($page, $pages, FormStateInterface $form_state) {
  */
 function check_local_time_expiry() {
   $currentTime = \Drupal::service('datetime.time')->getRequestTime();
-  \Drupal::logger('check_local_time_expiry')->notice($currentTime);
   $currentLocalTimeTemp = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce')->get('currentLocalTime');
   $service_expiry = \Drupal::config('o2e_obe_salesforce.settings')->get('sf_verify_area')['service_expiry'];
   $service_expiry = (int)($service_expiry);
