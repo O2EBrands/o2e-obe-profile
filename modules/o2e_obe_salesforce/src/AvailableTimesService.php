@@ -145,6 +145,41 @@ class AvailableTimesService {
             'service_id' => $sf_response['service_id'],
           ];
         }
+        if ($brand === 'WOW 1 DAY PAINTING') {
+          $interior_or_exterior = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('interior_or_exterior');
+          $customer_type = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('property_type');
+          $exterior = $interior = FALSE;
+          switch ($interior_or_exterior) {
+            case 'Exterior':
+              $exterior = TRUE;
+              break;
+
+            case 'Interior':
+              $interior = TRUE;
+              break;
+
+            case 'Both':
+              $exterior = TRUE;
+              $interior = TRUE;
+              break;
+          }
+          if ($customer_type == 'Residential') {
+            $service_type = $exterior ? 'W1D - Residential Exterior Estimate' : 'W1D - Residential Interior Estimate';
+          }
+          else {
+            $service_type = 'W1D - Commercial Estimate';
+          }
+          $options += [
+            'franchise_id' => $sf_response['franchise_id'],
+            'service_id' => $sf_response['service_id'] ?? '',
+            'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
+            'postal_code' => $sf_response['from_postal_code'],
+            'interior' => $interior,
+            'exterior' => $exterior,
+            'customer_type' => $customer_type,
+            'service_type' => $service_type,
+          ];
+        }
       }
       try {
         $res = $this->httpClient->request('POST', $api_url, [
