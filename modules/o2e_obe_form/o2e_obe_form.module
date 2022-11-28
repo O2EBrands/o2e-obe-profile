@@ -24,21 +24,6 @@ function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_i
         }
         if (isset($form['elements'][$current_page]['address'])) {
           $form['elements'][$current_page]['address']['#after_build'][] = '_update_address';
-          // Get Data related to postal code from tempstore.
-          $postal_code_data = $tempstore_service->get('postalCodeData');
-          // Auto Populate state code and postal code in Address field.
-          $form['elements'][$current_page]['address']['#default_value']['postal_code'] = $postal_code_data['zip_code'];
-          if (!empty($postal_code_data['state']) && empty($form['elements'][$current_page]['address']['#default_value']['state_province'])) {
-            $form['elements'][$current_page]['address']['#default_value']['state_province'] = $postal_code_data['state'];
-          }
-          // Set the country name based on postal code.
-          $country = '';
-          $zip_code = $postal_code_data['zip_code'];
-          if (preg_match('#[0-9]{4}#', $zip_code)) {
-            $country = 'Australia';
-            $tempstore_service->set('country_code', 'AU');
-          }
-          $form['elements'][$current_page]['address']['#default_value']['country'] = $country;
         }
       }
     }
