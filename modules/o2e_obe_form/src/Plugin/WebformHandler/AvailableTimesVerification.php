@@ -92,15 +92,17 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
     if ($current_page === $selected_step) {
       $hotd_time_success = $sfresponse->get('slotHoldTimesuccess');
       $start_form_date = $formState->getValue('start_date_time');
-      $start_form_date = substr_replace($start_form_date, 'Z', -6);
       $end_form_date = $formState->getValue('finish_date_time');
-      $end_form_date = substr_replace($end_form_date, 'Z', -6);
       $holdSlotTime = $sfresponse->get('holdSlotTime');
       if (empty($start_form_date) || empty($end_form_date)) {
         $slot_empty_message = $this->config->get('o2e_obe_common.settings')->get('o2e_obe_common.slot_holdtime_empty_message');
         $formState->setErrorByName('start_date_time', $slot_empty_message);
         return FALSE;
       }
+      // Format hold start & end date.
+      $start_form_date = substr_replace($start_form_date, 'Z', -6);
+      $end_form_date = substr_replace($end_form_date, 'Z', -6);
+      // Check expiry.
       $checkExpiry = check_local_time_expiry();
       if ($checkExpiry) {
         if ($hotd_time_success == TRUE && (isset($holdSlotTime['start_date_time']) && isset($holdSlotTime['start_date_time'])) && ($holdSlotTime['start_date_time'] == $start_form_date && $holdSlotTime['finish_date_time'] == $end_form_date)) {
