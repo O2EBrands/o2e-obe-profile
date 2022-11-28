@@ -100,20 +100,18 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
         $zip_code = preg_replace('/\s+/', '', $zip_code);
         $zip_code = str_replace($delete_val, '', $zip_code);
         $postalData = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('postalCodeData');
-        if (!empty($postalData) && $postalData['zip_code'] !== $zip_code) {
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('postalCodeData');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('currentLocalTime');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('lead_id');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTimesuccess');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('bookJobJunkService');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('bookJobJunkCustomer');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('bookJobCustomer');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('country_code');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('holdSlotTime');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
-        }
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('postalCodeData');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('currentLocalTime');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('lead_id');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTimesuccess');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('bookJobJunkService');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('bookJobJunkCustomer');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('bookJobCustomer');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('country_code');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('holdSlotTime');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
         $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
         if (!empty($response)) {
           if (isset($response['service_id'])) {
