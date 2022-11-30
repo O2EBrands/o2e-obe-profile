@@ -8,6 +8,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use GuzzleHttp\Exception\RequestException;
+use Drupal\Component\Datetime\TimeInterface;
 
 /**
  * CreateLead Servicee class is create the lead id in SF.  .
@@ -48,17 +49,23 @@ class CreateLead {
    * @var \Drupal\o2e_obe_salesforce\AuthTokenManager
    */
   protected $authTokenManager;
+  /**
+   * The datetime.time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $timeService;
 
   /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service) {
     $this->httpClient = $http_client;
     $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
     $this->tempStoreFactory = $temp_store_factory;
     $this->authTokenManager = $auth_token_manager;
-
+    $this->timeService = $time_service;
   }
 
   /**
@@ -85,10 +92,15 @@ class CreateLead {
       'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
     ];
     try {
+      $startCreateLeadTimer = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('POST', $api_url, [
         'headers' => $headers,
         'json' => $options,
       ]);
+      $endCreateLeadTimer = $this->timeService->getCurrentMicroTime();
+      // Logs the Timer CreateLead.
+      $createLeadTimerDuration = round($endCreateLeadTimer - $startCreateLeadTimer, 2);
+      $this->obeSfLogger->log('Timer CreateLead', 'notice', $createLeadTimerDuration);
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options) . ' ---- ' . $response->getStatusCode() . ' ---- ' . Json::encode($result);
       $this->obeSfLogger->log('Salesforce - Create Lead', 'notice', $data, [

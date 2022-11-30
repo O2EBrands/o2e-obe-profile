@@ -8,6 +8,7 @@ use Drupal\Component\Serialization\Json;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\Component\Datetime\TimeInterface;
 
 /**
  * Promo Details Junk Service class is return the promo details.
@@ -42,6 +43,7 @@ class PromoDetailsJunkService {
    * @var \Drupal\Core\State\State
    */
   protected $state;
+
   /**
    * The Auth Token Manager.
    *
@@ -50,15 +52,22 @@ class PromoDetailsJunkService {
   protected $authTokenManager;
 
   /**
+   * The datetime.time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $timeService;
+
+  /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service) {
     $this->httpClient = $http_client;
     $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
     $this->tempStoreFactory = $temp_store_factory;
     $this->authTokenManager = $auth_token_manager;
-
+    $this->timeService = $time_service;
   }
 
   /**
@@ -89,7 +98,12 @@ class PromoDetailsJunkService {
       'promotion_code' => $promocode,
     ];
     try {
+      $startPromoTimer = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('GET', $api_url, $options);
+      $endPromoTimer = $this->timeService->getCurrentMicroTime();
+      // Logs the Timer PromoDetailsJunk.
+      $promoTimerDuration = round($endPromoTimer - $startPromoTimer, 2);
+      $this->obeSfLogger->log('Timer PromoDetailsJunk', 'notice', $promoTimerDuration);
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options['query']) . ' ' . Json::encode($result);
       $this->obeSfLogger->log('Salesforce - Promo Details Junk', 'notice', $data, [

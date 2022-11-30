@@ -103,7 +103,12 @@ class AreaVerificationService {
       'from_postal_code' => $zipcode,
     ];
     try {
+      $startZipTimer = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('GET', $api_url, $options);
+      $endZipTimer = $this->timeService->getCurrentMicroTime();
+      // Logs the Timer VerifyAreaServiced.
+      $zipTimerDuration = round($endZipTimer - $startZipTimer, 2);
+      $this->obeSfLogger->log('Timer VerifyAreaServiced', 'notice', $zipTimerDuration);
       $result = Json::decode($response->getBody(), TRUE);
       $tempstore->set('response', [
         'service_id' => $result['service_id'],
