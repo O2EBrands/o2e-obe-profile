@@ -122,49 +122,8 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
             $sfresponse->set('slotHoldTime', TRUE);
 
           }
-          else {
-            $this->deleteTempstore();
-            $this->display_expiry_message($form, $formState, $sfresponse);
-          }
         }
-      }
-      else {
-        $this->deleteTempstore();
-        $this->display_expiry_message($form, $formState, $sfresponse);
       }
     }
   }
-
-  /**
-   * Redirect to selected redirected step.
-   */
-  private function display_expiry_message(array &$form, FormStateInterface $formState, $sfresponse) {
-    $selected_step = $this->configuration['steps'];
-    $form['elements'][$selected_step]['holdtime_data']['#access'] = FALSE;
-    $sfresponse->set('slotHoldTime', FALSE);
-    $sfresponse->set('slotHoldTimesuccess', FALSE);
-    $pages = $formState->get('pages');
-    $redirect_to_step = $this->configuration['redirect_to_step'];
-    goto_step($redirect_to_step, $pages, $formState);
-    // Show slot expiry message.
-    $slot_expiry_message = $this->config->get('o2e_obe_common.settings')->get('o2e_obe_common')['slot_holdtime_expiry_message'];
-    $this->messenger()->addError($slot_expiry_message);
-    return FALSE;
-  }
-
-  /**
-   * Custom function to delete tempstore collections.
-   */
-  private function deleteTempstore() {
-    $sfresponse = $this->tempStoreFactory->get('o2e_obe_salesforce');
-    $sfresponse->delete('holdSlotTime');
-    $sfresponse->delete('slotHoldTimesuccess');
-    $sfresponse->delete('slotHoldTime');
-    $sfresponse->delete('country_code');
-    $sfresponse->delete('bookJobJunkCustomer');
-    $sfresponse->delete('bookJobCustomer');
-    $sfresponse->delete('lead_id');
-    $sfresponse->delete('bookJobJunkService');
-  }
-
 }
