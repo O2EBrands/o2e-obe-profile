@@ -103,9 +103,9 @@ class AreaVerificationService {
       'from_postal_code' => $zipcode,
     ];
     try {
-      $startZipTimer = microtime(TRUE);
+      $startZipTimer = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('GET', $api_url, $options);
-      $endZipTimer = microtime(TRUE);
+      $endZipTimer = $this->timeService->getCurrentMicroTime();
       // Logs the Timer VerifyAreaServiced.
       $zipTimerDuration = round($endZipTimer - $startZipTimer, 2);
       $this->obeSfLogger->log('Timer VerifyAreaServiced', 'notice', $zipTimerDuration);
