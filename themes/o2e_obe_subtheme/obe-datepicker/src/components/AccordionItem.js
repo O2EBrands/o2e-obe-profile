@@ -46,7 +46,7 @@ export default function AccordionItem({
             {
               scrollTop:
                 jQuery(
-                  ".webform-submission-o2e-webform-form .webform-actions"
+                  '.webform-submission-o2e-webform-form .webform-actions[data-drupal-selector="edit-actions-datepicker"]'
                 ).offset().top - 100,
             },
             500
