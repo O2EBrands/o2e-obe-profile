@@ -28,3 +28,6 @@ services:
  o2e_obe_salesforce.obe_sf_logger:
    class: Drupal\o2e_obe_salesforce\ObeSfLogger
    arguments: ['@logger.factory']
+ o2e_obe_salesforce.get_payment_details:
+   class: Drupal\o2e_obe_salesforce\GetPaymentDetailsService
+   arguments: [ '@http_client', '@logger.factory', '@datetime.time', '@state', '@o2e_obe_salesforce.authtoken_manager' ]
