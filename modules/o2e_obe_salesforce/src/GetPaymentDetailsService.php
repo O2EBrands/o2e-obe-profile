@@ -13,8 +13,7 @@ use GuzzleHttp\Exception\RequestException;
 /**
  * Get Payment Details Service class is return the payment details.
  */
-class GetPaymentDetailsService
-{
+class GetPaymentDetailsService {
     protected $httpClient;
 
     protected $loggerFactory;
@@ -25,8 +24,7 @@ class GetPaymentDetailsService
 
     protected $authTokenManager;
 
-    public function __construct(Client $http_client, LoggerChannelFactory $logger_factory, TimeInterface $time_service, State $state, AuthTokenManager $auth_token_manager)
-    {
+    public function __construct(Client $http_client, LoggerChannelFactory $logger_factory, TimeInterface $time_service, State $state, AuthTokenManager $auth_token_manager) {
         $this->httpClient = $http_client;
         $this->loggerFactory = $logger_factory;
         $this->timeService = $time_service;
@@ -37,8 +35,7 @@ class GetPaymentDetailsService
     /**
      * Fetch Payment details from salesforce.
      */
-    public function GetPaymentDetails(string $quote_id)
-    {
+    public function GetPaymentDetails(string $quote_id) {
         $auth_token = $this->state->get('authtoken');
         $api_url = $this->authTokenManager->getSfConfig('sf_payment_details.api_url_segment');
         if (!str_starts_with($api_url, 'https://') && !str_starts_with($api_url, 'http://')) {
