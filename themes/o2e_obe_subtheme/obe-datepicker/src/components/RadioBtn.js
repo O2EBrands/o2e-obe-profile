@@ -2,7 +2,6 @@ import React from "react";
 import moment from "moment-timezone";
 
 export default function RadioBtn(props) {
-  let timeZone = props.timeZone;
   // Getting dom objects for selecting values.
   let startTimeField = document.querySelector(
     'input[data-drupal-selector="edit-start-date-time"]'
@@ -67,7 +66,7 @@ export default function RadioBtn(props) {
     <div
       className={`slot-item ${
         moment
-          .tz(startTimeField.value, sessionStorage.getItem("timeZone"))
+          .tz(startTimeField.value, localStorage.getItem("timeZone"))
           .tz("utc", true)
           .format() === props.startMoment.clone().format().toString()
           ? "pre-selected"

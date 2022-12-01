@@ -39,14 +39,14 @@ function App() {
   let currentDate;
   if (startTimeField) {
     // If already date is selected then convert it into UTC.
-    if (startTimeField.value !== "" && sessionStorage.getItem("timeZone")) {
+    if (startTimeField.value !== "" && localStorage.getItem("timeZone")) {
       let tempDate = moment
-        .tz(startTimeField.value, sessionStorage.getItem("timeZone"))
+        .tz(startTimeField.value, localStorage.getItem("timeZone"))
         .tz("utc", true)
         .format();
       currentDate = moment(tempDate).utc();
-    }
-    if (startTimeField.value === "") {
+    } else {
+      startTimeField.value = "";
       currentDate = moment.utc(curDateString);
     }
   } else {
@@ -75,7 +75,7 @@ function App() {
         (result) => {
           data = result;
           if (data.time_zone) {
-            sessionStorage.setItem("timeZone", data.time_zone);
+            localStorage.setItem("timeZone", data.time_zone);
           }
           setLoader(false);
         },

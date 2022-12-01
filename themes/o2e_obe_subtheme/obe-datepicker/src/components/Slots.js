@@ -178,14 +178,14 @@ export default function Slots(props) {
         optionsByDay[index].afternoon.length
       ) {
         jQuery(".promo-data").show();
-        sessionStorage.setItem("isPromoCode", 1);
+        localStorage.setItem("isPromoCode", 1);
       } else {
-        sessionStorage.removeItem("isPromoCode");
+        localStorage.removeItem("isPromoCode");
       }
     }
 
-    // if session variable is set then show promocode.
-    if (sessionStorage.getItem("isPromoCode") == 1) {
+    // if localStorage variable is set then show promocode.
+    if (localStorage.getItem("isPromoCode") == 1) {
       jQuery(".promo-data").show();
     }
 
