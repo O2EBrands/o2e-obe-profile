@@ -105,23 +105,15 @@ class AvailableTimesVerification extends ObeWebformHandlerBase {
       // Check expiry.
       $checkExpiry = check_local_time_expiry();
       if ($checkExpiry) {
-        if ($hotd_time_success == TRUE && (isset($holdSlotTime['start_date_time']) && isset($holdSlotTime['start_date_time'])) && ($holdSlotTime['start_date_time'] == $start_form_date && $holdSlotTime['finish_date_time'] == $end_form_date)) {
-          // Check Expiry.
-          $sfresponse->set('slotHoldTime', TRUE);
-          return TRUE;
-        }
-        else {
           $options = [
-            'start_date_time' => $start_form_date,
-            'finish_date_time' => $end_form_date,
-          ];
-          $holdTimeResponse = $this->holdTimeService->holdtime($options);
-          if ($holdTimeResponse == TRUE) {
-            $sfresponse->set('holdSlotTime', $options);
-            $sfresponse->set('slotHoldTimesuccess', TRUE);
-            $sfresponse->set('slotHoldTime', TRUE);
-
-          }
+          'start_date_time' => $start_form_date,
+          'finish_date_time' => $end_form_date,
+        ];
+        $holdTimeResponse = $this->holdTimeService->holdtime($options);
+        if ($holdTimeResponse == TRUE) {
+          $sfresponse->set('holdSlotTime', $options);
+          $sfresponse->set('slotHoldTimesuccess', TRUE);
+          $sfresponse->set('slotHoldTime', TRUE);
         }
       }
     }
