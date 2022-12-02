@@ -108,7 +108,7 @@ class BookJobJunkService {
       $this->obeSfLogger->log('Timer BookJobJunk2', 'notice', $bookJobTimerDuration2);
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options) . ' ' . $response->getStatusCode();
-      $this->obeSfLogger->log('Salesforce - Book Job Junk', 'notice', $data, [
+      $this->obeSfLogger->log('Salesforce - BookJobJunk2', 'notice', $data, [
         'request_url' => $api_url,
         'type' => 'POST',
         'payload' => $options,
@@ -117,7 +117,7 @@ class BookJobJunkService {
       return $response->getStatusCode();
     }
     catch (RequestException $e) {
-      $this->obeSfLogger->log('Salesforce - Book Job Junk Fail', 'error', $e->getMessage());
+      $this->obeSfLogger->log('Salesforce - BookJobJunk2 Fail', 'error', $e->getMessage());
       if (!empty($e->getResponse())) {
         return [
           'code' => $e->getCode(),
