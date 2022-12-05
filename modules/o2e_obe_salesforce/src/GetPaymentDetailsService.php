@@ -60,10 +60,10 @@ class GetPaymentDetailsService {
             $endFirstAvailDateTimer = microtime(TRUE);
             $firstAvailDateTimerDuration = round($endFirstAvailDateTimer - $startFirstAvailDateTimer, 2);
             $result['body'] = json_decode($response->getBody()->getContents(), TRUE);
-            $this->loggerFactory->get('Salesforce - Get Payment Details-response')->notice($response->getStatusCode());
+            $result['code'] = $response->getStatusCode();
+            $this->loggerFactory->get('Salesforce - Get Payment Details-response')->notice($result['code']);
             $this->loggerFactory->get('Salesforce - Get Payment Details')->notice(Json::encode($result));
             $this->loggerFactory->get('Salesforce - Timer GetPaymentDetails')->notice($firstAvailDateTimerDuration);
-            $result['code'] = $response->getStatusCode();
             return $result;
         } catch (RequestException $e) {
             $this->loggerFactory->get('Salesforce - GetPaymentDetails Fail')->error($e->getMessage());
