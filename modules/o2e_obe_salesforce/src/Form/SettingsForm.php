@@ -2,10 +2,13 @@
 
 namespace Drupal\o2e_obe_salesforce\Form;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\State\State;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\o2e_obe_salesforce\AuthTokenManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * SettingsForm class creates the OBE Salesforce configuration form.
@@ -22,6 +25,27 @@ class SettingsForm extends ConfigFormBase {
    * @var \Drupal\Core\State\State
    */
   protected $state;
+
+  /**
+   * The Auth Token Manager.
+   *
+   * @var \Drupal\o2e_obe_salesforce\AuthTokenManager
+   */
+  protected $authTokenManager;
+
+  /**
+   * The database connection used to check the IP against.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $connection;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
 
   /**
    * {@inheritdoc}
@@ -42,8 +66,11 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(State $state) {
+  public function __construct(State $state, AuthTokenManager $auth_token_manager, Connection $connection, EntityTypeManagerInterface $entity_type_manager) {
     $this->state = $state;
+    $this->authTokenManager = $auth_token_manager;
+    $this->connection = $connection;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -51,7 +78,10 @@ class SettingsForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('state')
+      $container->get('state'),
+      $container->get('o2e_obe_salesforce.authtoken_manager'),
+      $container->get('database'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -262,6 +292,26 @@ class SettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
+    $auth_config_values = $this->config('o2e_obe_salesforce.settings')->get('sf_auth');
+    $auth_form_values = $form_state->getValue('sf_auth');
+    $auth_value_diff = array_diff($auth_form_values, $auth_config_values);
+    if (!empty($auth_value_diff)) {
+      $this->state->delete('authtoken');
+      $this->state->delete('sfUrl');
+      $this->state->delete('lastAuthTime');
+      $this->authTokenManager->generateToken();
+      // SQL Query.
+      $query = $this->connection->delete('key_value_expire')
+        ->condition('collection', '%o2e%', 'LIKE')
+        ->execute();
+      // Delete Session.
+      $submission_storage = $this->entityTypeManager->getStorage('webform_submission');
+      $submissions = $submission_storage->loadByProperties([
+        'uid' => 0,
+        'in_draft' => TRUE,
+      ]);
+      $submission_storage->delete($submissions);
+    }
     $this->config('o2e_obe_salesforce.settings')
       ->set('sf_brand', $form_state->getValue('sf_brand'))
       ->set('sf_auth', $form_state->getValue('sf_auth'))
