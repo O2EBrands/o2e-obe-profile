@@ -31,3 +31,6 @@ o2e_obe_common.settings:
         slot_holdtime_empty_message:
           type: text
           label: 'Slot HoldTime Empty Message'
+        500_message:
+          type: text
+          label: '500 Message'

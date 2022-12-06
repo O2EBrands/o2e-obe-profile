@@ -109,6 +109,13 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $obe_common_state_data['slot_holdtime_empty_message'] ?? $config->get('o2e_obe_common.slot_holdtime_empty_message'),
       '#required' => TRUE,
     ];
+    $form['o2e_obe_common']['500_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('500 Message'),
+      '#description' => $this->t('Enter the message to be shown after salesforce return 500 error message.'),
+      '#default_value' => $obe_common_state_data['500_message'] ?? $config->get('o2e_obe_common.500_message'),
+      '#required' => TRUE,
+    ];
 
     return parent::buildForm($form, $form_state);
   }
@@ -125,6 +132,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('o2e_obe_common.slot_holdtime_empty_message', $form_state->getValue('slot_holdtime_empty_message'))
       ->set('o2e_obe_common.booking_error_message', $form_state->getValue('booking_error_message'))
       ->set('o2e_obe_common.obe_confirmation_message', $form_state->getValue('obe_confirmation_message')['value'])
+      ->set('o2e_obe_common.500_message', $form_state->getValue('500_message'))
       ->save();
     // Set confirm message in state to store the value.
     $this->state->set('obe_common_data', $this->config('o2e_obe_common.settings')->get('o2e_obe_common'));
