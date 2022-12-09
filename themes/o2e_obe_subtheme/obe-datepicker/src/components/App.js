@@ -60,12 +60,11 @@ function App() {
 
   useEffect(() => {
     // Setting up dates for API call.
-    let apiStartDate = selectedDate.clone().format("YYYY-MM-D");
-    let apiEndDate = selectedDate.clone().add(2, "days").format("YYYY-MM-D");
+    let apiStartDate = selectedDate.clone().format("YYYY-MM-DD");
+    let apiEndDate = selectedDate.clone().add(2, "days").format("YYYY-MM-DD");
 
     // API with parameters.
-    let hostname = window.location.origin;
-    let apiWithParam = `${hostname}/availabletime?start_date=${apiStartDate}&end_date=${apiEndDate}`;
+    let apiWithParam = Drupal.url(`availabletime?start_date=${apiStartDate}&end_date=${apiEndDate}`);
 
     //API calling and parsing logic.
     setLoader(true);
