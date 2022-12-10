@@ -13,4 +13,4 @@ o2e_obe_common.o2e_obe_config:
     _title: 'OBE Brand Configuration'
     _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
   requirements:
-    _permission: 'administer site configuration'
+    _role: 'administrator+marketing_cms_editor+qa+sc_personnel'
