@@ -64,7 +64,9 @@ function App() {
     let apiEndDate = selectedDate.clone().add(2, "days").format("YYYY-MM-DD");
 
     // API with parameters.
-    let apiWithParam = Drupal.url(`availabletime?start_date=${apiStartDate}&end_date=${apiEndDate}`);
+    let apiWithParam = Drupal.url(
+      `availabletime?start_date=${apiStartDate}&end_date=${apiEndDate}`
+    );
 
     //API calling and parsing logic.
     setLoader(true);
@@ -118,8 +120,8 @@ function App() {
 
   return (
     <div className="row fadein">
+      {isLoading ? <Loader /> : ""}
       <div className="col-lg-5 col-sm-7 col-xs-12 datepicker-wrapper">
-        {isLoading ? <Loader /> : ""}
         <DatePicker
           locale={currentLanguage}
           dateFormatCalendar={reactDateFormat}
