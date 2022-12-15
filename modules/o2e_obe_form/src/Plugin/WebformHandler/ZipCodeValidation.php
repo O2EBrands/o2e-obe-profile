@@ -116,30 +116,24 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
             $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
             return TRUE;
           }
-          elseif (isset($response['code']) && $response['code'] === 404) {
+          else {
             $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
-            if (strpos($response['message'], 'Area Not Serviced')) {
+            $message = $booking_error_message;
+            if (isset($response['code']) && $response['code'] === 404) {
               $this->tempStoreFactory->get('o2e_obe_salesforce')->set('ans_zip', $zip_code);
               $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
               $enable_ans = $salesforceConfigData['enable_ans'];
               if ($enable_ans == TRUE) {
                 $message = Markup::create($salesforceConfigData['ans_message']);
-                $formState->setErrorByName('from_postal_code', $message);
               }
               else {
-                $formState->setErrorByName('from_postal_code', $response['message']);
+                $message = $response['message'];
               }
             }
-          }
-          else {
-            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
-            if (!empty($response['message'])) {
-              $formState->setErrorByName('from_postal_code', $response['message']);
-            }
             else {
-              $formState->setErrorByName('', $booking_error_message);
+              $message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('o2e_obe_common.500_message');
             }
-            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
+            $formState->setErrorByName('from_postal_code', $message);
           }
         }
       }
