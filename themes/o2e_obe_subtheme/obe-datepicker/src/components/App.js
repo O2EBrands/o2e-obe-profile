@@ -137,8 +137,11 @@ function App() {
               "-" +
               ("0" + date.getDate()).slice(-2);
 
-            // days difference.
-            let daysDiff = selectedDate.diff(dateString, "days", true);
+            // Creating temp moment obj in UTC timezone.
+            let tempMomentObj = moment(dateString).tz("utc", true);
+
+            // Calculating days difference.
+            let daysDiff = selectedDate.diff(tempMomentObj, "days", true);
 
             // add class to day.
             if (daysDiff >= -2 && daysDiff < 0) {
