@@ -144,12 +144,15 @@ export default function Slots(props) {
       />
     );
 
+    // Setting up evening grouping variable
+    let eveningHrs = drupalSettings.brand_name === "W1D" ? 17 : 16;
+
     // Push the input radios into array based on their date and time.
     if (slotHours < 12 && slotMinutes < 31) {
       if (optionsByDay[optionsDay].hasOwnProperty("morning")) {
         optionsByDay[optionsDay].morning.push(radioBtnTemplate);
       }
-    } else if (slotHours < 16 && slotMinutes < 31) {
+    } else if (slotHours < eveningHrs && slotMinutes < 31) {
       if (optionsByDay[optionsDay].hasOwnProperty("afternoon")) {
         optionsByDay[optionsDay].afternoon.push(radioBtnTemplate);
       }
