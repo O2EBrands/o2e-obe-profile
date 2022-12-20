@@ -11,6 +11,7 @@ use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Http\RequestStack;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Available Times Service class is return the time slots details.
@@ -75,9 +76,14 @@ class AvailableTimesService {
   protected $request;
 
   /**
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $account;
+
+  /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification, RequestStack $request_stack) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification, RequestStack $request_stack, AccountInterface $account) {
     $this->httpClient = $http_client;
     $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
@@ -86,6 +92,7 @@ class AvailableTimesService {
     $this->timeService = $time_service;
     $this->areaVerification = $area_verification;
     $this->request = $request_stack;
+    $this->account = $account;
 
   }
 
@@ -225,6 +232,9 @@ class AvailableTimesService {
         'start_date' => $start_date,
         'end_date' => $end_date,
       ]);
+      if (in_array("administrator", $this->account->getRoles())) {
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots',$response);
+      }
       return new JsonResponse($response);
     }
     else {
