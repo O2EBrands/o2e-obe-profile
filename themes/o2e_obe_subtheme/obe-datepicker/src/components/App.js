@@ -106,7 +106,7 @@ function App() {
           }
         },
         (error) => {
-          // setLoader(true);
+          setLoader(true);
         }
       );
   }
@@ -193,7 +193,6 @@ function App() {
             )
           }
           onChange={(date: Date) => {
-            console.log("date change from cal");
             fetchSlots(date);
           }}
         />
