@@ -20,6 +20,12 @@ registerLocale("fr", fr);
 //Initialize object for response
 let data = {};
 
+// Flag for setting up the loader to full width.
+let isFullLoader =
+  drupalSettings.brand_name === "SSH" || drupalSettings.brand_name === "W1D"
+    ? true
+    : false;
+
 // Current date string.
 let today = new Date();
 let curDateString =
@@ -57,34 +63,58 @@ function App() {
   const startDate = useMemo(() => moment(), []);
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const [isLoading, setLoader] = useState(true);
+  const [isFetched, setFetched] = useState(false);
 
-  useEffect(() => {
+  // Function to fetch slots and update concerned states.
+  function fetchSlots(date) {
+    if (!isFullLoader) {
+      setFetched(false);
+    }
+
+    let calDateString =
+      date.getFullYear() +
+      "-" +
+      ("0" + (date.getMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + date.getDate()).slice(-2);
+
+    //Creating moment obj from date.
+    let momentObj = moment.utc(calDateString);
+
     // Setting up dates for API call.
-    let apiStartDate = selectedDate.clone().format("YYYY-MM-DD");
-    let apiEndDate = selectedDate.clone().add(2, "days").format("YYYY-MM-DD");
+    let apiStartDate = momentObj.clone().format("YYYY-MM-DD");
+    let apiEndDate = momentObj.clone().add(2, "days").format("YYYY-MM-DD");
 
     // API with parameters.
     let apiWithParam = Drupal.url(
       `availabletime?start_date=${apiStartDate}&end_date=${apiEndDate}`
     );
 
-    //API calling and parsing logic.
+    // API calling and parsing logic.
     setLoader(true);
+
     fetch(apiWithParam)
       .then((res) => res.json())
       .then(
         (result) => {
+          setFetched(true);
+          setSelectedDate(momentObj);
+          setLoader(false);
           data = result;
           if (data.time_zone) {
             localStorage.setItem("timeZone", data.time_zone);
           }
-          setLoader(false);
         },
         (error) => {
           setLoader(true);
         }
       );
-  }, [selectedDate]);
+  }
+
+  // Inital render.
+  useEffect(() => {
+    fetchSlots(selectedDate.toDate());
+  }, []);
 
   // Min date and Max date for Calendar.
   let minDate = startDate.clone();
@@ -93,9 +123,14 @@ function App() {
     drupalSettings.brand_name === "GJ AU"
       ? startDate.clone().add(4, "months").subtract(2, "days")
       : drupalSettings.brand_name === "W1D"
-      ? startDate.clone().add(1, "years")
+      ? startDate.clone().add(1, "years").subtract(2, "days")
       : drupalSettings.brand_name === "SSH"
-      ? startDate.clone().endOf("year").startOf("day").add(3, "years")
+      ? startDate
+          .clone()
+          .endOf("year")
+          .startOf("day")
+          .add(3, "years")
+          .subtract(2, "days")
       : undefined;
 
   // input for datepicker maxDate.
@@ -120,8 +155,9 @@ function App() {
 
   return (
     <div className="row fadein">
-      {isLoading ? <Loader /> : ""}
+      {isLoading && isFullLoader ? <Loader /> : ""}
       <div className="col-lg-5 col-sm-7 col-xs-12 datepicker-wrapper">
+        {isLoading && !isFullLoader ? <Loader /> : ""}
         <DatePicker
           locale={currentLanguage}
           dateFormatCalendar={reactDateFormat}
@@ -157,20 +193,12 @@ function App() {
             )
           }
           onChange={(date: Date) => {
-            let calDateString =
-              date.getFullYear() +
-              "-" +
-              ("0" + (date.getMonth() + 1)).slice(-2) +
-              "-" +
-              ("0" + date.getDate()).slice(-2);
-            setSelectedDate(moment.utc(calDateString));
+            fetchSlots(date);
           }}
         />
       </div>
       <div className="col-lg-7 col-sm-5 col-xs-12 timeslot-wrapper">
-        {isLoading ? (
-          <SlotLoader />
-        ) : (
+        {isFetched && (
           <Slots {...data} selectedDate={selectedDate} maxDate={maxDate} />
         )}
       </div>

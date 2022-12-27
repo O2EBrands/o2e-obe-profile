@@ -215,5 +215,5 @@ export default function Slots(props) {
     };
   });
 
-  return <div className="row fadein">{accordionGroup}</div>;
+  return <div className="row slideDown">{accordionGroup}</div>;
 }
