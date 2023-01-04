@@ -113,7 +113,9 @@ function App() {
 
   // Inital render.
   useEffect(() => {
-    fetchSlots(selectedDate.toDate());
+    fetchSlots(
+      new Date(selectedDate.year(), selectedDate.month(), selectedDate.date())
+    );
   }, []);
 
   // Min date and Max date for Calendar.
