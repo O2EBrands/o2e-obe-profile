@@ -15,7 +15,6 @@ use Drupal\Component\Datetime\TimeInterface;
  */
 class CreateLead {
 
-
   /**
    * PrivateTempStoreFactory definition.
    *
@@ -43,12 +42,14 @@ class CreateLead {
    * @var \Drupal\Core\State\State
    */
   protected $state;
+
   /**
    * The Auth Token Manager.
    *
    * @var \Drupal\o2e_obe_salesforce\AuthTokenManager
    */
   protected $authTokenManager;
+
   /**
    * The datetime.time service.
    *
