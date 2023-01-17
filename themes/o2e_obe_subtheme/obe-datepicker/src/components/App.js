@@ -4,7 +4,6 @@ import DatePicker from "react-datepicker";
 import { registerLocale } from "react-datepicker";
 import Loader from "./Loader";
 import Slots from "./Slots";
-import SlotLoader from "./SlotLoader";
 import { fr } from "date-fns/locale";
 
 // import 'react-datepicker/dist/react-datepicker-cssmodules.css';

@@ -29,30 +29,25 @@ export default function AccordionItem({
 
   // DatePicker scroll on submit.
   useEffect(() => {
-    if (
-      drupalSettings.brand_name === "GJ NA" ||
-      drupalSettings.brand_name === "GJ AU"
-    ) {
-      let timeSlot = jQuery(
-        ".webform-submission-o2e-webform-form .slot-item"
-      ).once("reactDatepicker");
-      if (timeSlot.length) {
-        // Remove click event listeners.
-        timeSlot.off("click");
+    let timeSlot = jQuery(
+      ".webform-submission-o2e-webform-form .slot-item"
+    ).once("reactDatepicker");
+    if (timeSlot.length) {
+      // Remove click event listeners.
+      timeSlot.off("click");
 
-        // Add Event listeners
-        timeSlot.on("click", function () {
-          jQuery("html, body").animate(
-            {
-              scrollTop:
-                jQuery(
-                  '.webform-submission-o2e-webform-form .webform-actions[data-drupal-selector="edit-actions-datepicker"]'
-                ).offset().top - 100,
-            },
-            500
-          );
-        });
-      }
+      // Add Event listeners
+      timeSlot.on("click", function () {
+        jQuery("html, body").animate(
+          {
+            scrollTop:
+              jQuery(
+                ".webform-submission-o2e-webform-form .webform-actions .webform-button--next"
+              ).offset().top - 100,
+          },
+          500
+        );
+      });
     }
   }, [isExpanded]);
 
@@ -62,9 +57,8 @@ export default function AccordionItem({
     setTimeout(() => {
       if (jQuery(".pre-selected").length) {
         jQuery(".pre-selected").find("input").prop("checked", "true");
-        let activeAccordion = jQuery(".pre-selected").parents(
-          ".accordion-item"
-        );
+        let activeAccordion =
+          jQuery(".pre-selected").parents(".accordion-item");
         activeAccordion.find(".accordion-collapse").collapse("show");
         jQuery(".accordion-button.collapsed")
           .parents(".accordion-item")
