@@ -132,6 +132,9 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
             }
             else {
               $message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('o2e_obe_common.500_message');
+              if (!empty($message)) {
+                $message = Markup::create($message);
+              }
             }
             $formState->setErrorByName('from_postal_code', $message);
           }
