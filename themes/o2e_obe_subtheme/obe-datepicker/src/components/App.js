@@ -34,20 +34,21 @@ let curDateString =
   "-" +
   ("0" + today.getDate()).slice(-2);
 
-// Getting nextAvalDateW1d
-let nextAvalDateW1d = document.querySelector(".next-avail-date span")?.dataset
+// Getting nextAvailDate.
+let nextAvailDate = document.querySelector(".next-avail-date span")?.dataset
   ?.next;
+let useNxtAvblDate = drupalSettings.brand_name === "W1D" || drupalSettings.brand_name === "SSH";
 
 // flag for nextdate avail date
 const isNextFlag =
-  moment().startOf("day").isBefore(nextAvalDateW1d, "day") &&
+  moment().startOf("day").isBefore(nextAvailDate, "day") &&
   Math.abs(
-    moment().startOf("day").diff(moment(nextAvalDateW1d), "days", true)
+    moment().startOf("day").diff(moment(nextAvailDate), "days", true)
   ) <= 10;
 
 // if there is next aval date then set it as current Date.
-if (isNextFlag && drupalSettings.brand_name === "W1D" && nextAvalDateW1d) {
-  curDateString = nextAvalDateW1d;
+if (isNextFlag && useNxtAvblDate && nextAvailDate) {
+  curDateString = nextAvailDate;
 }
 
 function App() {
@@ -182,11 +183,11 @@ function App() {
           maxDate={datePickerMaxDateInput}
           inline
           excludeDateIntervals={
-            isNextFlag && drupalSettings.brand_name === "W1D" && nextAvalDateW1d
+            isNextFlag && useNxtAvblDate && nextAvailDate
               ? [
                   {
                     start: moment().startOf("day").toDate(),
-                    end: moment(nextAvalDateW1d)
+                    end: moment(nextAvailDate)
                       .startOf("day")
                       .subtract(1, "days")
                       .toDate(),
