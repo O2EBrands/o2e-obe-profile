@@ -174,6 +174,19 @@ function App() {
           minDate={new Date(minDate.year(), minDate.month(), minDate.date())}
           maxDate={datePickerMaxDateInput}
           inline
+          excludeDateIntervals={
+            nextAvalDateW1d && drupalSettings.brand_name === "W1D"
+              ? [
+                  {
+                    start: moment().startOf("day").toDate(),
+                    end: moment(nextAvalDateW1d)
+                      .startOf("day")
+                      .subtract(1, "days")
+                      .toDate(),
+                  },
+                ]
+              : null
+          }
           dayClassName={(date: Date) => {
             // day Date string
             let dateString =
