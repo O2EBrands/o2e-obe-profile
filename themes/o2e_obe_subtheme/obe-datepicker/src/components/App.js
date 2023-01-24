@@ -34,6 +34,15 @@ let curDateString =
   "-" +
   ("0" + today.getDate()).slice(-2);
 
+// Getting nextAvalDateW1d
+let nextAvalDateW1d = document.querySelector(".next-avail-date span")?.dataset
+  ?.next;
+
+// if there is next aval date then set it as current Date.
+if (drupalSettings.brand_name === "W1D" && nextAvalDateW1d) {
+  curDateString = nextAvalDateW1d;
+}
+
 function App() {
   //Fetching hidden field.
   let startTimeField = document.querySelector(
