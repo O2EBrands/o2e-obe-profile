@@ -12,7 +12,9 @@
     "css-what": ">=5.0.1",
     "qs": ">=6.2.4",
     "engine.io": ">=6.2.1",
-    "decode-uri-component": ">=0.2.1"
+    "decode-uri-component": ">=0.2.1",
+    "json5": ">=2.2.2",
+    "ua-parser-js": ">=1.0.33"
   },
   "keywords": [
     "SASS",
