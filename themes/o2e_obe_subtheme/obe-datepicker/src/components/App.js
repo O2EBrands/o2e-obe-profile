@@ -37,14 +37,16 @@ let curDateString =
 // Getting nextAvailDate.
 let nextAvailDate = document.querySelector(".next-avail-date span")?.dataset
   ?.next;
-let useNxtAvblDate = drupalSettings.brand_name === "W1D" || drupalSettings.brand_name === "SSH";
+let useNxtAvblDate =
+  drupalSettings.brand_name === "W1D" || drupalSettings.brand_name === "SSH";
+
+let uniqueKey = Math.random();
 
 // flag for nextdate avail date
 const isNextFlag =
   moment().startOf("day").isBefore(nextAvailDate, "day") &&
-  Math.abs(
-    moment().startOf("day").diff(moment(nextAvailDate), "days", true)
-  ) <= 10;
+  Math.abs(moment().startOf("day").diff(moment(nextAvailDate), "days", true)) <=
+    10;
 
 // if there is next aval date then set it as current Date.
 if (isNextFlag && useNxtAvblDate && nextAvailDate) {
@@ -116,6 +118,9 @@ function App() {
           setFetched(true);
           setSelectedDate(momentObj);
           setLoader(false);
+          if (isFullLoader) {
+            uniqueKey = Math.random();
+          }
           data = result;
           if (data.time_zone) {
             localStorage.setItem("timeZone", data.time_zone);
@@ -230,7 +235,12 @@ function App() {
       </div>
       <div className="col-lg-7 col-sm-5 col-xs-12 timeslot-wrapper">
         {isFetched && (
-          <Slots {...data} selectedDate={selectedDate} maxDate={maxDate} />
+          <Slots
+            {...data}
+            selectedDate={selectedDate}
+            maxDate={maxDate}
+            key={uniqueKey}
+          />
         )}
       </div>
     </div>
