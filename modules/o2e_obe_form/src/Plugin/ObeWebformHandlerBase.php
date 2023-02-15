@@ -46,7 +46,8 @@ abstract class ObeWebformHandlerBase extends WebformHandlerBase {
       'checkbox',
       'webform_custom_composite',
       'number',
-      'webform_radios_other'
+      'webform_radios_other',
+      'value',
     ];
     $excluded_field_names = [
       'promo_code',
