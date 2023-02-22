@@ -55,9 +55,18 @@ if (isNextFlag && useNxtAvblDate && nextAvailDate) {
 
 function App() {
   //Fetching hidden field.
-  let startTimeField = document.querySelector(
-    'input[data-drupal-selector="edit-start-date-time"]'
+
+  let startTimeField;
+  const startFieldGrp = Array.from(
+    document.querySelectorAll(
+      'input[data-drupal-selector="edit-start-date-time"], input[data-drupal-selector="edit-ssh-checkout-pane-calendar-availability-start-date-time"]'
+    )
   );
+
+  startFieldGrp.forEach((field) => {
+    startTimeField = {};
+    startTimeField.value = field.value;
+  });
 
   //Check if date is already set.
   let currentDate;

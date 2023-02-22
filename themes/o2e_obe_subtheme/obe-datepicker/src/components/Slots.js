@@ -106,18 +106,20 @@ export default function Slots(props) {
   ];
 
   // Getting dom objects for selecting values.
-  let startTimeField = document.querySelector(
-    'input[data-drupal-selector="edit-start-date-time"]'
-  );
-  let finshTimeField = document.querySelector(
-    'input[data-drupal-selector="edit-finish-date-time"]'
-  );
-  let pickUpField = document.querySelector(
-    'input[data-drupal-selector="edit-pick-up-date"]'
-  );
-  let arrivalTimeField = document.querySelector(
-    'input[data-drupal-selector="edit-arrival-time"]'
-  );
+  let startTimeField = Array.from(document.querySelectorAll(
+    'input[data-drupal-selector="edit-start-date-time"], input[data-drupal-selector="edit-ssh-checkout-pane-calendar-availability-start-date-time"]'
+  ));
+  let finshTimeField = Array.from(document.querySelectorAll(
+    'input[data-drupal-selector="edit-finish-date-time"], input[data-drupal-selector="edit-ssh-checkout-pane-calendar-availability-finish-date-time"]'
+  ));
+  let pickUpField = Array.from(document.querySelectorAll(
+    'input[data-drupal-selector="edit-pick-up-date"], input[data-drupal-selector="edit-ssh-checkout-pane-calendar-availability-pick-up-date"]'
+  ));
+  let arrivalTimeField = Array.from(document.querySelectorAll(
+    'input[data-drupal-selector="edit-arrival-time"], input[data-drupal-selector="edit-ssh-checkout-pane-calendar-availability-arrival-time"]'
+  ));
+
+  let fields = [startTimeField, finshTimeField, pickUpField, arrivalTimeField];
 
   // Loop through each timeslot and group them by date.
   for (let key in props.timeslots) {
@@ -208,10 +210,12 @@ export default function Slots(props) {
   // Cleaning up on re-renders
   useEffect(() => {
     return function cleanUp() {
-      startTimeField.value = "";
-      finshTimeField.value = "";
-      pickUpField.value = "";
-      arrivalTimeField.value = "";
+      fields.forEach((fieldGrp)=> {
+        fieldGrp.forEach((field)=> {
+          field.value="";
+        })
+      })
+      
     };
   });
 

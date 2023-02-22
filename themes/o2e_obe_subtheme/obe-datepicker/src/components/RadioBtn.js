@@ -1,19 +1,33 @@
 import React from "react";
 import moment from "moment-timezone";
 
+let startTimeField = { value: "" };
 export default function RadioBtn(props) {
-  // Getting dom objects for selecting values.
-  let startTimeField = document.querySelector(
-    'input[data-drupal-selector="edit-start-date-time"]'
+  let startGrp = Array.from(
+    document.querySelectorAll(
+      'input[data-drupal-selector="edit-start-date-time"], input[data-drupal-selector="edit-ssh-checkout-pane-calendar-availability-start-date-time"]'
+    )
   );
-  let finshTimeField = document.querySelector(
-    'input[data-drupal-selector="edit-finish-date-time"]'
+
+  // Updating the values.
+  startGrp.forEach((field) => {
+    startTimeField.value = field.value;
+  });
+
+  let finishTimeField = Array.from(
+    document.querySelectorAll(
+      'input[data-drupal-selector="edit-finish-date-time"], input[data-drupal-selector="edit-ssh-checkout-pane-calendar-availability-finish-date-time"]'
+    )
   );
-  let pickUpField = document.querySelector(
-    'input[data-drupal-selector="edit-pick-up-date"]'
+  let pickUpField = Array.from(
+    document.querySelectorAll(
+      'input[data-drupal-selector="edit-pick-up-date"], input[data-drupal-selector="edit-ssh-checkout-pane-calendar-availability-pick-up-date"]'
+    )
   );
-  let arrivalTimeField = document.querySelector(
-    'input[data-drupal-selector="edit-arrival-time"]'
+  let arrivalTimeField = Array.from(
+    document.querySelectorAll(
+      'input[data-drupal-selector="edit-arrival-time"], input[data-drupal-selector="edit-ssh-checkout-pane-calendar-availability-arrival-time"]'
+    )
   );
   let radioId = props.startMoment.clone().format("MMMDHm");
 
@@ -31,16 +45,22 @@ export default function RadioBtn(props) {
       .format("h:mma")}`;
 
     // Updating the values.
-    startTimeField.value = moment
-      .utc(startValue)
-      .tz(props.timeZone, true)
-      .format();
-    finshTimeField.value = moment
-      .utc(finishValue)
-      .tz(props.timeZone, true)
-      .format();
-    pickUpField.value = pickUpValue.toString();
-    arrivalTimeField.value = arrivalTimeValue.toString();
+    startGrp.forEach((field) => {
+      field.value = moment.utc(startValue).tz(props.timeZone, true).format();
+      startTimeField.value = field.value;
+    });
+
+    finishTimeField.forEach((field) => {
+      field.value = moment.utc(finishValue).tz(props.timeZone, true).format();
+    });
+
+    pickUpField.forEach((field) => {
+      field.value = pickUpValue.toString();
+    });
+
+    arrivalTimeField.forEach((field) => {
+      field.value = arrivalTimeValue.toString();
+    });
   }
 
   // default formatted timeslot
