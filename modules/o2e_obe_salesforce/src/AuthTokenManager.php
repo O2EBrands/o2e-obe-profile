@@ -8,6 +8,7 @@ use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\State\State;
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use GuzzleHttp\Exception\RequestException;
 
@@ -76,8 +77,27 @@ class AuthTokenManager {
    * GenerateToken the auth token.
    */
   public function generateToken() {
-    if ($this->validateConfigField($this->sfConfig->get('sf_auth'))) {
-      return [];
+    $options = [];
+    if (!empty($_ENV['PANTHEON_ENVIRONMENT']) && $_ENV['PANTHEON_ENVIRONMENT'] === 'live') {
+      $options = [
+        'grant_type' => Settings::get('grant_type', 'password'),
+        'client_id' => Settings::get('client_id', '1111'),
+        'client_secret' => Settings::get('client_secret', '1111'),
+        'username' => Settings::get('api_username', '1111'),
+        'password' => Settings::get('api_password', '1111'),
+      ];
+    }
+    else {
+      if ($this->validateConfigField($this->sfConfig->get('sf_auth'))) {
+        return [];
+      }
+      $options = [
+        'grant_type' => $this->sfConfig->get('sf_auth.grant_type'),
+        'client_id' => $this->sfConfig->get('sf_auth.client_id'),
+        'client_secret' => $this->sfConfig->get('sf_auth.client_secret'),
+        'username' => $this->sfConfig->get('sf_auth.api_username'),
+        'password' => $this->sfConfig->get('sf_auth.api_password'),
+      ];
     }
     $currentTimeStamp = $this->timeService->getRequestTime();
     if ($this->token = $this->checkTokenValidity($currentTimeStamp)) {
@@ -85,13 +105,7 @@ class AuthTokenManager {
     }
     $token_segemets = 'Bearer ';
     $endpoint = $this->sfConfig->get('sf_auth.login_url');
-    $options = [
-      'grant_type' => $this->sfConfig->get('sf_auth.grant_type'),
-      'client_id' => $this->sfConfig->get('sf_auth.client_id'),
-      'client_secret' => $this->sfConfig->get('sf_auth.client_secret'),
-      'username' => $this->sfConfig->get('sf_auth.api_username'),
-      'password' => $this->sfConfig->get('sf_auth.api_password'),
-    ];
+
     try {
       // Get the access token first.
       $res = $this->httpClient->request('POST', $endpoint, ['form_params' => $options]);
@@ -149,7 +163,7 @@ class AuthTokenManager {
     if ($config) {
       foreach ($config as $key => $value) {
         if (empty($value)) {
-          $message = $this->t(' @field field is required in the Salesforce configuration.', ['@field' => $key]);
+          $message = $this->t('@field field is required in the Salesforce configuration.', ['@field' => $key]);
           $this->loggerFactory->get('Salesforce - Api Fields ')->error($message);
           return TRUE;
         }
