@@ -118,6 +118,7 @@ class AreaVerificationService {
         'job_duration' => $result['job_duration'] ?? '',
         'lastServiceTime' => $currentTimeStamp,
         'state' => $result['state'] ?? '',
+        'geolocation' => $result['geolocation']
       ]);
       $data = UrlHelper::buildQuery($options['query']) . '  -----  ' . Json::encode($result);
       $this->obeSfLogger->log('Salesforce - VerifyAreaServiced', 'notice', $data, [
