@@ -196,8 +196,12 @@ class AvailableTimesService {
         ])->getBody();
         $endAvailabilityTimer = $this->timeService->getCurrentMicroTime();
         // Logs the Timer GetAvailableTimes.
-        $availabilityTimerDuration = round($endAvailabilityTimer - $startAvailabilityTimer, 2);
-        $this->obeSfLogger->log('Timer GetAvailableTimes', 'notice', $availabilityTimerDuration);
+        $availabilityTimerDuration = "API response time: " . round($endAvailabilityTimer - $startAvailabilityTimer, 2);
+        $zipCode = "Zip code: " . $sf_response['from_postal_code'];
+        $userAgent = "User agent: " . $_SERVER['HTTP_USER_AGENT'];
+        $this->obeSfLogger->log('Timer GetAvailableTimes', 'notice', $zipCode . " // " .
+          $availabilityTimerDuration . " // " .
+          $userAgent);
         $result = Json::decode($res, TRUE);
         $current_time = \Drupal::service('datetime.time')->getRequestTime();
         $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('currentLocalTime');
