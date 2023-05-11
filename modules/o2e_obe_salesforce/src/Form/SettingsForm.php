@@ -299,7 +299,6 @@ class SettingsForm extends ConfigFormBase {
       $this->state->delete('authtoken');
       $this->state->delete('sfUrl');
       $this->state->delete('lastAuthTime');
-      $this->authTokenManager->generateToken();
       // SQL Query.
       $query = $this->connection->delete('key_value_expire')
         ->condition('collection', '%o2e%', 'LIKE')
