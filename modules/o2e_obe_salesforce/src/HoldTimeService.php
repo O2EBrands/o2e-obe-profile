@@ -102,7 +102,13 @@ class HoldTimeService {
       $endHoldTimeTimer = $this->timeService->getCurrentMicroTime();
       // Logs the Timer HoldTime.
       $holdTimeTimerDuration = round($endHoldTimeTimer - $startHoldTimeTimer, 2);
-      $this->obeSfLogger->log('Timer HoldTime', 'notice', $holdTimeTimerDuration);
+      $availabilityTimerDuration = "API response time: " . $holdTimeTimerDuration;
+      $zipCode = "Zip code: " . $tempstore['from_postal_code'];
+      $userAgent = "User agent: " . $_SERVER['HTTP_USER_AGENT'];
+      $this->obeSfLogger->log('Timer HoldTime', 'notice', $zipCode . " // " .
+      $availabilityTimerDuration . " // " .
+      $userAgent);
+
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options) . '  -----  ' . Json::encode($result);
       $this->obeSfLogger->log('Salesforce - Hold Time', 'notice', $data, [

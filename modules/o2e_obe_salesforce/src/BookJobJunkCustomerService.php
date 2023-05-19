@@ -103,7 +103,13 @@ class BookJobJunkCustomerService {
       $endBookJobTimer = $this->timeService->getCurrentMicroTime();
       // Logs the Timer BookJobJunk.
       $bookJobTimerDuration = round($endBookJobTimer - $startBookJobTimer, 2);
-      $this->obeSfLogger->log('Timer BookJobJunk', 'notice', $bookJobTimerDuration);
+      $availabilityTimerDuration = "API response time: " . $bookJobTimerDuration;
+      $zipCode = "Zip code: " . $sf_response['from_postal_code'];
+      $userAgent = "User agent: " . $_SERVER['HTTP_USER_AGENT'];
+      $this->obeSfLogger->log(
+        'Timer BookJobJunk', 'notice', $zipCode . " // " .
+        $availabilityTimerDuration . " // " . $userAgent
+      );
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options) . ' ' . Json::encode($result);
       $this->obeSfLogger->log('Salesforce - BookJobJunk', 'notice', $data, [
