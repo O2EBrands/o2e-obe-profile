@@ -108,7 +108,12 @@ class AreaVerificationService {
       $endZipTimer = $this->timeService->getCurrentMicroTime();
       // Logs the Timer VerifyAreaServiced.
       $zipTimerDuration = round($endZipTimer - $startZipTimer, 2);
-      $this->obeSfLogger->log('Timer VerifyAreaServiced', 'notice', $zipTimerDuration);
+      $availabilityTimerDuration = "API response time: " . $zipTimerDuration;
+      $zipCode = "Zip code: " . $zipcode;
+      $userAgent = "User agent: " . $_SERVER['HTTP_USER_AGENT'];
+      $this->obeSfLogger->log('Timer VerifyAreaServiced', 'notice', $zipCode . " // " .
+      $availabilityTimerDuration . " // " .
+      $userAgent);
       $result = Json::decode($response->getBody(), TRUE);
       $tempstore->set('response', [
         'service_id' => $result['service_id'],

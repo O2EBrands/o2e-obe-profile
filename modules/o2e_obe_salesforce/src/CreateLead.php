@@ -92,6 +92,8 @@ class CreateLead {
     $options += [
       'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
     ];
+    $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
+
     try {
       $startCreateLeadTimer = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('POST', $api_url, [
@@ -101,7 +103,13 @@ class CreateLead {
       $endCreateLeadTimer = $this->timeService->getCurrentMicroTime();
       // Logs the Timer CreateLead.
       $createLeadTimerDuration = round($endCreateLeadTimer - $startCreateLeadTimer, 2);
-      $this->obeSfLogger->log('Timer CreateLead', 'notice', $createLeadTimerDuration);
+      $availabilityTimerDuration = "API response time: " . $createLeadTimerDuration;
+      $zipCode = "Zip code: " . $tempstore['from_postal_code'];
+      $userAgent = "User agent: " . $_SERVER['HTTP_USER_AGENT'];
+      $this->obeSfLogger->log('Timer CreateLead', 'notice', $zipCode . " // " .
+      $availabilityTimerDuration . " // " .
+      $userAgent);
+
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options) . ' ---- ' . $response->getStatusCode() . ' ---- ' . Json::encode($result);
       $this->obeSfLogger->log('Salesforce - Create Lead', 'notice', $data, [
