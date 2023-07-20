@@ -102,6 +102,8 @@ class AreaVerificationService {
       'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
       'from_postal_code' => $zipcode,
     ];
+    // Request object for Email entry.
+    $request = $api_url . '?' . UrlHelper::buildQuery($options['query']);
     try {
       $startZipTimer = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('GET', $api_url, $options);
@@ -131,11 +133,23 @@ class AreaVerificationService {
         'payload' => $options['query'],
         'response' => $result,
       ]);
+      // Tempstore to store areaverification request log.
+      $tempstore->set('areaverification', [
+        'name' => 'Verify Area Serviced',
+        'request' => $request,
+        'response' => $result,
+      ]);
       return $result;
     }
     catch (RequestException $e) {
       $this->obeSfLogger->log('Salesforce - VerifyAreaServiced Fail', 'error', $e->getMessage());
       if (!empty($e->getResponse())) {
+        // Tempstore to store areaverification request log.
+        $tempstore->set('areaverification', [
+          'name' => 'Verify Area Serviced',
+          'request' => $request,
+          'response' => $e->getResponseBodySummary($e->getResponse()),
+        ]);
         return [
           'code' => $e->getCode(),
           'message' => $e->getResponseBodySummary($e->getResponse()),

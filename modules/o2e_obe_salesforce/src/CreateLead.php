@@ -93,7 +93,8 @@ class CreateLead {
       'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
     ];
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
-
+    // Request object for Email entry.
+    $request = UrlHelper::buildQuery($options);
     try {
       $startCreateLeadTimer = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('POST', $api_url, [
@@ -118,11 +119,25 @@ class CreateLead {
         'payload' => $options,
         'response' => $result,
       ]);
+      // Tempstore to store createLead request log.
+      $this->tempStoreFactory->get('o2e_obe_salesforce')->set('createLead', [
+        'name' => 'Create Lead',
+        'url' => $api_url,
+        'request' => $request,
+        'response' => $result,
+      ]);
       return $result;
     }
     catch (RequestException $e) {
       $this->obeSfLogger->log('Salesforce - Create Lead Fail', 'error', $e->getMessage());
       if (!empty($e->getResponse())) {
+        // Tempstore to store createLead request log.
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('createLead', [
+          'name' => 'Create Lead',
+          'url' => $api_url,
+          'request' => $request,
+          'response' => $e->getResponseBodySummary($e->getResponse()),
+        ]);
         return [
           'code' => $e->getCode(),
           'message' => $e->getResponseBodySummary($e->getResponse()),

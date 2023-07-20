@@ -94,6 +94,8 @@ class BookJobJunkCustomerService {
       'franchise_id' => $sf_response['franchise_id'],
     ];
     $tempstore->set('bookJobJunkCustomer', UrlHelper::buildQuery($options));
+    // Request object for Email entry.
+    $request = UrlHelper::buildQuery($options);
     try {
       $startBookJobTimer = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('POST', $api_url, [
@@ -118,11 +120,25 @@ class BookJobJunkCustomerService {
         'payload' => $options,
         'response' => $result,
       ]);
+      // Tempstore to store bookjobcustomer request log.
+      $this->tempStoreFactory->get('o2e_obe_salesforce')->set('bookjobcustomerjunk', [
+        'name' => 'Book Job Junk Customer',
+        'url' => $api_url,
+        'request' => $request,
+        'response' => $result,
+      ]);
       return $result;
     }
     catch (RequestException $e) {
       $this->obeSfLogger->log('Salesforce - BookJobJunk Fail', 'error', $e->getMessage());
       if (!empty($e->getResponse())) {
+        // Tempstore to store bookjobcustomer request log.
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('bookjobcustomerjunk', [
+          'name' => 'Book Job Junk Customer',
+          'url' => $api_url,
+          'request' => $request,
+          'response' => $e->getResponseBodySummary($e->getResponse()),
+        ]);
         return [
           'code' => $e->getCode(),
           'message' => $e->getResponseBodySummary($e->getResponse()),
