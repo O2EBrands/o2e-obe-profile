@@ -97,6 +97,8 @@ class PromoDetailsJunkService {
       'franchise_id' => $tempstore['franchise_id'],
       'promotion_code' => $promocode,
     ];
+    // Request object for Email entry.
+    $request = $api_url . '?' . UrlHelper::buildQuery($options['query']);
     try {
       $startPromoTimer = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('GET', $api_url, $options);
@@ -112,9 +114,21 @@ class PromoDetailsJunkService {
         'payload' => $options['query'],
         'response' => $result,
       ]);
+      // Tempstore to store promoDetails request log.
+      $tempstore->set('promoDetails', [
+        'name' => 'Promo Details Junk',
+        'request' => $request,
+        'response' => $result,
+      ]);
       return $result;
     }
     catch (RequestException $e) {
+      // Tempstore to store promoDetails request log.
+      $tempstore->set('promoDetails', [
+        'name' => 'Promo Details Junk',
+        'request' => $request,
+        'response' => $e->getMessage(),
+      ]);
       $this->obeSfLogger->log('Salesforce - Promo Details Junk Fail', 'error', $e->getMessage());
     }
   }

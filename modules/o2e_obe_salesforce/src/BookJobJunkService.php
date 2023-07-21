@@ -96,6 +96,8 @@ class BookJobJunkService {
       'service_id' => $sf_response['service_id'],
     ];
     $tempstore->set('bookJobJunkService', UrlHelper::buildQuery($options));
+    // Request object for Email entry.
+    $request = UrlHelper::buildQuery($options);
     try {
       $startBookJobTimer2 = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('POST', $api_url, [
@@ -121,11 +123,25 @@ class BookJobJunkService {
         'payload' => $options,
         'response' => $result,
       ]);
+      // Tempstore to store bookjobservice request log.
+      $this->tempStoreFactory->get('o2e_obe_salesforce')->set('bookjobservice', [
+        'name' => 'Book Job Junk Service',
+        'url' => $api_url,
+        'request' => $request,
+        'response' => $result,
+      ]);
       return $response->getStatusCode();
     }
     catch (RequestException $e) {
       $this->obeSfLogger->log('Salesforce - BookJobJunk2 Fail', 'error', $e->getMessage());
       if (!empty($e->getResponse())) {
+        // Tempstore to store bookjobservice request log.
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('bookjobservice', [
+          'name' => 'Book Job Junk Service',
+          'url' => $api_url,
+          'request' => $request,
+          'response' => $e->getResponseBodySummary($e->getResponse()),
+        ]);
         return [
           'code' => $e->getCode(),
           'message' => $e->getResponseBodySummary($e->getResponse()),

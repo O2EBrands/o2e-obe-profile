@@ -93,6 +93,8 @@ class HoldTimeService {
     $options += [
       'service_id' => $tempstore['service_id'],
     ];
+    // Request object for Email entry.
+    $request = UrlHelper::buildQuery($options);
     try {
       $startHoldTimeTimer = $this->timeService->getCurrentMicroTime();
       $response = $this->httpClient->request('POST', $api_url, [
@@ -117,9 +119,23 @@ class HoldTimeService {
         'payload' => $options,
         'response' => $result,
       ]);
+      // Tempstore to store holdtime request log.
+      $this->tempStoreFactory->get('o2e_obe_salesforce')->set('holdtime', [
+        'name' => 'Hold Time',
+        'url' => $api_url,
+        'request' => $request,
+        'response' => $result,
+      ]);
       return $response->getStatusCode();
     }
     catch (RequestException $e) {
+      // Tempstore to store holdtime request log.
+      $this->tempStoreFactory->get('o2e_obe_salesforce')->set('holdtime', [
+        'name' => 'Hold Time',
+        'url' => $api_url,
+        'request' => $request,
+        'response' => $e->getMessage(),
+      ]);
       $this->obeSfLogger->log('Salesforce - Hold Time Fail', 'error', $e->getMessage());
     }
   }

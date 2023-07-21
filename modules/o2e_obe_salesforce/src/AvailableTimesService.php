@@ -188,6 +188,8 @@ class AvailableTimesService {
           ];
         }
       }
+      // Request object for Email entry.
+      $request = UrlHelper::buildQuery($options);
       try {
         $startAvailabilityTimer = $this->timeService->getCurrentMicroTime();
         $res = $this->httpClient->request('POST', $api_url, [
@@ -216,9 +218,23 @@ class AvailableTimesService {
           'payload' => $options,
           'response' => $result,
         ]);
+        // Tempstore to store availableTimes request log.
+        $tempstore->set('availableTimes', [
+          'name' => 'Get Available Times',
+          'url' => $api_url,
+          'request' => $request,
+          'response' => $result,
+        ]);
         return $result;
       }
       catch (RequestException $e) {
+        // Tempstore to store availableTimes request log.
+        $tempstore->set('availableTimes', [
+          'name' => 'Get Available Times',
+          'url' => $api_url,
+          'request' => $request,
+          'response' => $e->getMessage(),
+        ]);
         $this->obeSfLogger->log('Salesforce - GetAvailableTimes Fail', 'error', $e->getMessage());
       }
     }
@@ -237,7 +253,7 @@ class AvailableTimesService {
         'end_date' => $end_date,
       ]);
       if (in_array("administrator", $this->account->getRoles())) {
-        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots',$response);
+        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
       }
       return new JsonResponse($response);
     }
