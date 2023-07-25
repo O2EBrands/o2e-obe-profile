@@ -115,7 +115,7 @@ class PromoDetailsJunkService {
         'response' => $result,
       ]);
       // Tempstore to store promoDetails request log.
-      $tempstore->set('promoDetails', [
+      $this->tempStoreFactory->get('o2e_obe_salesforce')->set('promoDetails', [
         'name' => 'Promo Details Junk',
         'request' => $request,
         'response' => $result,
@@ -124,7 +124,7 @@ class PromoDetailsJunkService {
     }
     catch (RequestException $e) {
       // Tempstore to store promoDetails request log.
-      $tempstore->set('promoDetails', [
+      $this->tempStoreFactory->get('o2e_obe_salesforce')->set('promoDetails', [
         'name' => 'Promo Details Junk',
         'request' => $request,
         'response' => $e->getMessage(),
