@@ -11,7 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
  * Implements hook_form_alter().
  */
 function o2e_obe_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if (isset($form['#webform_id']) && $form['#webform_id'] === 'o2e_webform') {
+  if (isset($form['#webform_id']) && ($form['#webform_id'] === 'o2e_webform' || $form['#webform_id'] === 'onlinebooking2')) {
     $tempstore_service = \Drupal::service('tempstore.private')->get('o2e_obe_salesforce');
     $current_page = $form_state->get('current_page');
     $page_array = !empty($form_state->get('pages')) ? array_keys($form_state->get('pages')) : [];
