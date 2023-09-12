@@ -262,26 +262,4 @@ class AvailableTimesService {
     }
   }
 
-  /**
-   * Get the time slots on the basis of start and end date form URL.
-   */
-  public function getTimesSlotsv2() {
-    $params = $this->request->getCurrentRequest();
-    $start_date = $params->get('start_date');
-    $end_date = $params->get('end_date');
-    if ($start_date && $end_date) {
-      $response = $this->getAvailableTimes([
-        'start_date' => $start_date,
-        'end_date' => $end_date,
-      ]);
-      if (in_array("administrator", $this->account->getRoles())) {
-        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
-      }
-      return new JsonResponse($response);
-    }
-    else {
-      return FALSE;
-    }
-  }
-
 }

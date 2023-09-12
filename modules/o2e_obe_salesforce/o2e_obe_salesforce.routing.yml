@@ -12,10 +12,3 @@ o2e_obe_salesforce.available_time_slots:
     _title: 'Get Available Time data'
   requirements:
     _permission: 'access content'
-o2e_obe_salesforce.available_time_slots_v2:
-  path: '/availabletimev2'
-  defaults:
-    _controller: 'o2e_obe_salesforce.available_times_service:getTimesSlotsv2'
-    _title: 'Get Available Time data V2'
-  requirements:
-    _permission: 'access content'
