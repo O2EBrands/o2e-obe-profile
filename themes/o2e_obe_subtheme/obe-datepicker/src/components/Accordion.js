@@ -11,6 +11,9 @@ export default function Accordion(props) {
   // index for accordion if there are multiple accordions.
   let accordionId = props.index;
 
+  // classes on accordion wrapper
+  let accordionClass = props.classes;
+  
   // Accordion item generator.
   function accordionItemGenerate(timeOfTheDay, accordionId) {
     return (
@@ -25,7 +28,7 @@ export default function Accordion(props) {
   }
 
   return (
-    <div className="col-lg-4 accordion" id={`accordion${accordionId}`}>
+    <div className={`accordion ${accordionClass}`} id={`accordion${accordionId}`}>
       <h3 className="slot-day-title">
         {props.today &&
         (drupalSettings.brand_name === "GJ NA" ||

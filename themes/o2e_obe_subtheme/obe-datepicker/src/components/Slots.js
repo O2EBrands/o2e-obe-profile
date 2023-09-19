@@ -167,6 +167,8 @@ export default function Slots(props) {
   let accordionGroup = [];
 
   //Pushing accordions in the array.
+  let accordClass = "col-lg-4";
+  const element = document.getElementById('webform-submission-o2e-webform-add-form');
   optionsByDay.forEach((option, index) => {
     // Check if selected date is today and all slots are empty for GJ NA and GJ AU.
     if (
@@ -193,13 +195,26 @@ export default function Slots(props) {
     }
 
     // Generate accordion for each day.
-    if (index > 0) {
+    if ((element != null) && (index > 0)) {
       accordionGroup.push(
         <Accordion
           items={option}
           dayInfo={availableDates[index - 1]}
           index={index}
           today={index === 1 ? isToday : false}
+          classes={accordClass}
+        />
+      );
+    }
+    else if (index === 1) {
+      accordClass = "col-lg-12";
+      accordionGroup.push(
+        <Accordion
+          items={option}
+          dayInfo={availableDates[index - 1]}
+          index={index}
+          today={index === 1 ? isToday : false}
+          classes={accordClass}
         />
       );
     }
