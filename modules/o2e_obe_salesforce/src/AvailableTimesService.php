@@ -245,43 +245,40 @@ class AvailableTimesService {
    */
   public function getTimesSlots() {
     $params = $this->request->getCurrentRequest();
-    $start_date = $params->get('start_date');
-    $end_date = $params->get('end_date');
-    if ($start_date && $end_date) {
-      $response = $this->getAvailableTimes([
-        'start_date' => $start_date,
-        'end_date' => $end_date,
-      ]);
-      if (in_array("administrator", $this->account->getRoles())) {
-        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
+    $referer_url = $params->headers->get('referer');
+    // Updating slot request to 1 day for Clone V2.
+    $pattern = "/onlinebooking2/i";
+    if (preg_match($pattern, $referer_url)) {
+      $start_date = $params->get('start_date');
+      if ($start_date) {
+        $response = $this->getAvailableTimes([
+          'start_date' => $start_date,
+          'end_date' => $start_date,
+        ]);
+        if (in_array("administrator", $this->account->getRoles())) {
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
+        }
+        return new JsonResponse($response);
       }
-      return new JsonResponse($response);
+      else {
+        return FALSE;
+      }
     }
     else {
-      return FALSE;
-    }
-  }
-
-  /**
-   * Get the time slots on the basis of start and end date form URL.
-   */
-  public function getTimesSlotsv2() {
-    $params = $this->request->getCurrentRequest();
-    $start_date = $params->get('start_date');
-    $end_date = $params->get('end_date');
-    if ($start_date && $end_date) {
-      $response = $this->getAvailableTimes([
-        'start_date' => $start_date,
-        'end_date' => $end_date,
-      ]);
-      if (in_array("administrator", $this->account->getRoles())) {
-        $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
+      $start_date = $params->get('start_date');
+      $end_date = $params->get('end_date');
+      if ($start_date && $end_date) {
+        $response = $this->getAvailableTimes([
+          'start_date' => $start_date,
+          'end_date' => $end_date,
+        ]);
+        if (in_array("administrator", $this->account->getRoles())) {
+          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
+        }
+        return new JsonResponse($response);
       }
-      return new JsonResponse($response);
-    }
-    else {
-      return FALSE;
+      else {
+        return FALSE;
+      }
     }
   }
-
-}
