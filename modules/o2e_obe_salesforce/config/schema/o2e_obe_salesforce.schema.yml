@@ -109,3 +109,18 @@ o2e_obe_salesforce.settings:
         api_url_segment:
           type: text
           label: 'Api URL Segment'
+
+o2e_obe_salesforce.datadog_settings:
+  type: config_object
+  label: 'Datadog Settings'
+  mapping:
+    dd_config:
+      type: mapping
+      label: 'Fieldset for the fields'
+      mapping:
+        api_url:
+          type: text
+          label: 'API URL'
+        api_key:
+          type: text
+          label: 'API Key'
