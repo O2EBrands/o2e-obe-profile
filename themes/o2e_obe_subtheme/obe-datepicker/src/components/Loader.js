@@ -1,4 +1,10 @@
-var loaderString = Drupal.t("Checking available time slots");
+var loaderString =
+  drupalSettings.brand_name === "GJ AU" || drupalSettings.brand_name === "GJ NA"
+    ? Drupal.t(
+        "In just 15 seconds, we'll have some pick up times for you"
+      )
+    : Drupal.t("Checking available time slots");
+//calendar loader fnx on page 2
 function Loader() {
   return (
     <div className="obe-loader">
