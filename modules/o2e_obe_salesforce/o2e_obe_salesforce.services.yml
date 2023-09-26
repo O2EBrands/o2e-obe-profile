@@ -6,28 +6,28 @@ services:
     - [generateToken]
  o2e_obe_salesforce.area_verification_service:
    class: Drupal\o2e_obe_salesforce\AreaVerificationService
-   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@datetime.time', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager']
+   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@datetime.time', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@request_stack', '@config.factory']
  o2e_obe_salesforce.available_times_service:
    class: Drupal\o2e_obe_salesforce\AvailableTimesService
-   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time','@o2e_obe_salesforce.area_verification_service', '@request_stack', '@current_user']
+   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time','@o2e_obe_salesforce.area_verification_service', '@request_stack', '@current_user', '@config.factory']
  o2e_obe_salesforce.promo_details_junk_service:
    class: Drupal\o2e_obe_salesforce\PromoDetailsJunkService
-   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time']
+   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time', '@request_stack', '@config.factory']
  o2e_obe_salesforce.book_job_junk_customer:
    class: Drupal\o2e_obe_salesforce\BookJobJunkCustomerService
-   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time']
+   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time', '@request_stack', '@config.factory']
  o2e_obe_salesforce.book_job_junk:
    class: Drupal\o2e_obe_salesforce\BookJobJunkService
-   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time']
+   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time', '@request_stack', '@config.factory']
  o2e_obe_salesforce.hold_time:
    class: Drupal\o2e_obe_salesforce\HoldTimeService
-   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time']
+   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time', '@request_stack', '@config.factory']
  o2e_obe_salesforce.create_lead:
    class: Drupal\o2e_obe_salesforce\CreateLead
-   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time']
+   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time', '@request_stack', '@config.factory']
  o2e_obe_salesforce.obe_sf_logger:
    class: Drupal\o2e_obe_salesforce\ObeSfLogger
    arguments: ['@logger.factory']
  o2e_obe_salesforce.get_payment_details:
    class: Drupal\o2e_obe_salesforce\GetPaymentDetailsService
-   arguments: [ '@http_client', '@logger.factory', '@datetime.time', '@state', '@o2e_obe_salesforce.authtoken_manager' ]
+   arguments: [ '@http_client', '@logger.factory', '@datetime.time', '@state', '@o2e_obe_salesforce.authtoken_manager', '@request_stack', '@config.factory']

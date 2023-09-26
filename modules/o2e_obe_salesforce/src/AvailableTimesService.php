@@ -12,6 +12,7 @@ use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Http\RequestStack;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Available Times Service class is return the time slots details.
@@ -79,11 +80,17 @@ class AvailableTimesService {
    * @var \Drupal\Core\Session\AccountInterface
    */
   protected $account;
+  /**
+   * Get the sfConfig values.
+   *
+   * @var \object|null
+   */
+  protected $ddConfig;
 
   /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification, RequestStack $request_stack, AccountInterface $account) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification, RequestStack $request_stack, AccountInterface $account, ConfigFactoryInterface $config) {
     $this->httpClient = $http_client;
     $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
@@ -93,13 +100,24 @@ class AvailableTimesService {
     $this->areaVerification = $area_verification;
     $this->request = $request_stack;
     $this->account = $account;
-
+    $this->ddConfig = $config->get('o2e_obe_salesforce.datadog_settings');
   }
 
   /**
    * Get the time slots on the basis of start and end date.
    */
   public function getAvailableTimes(array $options = []) {
+    // Variables for Datadog.
+    $hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
+    $dd_env = 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"];
+    $dd_api_key = $this->ddConfig->get('dd_config.api_key') ?? '';
+    $datadog_url = $this->ddConfig->get('dd_config.api_url') ?? '';
+    $dd_headers = [
+      'Accept' => 'application/json',
+      'Content-type' => 'application/json',
+      'DD-API-KEY' => $dd_api_key,
+    ];
+
     $currentTimeStamp = $this->timeService->getRequestTime();
     $auth_token = $this->state->get('authtoken');
     $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
@@ -218,6 +236,34 @@ class AvailableTimesService {
           'payload' => $options,
           'response' => $result,
         ]);
+        // Datadog Implementation - Timer - Verify Area Serviced.
+        try {
+          $this->httpClient->request('POST', $datadog_url, [
+            'verify' => TRUE,
+            'json' => [
+              [
+                'ddsource' => 'drupal',
+                'ddtags' => $dd_env,
+                'hostname' => $hostname,
+                'message' => $zipCode . " // " .
+                $availabilityTimerDuration . " // " .
+                $userAgent,
+                'service' => 'Timer GetAvailableTimes',
+              ],
+              [
+                'ddsource' => 'drupal',
+                'ddtags' => $dd_env,
+                'hostname' => $hostname,
+                'message' => $data,
+                'service' => 'Salesforce - GetAvailableTimes',
+              ],
+            ],
+            'headers' => $dd_headers,
+          ]);
+        }
+        catch (RequestException $e) {
+        }
+        // End of datadog implementation.
         // Tempstore to store availableTimes request log.
         $tempstore->set('availableTimes', [
           'name' => 'Get Available Times',
@@ -236,6 +282,26 @@ class AvailableTimesService {
           'response' => $e->getMessage(),
         ]);
         $this->obeSfLogger->log('Salesforce - GetAvailableTimes Fail', 'error', $e->getMessage());
+        // Datadog Implementation - Timer - Verify Area Serviced.
+        try {
+          $this->httpClient->request('POST', $datadog_url, [
+            'verify' => TRUE,
+            'json' => [
+            [
+              'ddsource' => 'drupal',
+              'ddtags' => $dd_env,
+              'hostname' => $hostname,
+              'message' => $e->getMessage(),
+              'service' => 'Salesforce - GetAvailableTimes Fail',
+              "status" => 'error',
+            ],
+            ],
+            'headers' => $dd_headers,
+          ]);
+        }
+        catch (RequestException $e) {
+        }
+        // End of datadog implementation.
       }
     }
   }

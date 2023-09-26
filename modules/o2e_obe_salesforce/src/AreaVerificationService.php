@@ -9,6 +9,8 @@ use Drupal\Component\Serialization\Json;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\Core\Http\RequestStack;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Area Verification Service class is return the area details.
@@ -56,24 +58,48 @@ class AreaVerificationService {
    * @var \Drupal\o2e_obe_salesforce\AuthTokenManager
    */
   protected $authTokenManager;
+  /**
+   * Request stack.
+   *
+   * @var \Drupal\Core\Http\RequestStack
+   */
+  protected $request;
+  /**
+   * Get the sfConfig values.
+   *
+   * @var \object|null
+   */
+  protected $ddConfig;
 
   /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, TimeInterface $time_service, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, TimeInterface $time_service, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, RequestStack $request_stack, ConfigFactoryInterface $config) {
+    $this->ddConfig = $config->get('o2e_obe_salesforce.datadog_settings');
     $this->httpClient = $http_client;
     $this->obeSfLogger = $obe_sf_logger;
     $this->timeService = $time_service;
     $this->state = $state;
     $this->tempStoreFactory = $temp_store_factory;
     $this->authTokenManager = $auth_token_manager;
-
+    $this->request = $request_stack;
   }
 
   /**
    * Verify the area on the basis of zip code.
    */
   public function verifyAreaCode(string $zipcode) {
+    // Variables for Datadog.
+    $hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
+    $dd_env = 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"];
+    $dd_api_key = $this->ddConfig->get('dd_config.api_key') ?? '';
+    $datadog_url = $this->ddConfig->get('dd_config.api_url') ?? '';
+    $dd_headers = [
+      'Accept' => 'application/json',
+      'Content-type' => 'application/json',
+      'DD-API-KEY' => $dd_api_key,
+    ];
+
     $options = [];
     $currentTimeStamp = $this->timeService->getRequestTime();
     $auth_token = $this->authTokenManager->getToken();
@@ -133,6 +159,35 @@ class AreaVerificationService {
         'payload' => $options['query'],
         'response' => $result,
       ]);
+
+      // Datadog Implementation - Timer - Verify Area Serviced.
+      try {
+        $this->httpClient->request('POST', $datadog_url, [
+          'verify' => TRUE,
+          'json' => [
+            [
+              'ddsource' => 'drupal',
+              'ddtags' => $dd_env,
+              'hostname' => $hostname,
+              'message' => $zipCode . " // " .
+              $availabilityTimerDuration . " // " .
+              $userAgent,
+              'service' => 'Timer - Verify Area Serviced',
+            ],
+            [
+              'ddsource' => 'drupal',
+              'ddtags' => $dd_env,
+              'hostname' => $hostname,
+              'message' => $data,
+              'service' => 'Salesforce - Verify Area Serviced',
+            ],
+          ],
+          'headers' => $dd_headers,
+        ]);
+      }
+      catch (RequestException $e) {
+      }
+      // End of datadog implementation.
       // Tempstore to store areaverification request log.
       $tempstore->set('areaverification', [
         'name' => 'Verify Area Serviced',
@@ -143,6 +198,26 @@ class AreaVerificationService {
     }
     catch (RequestException $e) {
       $this->obeSfLogger->log('Salesforce - VerifyAreaServiced Fail', 'error', $e->getMessage());
+      // Datadog Implementation - Timer - Verify Area Serviced.
+      try {
+        $this->httpClient->request('POST', $datadog_url, [
+          'verify' => TRUE,
+          'json' => [
+            [
+              'ddsource' => 'drupal',
+              'ddtags' => $dd_env,
+              'hostname' => $hostname,
+              'message' => $e->getMessage(),
+              'service' => 'Salesforce - VerifyAreaServiced Fail',
+              "status" => 'error',
+            ],
+          ],
+          'headers' => $dd_headers,
+        ]);
+      }
+      catch (RequestException $e) {
+      }
+      // End of datadog implementation.
       if (!empty($e->getResponse())) {
         // Tempstore to store areaverification request log.
         $tempstore->set('areaverification', [
