@@ -91,7 +91,7 @@ class AreaVerificationService {
   public function verifyAreaCode(string $zipcode) {
     // Variables for Datadog.
     $hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
-    $dd_env = 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"];
+    $dd_env = (!empty($_ENV["PANTHEON_ENVIRONMENT"])) ? 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"] : '';
     $dd_api_key = $this->ddConfig->get('dd_config.api_key') ?? '';
     $datadog_url = $this->ddConfig->get('dd_config.api_url') ?? '';
     $dd_headers = [
