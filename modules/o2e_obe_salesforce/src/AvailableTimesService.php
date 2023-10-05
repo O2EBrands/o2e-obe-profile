@@ -9,7 +9,7 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\Http\RequestStack;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;

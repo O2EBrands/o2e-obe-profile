@@ -9,7 +9,7 @@ use Drupal\Component\Serialization\Json;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
-use Drupal\Core\Http\RequestStack;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**

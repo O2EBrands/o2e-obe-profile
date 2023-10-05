@@ -1,7 +1,7 @@
 name: 'Multistep Form'
 type: module
 description: 'O2E Multistep Form'
-core_version_requirement: ^9.3
+core_version_requirement: ^9 || ^10
 package: 'O2E OBE'
 dependencies:
   - o2e_obe_salesforce:o2e_obe_salesforce
