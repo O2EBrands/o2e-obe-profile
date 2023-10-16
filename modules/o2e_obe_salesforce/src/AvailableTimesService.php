@@ -313,8 +313,8 @@ class AvailableTimesService {
     $params = $this->request->getCurrentRequest();
     $referer_url = $params->headers->get('referer');
     // Updating slot request to 1 day for Clone V2.
-    $pattern = "/onlinebooking2/i";
-    if (preg_match($pattern, $referer_url)) {
+    $pattern_v2 = "/onlinebooking2/i";
+    if (isset($referer_url) && preg_match($pattern_v2, $referer_url)) {
       $start_date = $params->get('start_date');
       if ($start_date) {
         $response = $this->getAvailableTimes([
@@ -331,15 +331,10 @@ class AvailableTimesService {
       }
     }
     else {
-      $params = $this->request->getCurrentRequest();
+      $pattern_v1 = "/onlinebooking/i";
       $start_date = $params->get('start_date');
       $end_date = $params->get('end_date');
-      $params = $this->request->getCurrentRequest(); 
-      $referer_url = $params->headers->get('referer');
-      $url_pattern = "/onlinebooking/i";
-      $start_date = $params->get('start_date');
-      $end_date = $params->get('end_date');
-      if (isset($referer_url) && preg_match($url_pattern, $referer_url)) {
+      if (isset($referer_url) && preg_match($pattern_v1, $referer_url)) {
         if ($start_date && $end_date) {
           $response = $this->getAvailableTimes([
             'start_date' => $start_date,
