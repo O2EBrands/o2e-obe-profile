@@ -331,22 +331,54 @@ class AvailableTimesService {
       }
     }
     else {
+      $params = $this->request->getCurrentRequest();
       $start_date = $params->get('start_date');
       $end_date = $params->get('end_date');
-      if ($start_date && $end_date) {
-        $response = $this->getAvailableTimes([
-          'start_date' => $start_date,
-          'end_date' => $end_date,
-        ]);
-        if (in_array("administrator", $this->account->getRoles())) {
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
+      $params = $this->request->getCurrentRequest(); 
+      $referer_url = $params->headers->get('referer');
+      $url_pattern = "/onlinebooking/i";
+      $start_date = $params->get('start_date');
+      $end_date = $params->get('end_date');
+      if (isset($referer_url) && preg_match($url_pattern, $referer_url)) {
+        if ($start_date && $end_date) {
+          $response = $this->getAvailableTimes([
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+          ]);
+          if (in_array("administrator", $this->account->getRoles())) {
+            $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
+          }
+          return new JsonResponse($response);
         }
-        return new JsonResponse($response);
-      }
-      else {
-        return FALSE;
+        else {
+          return FALSE;
+        }
+    }
+    else {
+      $response = [         
+        'message' => 'Salesforce - GetAvailableTimes Fail, Invalid request.',
+      ];
+      return new JsonResponse($response);
       }
     }
+  }
+
+  /**
+    *  Validate Request to the SalesForce OBE
+  */
+  public function IsSalesForceValidRequest($options) { 
+    $mandatory_fields =['franchise_id','service_id','brand','start_date','end_date','postal_code'];
+    $missing_fields = [];
+    foreach ($mandatory_fields as $key) { 
+      if (empty($options[$key])) {
+        $missing_fields[] = $key;
+        } 
+      }
+      if(!empty($missing_fields)){
+          return FALSE;
+      }else{
+          return TRUE;
+      }
   }
 
 }
