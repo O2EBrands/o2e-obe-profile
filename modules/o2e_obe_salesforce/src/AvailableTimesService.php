@@ -313,8 +313,8 @@ class AvailableTimesService {
     $params = $this->request->getCurrentRequest();
     $referer_url = $params->headers->get('referer');
     // Updating slot request to 1 day for Clone V2.
-    $pattern = "/onlinebooking2/i";
-    if (preg_match($pattern, $referer_url)) {
+    $pattern_v2 = "/onlinebooking2/i";
+    if (isset($referer_url) && preg_match($pattern_v2, $referer_url)) {
       $start_date = $params->get('start_date');
       if ($start_date) {
         $response = $this->getAvailableTimes([
@@ -331,22 +331,49 @@ class AvailableTimesService {
       }
     }
     else {
+      $pattern_v1 = "/onlinebooking/i";
       $start_date = $params->get('start_date');
       $end_date = $params->get('end_date');
-      if ($start_date && $end_date) {
-        $response = $this->getAvailableTimes([
-          'start_date' => $start_date,
-          'end_date' => $end_date,
-        ]);
-        if (in_array("administrator", $this->account->getRoles())) {
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
+      if (isset($referer_url) && preg_match($pattern_v1, $referer_url)) {
+        if ($start_date && $end_date) {
+          $response = $this->getAvailableTimes([
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+          ]);
+          if (in_array("administrator", $this->account->getRoles())) {
+            $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
+          }
+          return new JsonResponse($response);
         }
-        return new JsonResponse($response);
-      }
-      else {
-        return FALSE;
+        else {
+          return FALSE;
+        }
+    }
+    else {
+      $response = [         
+        'message' => 'Salesforce - GetAvailableTimes Fail, Invalid request.',
+      ];
+      return new JsonResponse($response);
       }
     }
+  }
+
+  /**
+    *  Validate Request to the SalesForce OBE
+  */
+  public function IsSalesForceValidRequest($options) { 
+    $mandatory_fields =['franchise_id','service_id','brand','start_date','end_date','postal_code'];
+    $missing_fields = [];
+    foreach ($mandatory_fields as $key) { 
+      if (empty($options[$key])) {
+        $missing_fields[] = $key;
+        } 
+      }
+      if(!empty($missing_fields)){
+          return FALSE;
+      }else{
+          return TRUE;
+      }
   }
 
 }
