@@ -30,8 +30,8 @@ export default function AccordionItem({
   // DatePicker scroll on submit.
   useEffect(() => {
     let timeSlot = jQuery(
-      ".webform-submission-o2e-webform-form .slot-item"
-    ).once("reactDatepicker");
+      once("reactDatepicker", ".webform-submission-o2e-webform-form .slot-item")
+    );
     if (timeSlot.length) {
       // Remove click event listeners.
       timeSlot.off("click");
