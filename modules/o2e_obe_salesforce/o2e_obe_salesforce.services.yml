@@ -9,7 +9,7 @@ services:
    arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@datetime.time', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@request_stack', '@config.factory']
  o2e_obe_salesforce.available_times_service:
    class: Drupal\o2e_obe_salesforce\AvailableTimesService
-   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time','@o2e_obe_salesforce.area_verification_service', '@request_stack', '@current_user', '@config.factory']
+   arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time','@o2e_obe_salesforce.area_verification_service', '@request_stack', '@current_user', '@config.factory', '@gj_na_franchise.service_id_manager', '@gj_na_franchise.get_timeslot_manager']
  o2e_obe_salesforce.promo_details_junk_service:
    class: Drupal\o2e_obe_salesforce\PromoDetailsJunkService
    arguments: ['@http_client', '@o2e_obe_salesforce.obe_sf_logger', '@state', '@tempstore.private', '@o2e_obe_salesforce.authtoken_manager', '@datetime.time', '@request_stack', '@config.factory']

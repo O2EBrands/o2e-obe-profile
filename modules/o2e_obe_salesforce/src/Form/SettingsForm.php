@@ -306,6 +306,17 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('st_cache_create_serviceid.api_url_segment'),
       '#required' => TRUE,
     ];
+    $form['st_cache_get_timeslots'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Get Available Times - Get Slots API Details'),
+      '#tree' => TRUE,
+    ];
+    $form['st_cache_get_timeslots']['api_url_segment'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Get Slots'),
+      '#default_value' => $config->get('st_cache_get_timeslots.api_url_segment'),
+      '#required' => TRUE,
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -345,6 +356,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('create_lead', $form_state->getValue('create_lead'))
       ->set('st_cache_refresh_franchise', $form_state->getValue('st_cache_refresh_franchise'))
       ->set('st_cache_create_serviceid', $form_state->getValue('st_cache_create_serviceid'))
+      ->set('st_cache_get_timeslots', $form_state->getValue('st_cache_get_timeslots'))
       ->save();
     // Salesforce config data to be stored in STATE.
     $sf_data = [

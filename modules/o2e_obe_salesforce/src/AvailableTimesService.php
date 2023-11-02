@@ -13,6 +13,8 @@ use Drupal\Core\Http\RequestStack;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\gj_na_franchise\Service\ServiceIdCreationService;
+use Drupal\gj_na_franchise\Service\GetAvailableTimeService;
 
 /**
  * Available Times Service class is return the time slots details.
@@ -88,9 +90,23 @@ class AvailableTimesService {
   protected $ddConfig;
 
   /**
+   * The Service Id Creation Service.
+   *
+   * @var \Drupal\gj_na_franchise\Service\ServiceIdCreationService
+   */
+  protected $serviceIdManager;
+
+  /**
+   * The Get Timeslot Service.
+   *
+   * @var \Drupal\gj_na_franchise\Service\GetAvailableTimeService
+   */
+  protected $getTimeSlotsManager;
+
+  /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification, RequestStack $request_stack, AccountInterface $account, ConfigFactoryInterface $config) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, AreaVerificationService $area_verification, RequestStack $request_stack, AccountInterface $account, ConfigFactoryInterface $config, ServiceIdCreationService $service_id_manager, GetAvailableTimeService $get_timeslots_manager) {
     $this->httpClient = $http_client;
     $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
@@ -101,6 +117,8 @@ class AvailableTimesService {
     $this->request = $request_stack;
     $this->account = $account;
     $this->ddConfig = $config->get('o2e_obe_salesforce.datadog_settings');
+    $this->serviceIdManager = $service_id_manager;
+    $this->getTimeSlotsManager = $get_timeslots_manager;
   }
 
   /**
@@ -336,10 +354,25 @@ class AvailableTimesService {
       $end_date = $params->get('end_date');
       if (isset($referer_url) && preg_match($pattern_v1, $referer_url)) {
         if ($start_date && $end_date) {
-          $response = $this->getAvailableTimes([
+          $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce');
+          $sf_response = $tempstore->get('postalCodeData');
+          $servDetails = [
             'start_date' => $start_date,
+            'service_type' => NULL,
+            'service_id' => $sf_response['service_id'] ?? NULL,
+            'job_duration' => NULL,
             'end_date' => $end_date,
-          ]);
+          ];
+          $brand = $this->authTokenManager->getSfConfig('sf_brand.brand');
+          $franDetails = [
+            'serviceTerritoryId' => "",
+            'reqType' => 'getAvailableTimes',
+            'from_postal_code' => $sf_response['zip_code'],
+            'franchiseid' => $sf_response['franchise_id'],
+            'brand' => $brand,
+          ];
+          $serviceResponse = $this->serviceIdManager->createServiceId($servDetails, $franDetails, $sf_response['zip_code']);
+          $response = $this->getTimeSlotsManager->getSlots($serviceResponse['service_id']);
           if (in_array("administrator", $this->account->getRoles())) {
             $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
           }
