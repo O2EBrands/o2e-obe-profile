@@ -306,6 +306,35 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('st_cache_create_serviceid.api_url_segment'),
       '#required' => TRUE,
     ];
+    $form['st_cache_create_mail_manager'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('ST Cache Mail Configurations'),
+      '#tree' => TRUE,
+    ];
+    $form['st_cache_create_mail_manager']['bcc'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Mail BCC'),
+      '#default_value' => $config->get('st_cache_create_mail_manager.bcc'),
+      '#required' => TRUE,
+    ];
+    $form['st_cache_create_mail_manager']['invalid_count_error_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Invalid count Mail Content'),
+      '#default_value' => $config->get('st_cache_create_mail_manager.invalid_count_error_message'),
+      '#required' => TRUE,
+    ];
+    $form['st_cache_create_mail_manager']['no_records_error_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('No records Mail Content'),
+      '#default_value' => $config->get('st_cache_create_mail_manager.no_records_error_message'),
+      '#required' => TRUE,
+    ];
+    $form['st_cache_create_mail_manager']['auth_fail_error_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Authentication failure Mail Content'),
+      '#default_value' => $config->get('st_cache_create_mail_manager.auth_fail_error_message'),
+      '#required' => TRUE,
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -345,6 +374,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('create_lead', $form_state->getValue('create_lead'))
       ->set('st_cache_refresh_franchise', $form_state->getValue('st_cache_refresh_franchise'))
       ->set('st_cache_create_serviceid', $form_state->getValue('st_cache_create_serviceid'))
+      ->set('st_cache_create_mail_manager', $form_state->getValue('st_cache_create_mail_manager'))
       ->save();
     // Salesforce config data to be stored in STATE.
     $sf_data = [
