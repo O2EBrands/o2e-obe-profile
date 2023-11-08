@@ -63,17 +63,21 @@ class BookJobJunkService {
    * @var \Drupal\Core\Http\RequestStack
    */
   protected $request;
+
   /**
-   * Get the sfConfig values.
+   * Data dog service.
    *
-   * @var \object|null
+   * @var \Drupal\o2e_obe_salesforce\DataDogService
    */
-  protected $ddConfig;
+  protected $dataDogService;
 
   /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, RequestStack $request_stack, ConfigFactoryInterface $config) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, 
+    PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, 
+    RequestStack $request_stack, ConfigFactoryInterface $config, DataDogService $data_dog_manager) {
+
     $this->httpClient = $http_client;
     $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
@@ -81,24 +85,13 @@ class BookJobJunkService {
     $this->authTokenManager = $auth_token_manager;
     $this->timeService = $time_service;
     $this->request = $request_stack;
-    $this->ddConfig = $config->get('o2e_obe_salesforce.datadog_settings');
+    $this->dataDogService = $data_dog_manager;   
   }
 
   /**
    * Return the book job junk data.
    */
   public function bookJobJunk(array $options = []) {
-    // Variables for Datadog.
-    $hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
-    $dd_env = (!empty($_ENV["PANTHEON_ENVIRONMENT"])) ? 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"] : '';
-    $dd_api_key = $this->ddConfig->get('dd_config.api_key') ?? '';
-    $datadog_url = $this->ddConfig->get('dd_config.api_url') ?? '';
-    $dd_headers = [
-      'Accept' => 'application/json',
-      'Content-type' => 'application/json',
-      'DD-API-KEY' => $dd_api_key,
-    ];
-
     $auth_token = $this->authTokenManager->getToken();
     $api_url = $this->authTokenManager->getSfConfig('sf_book_job_junk.api_url_segment');
     if (strpos($api_url, 'https://') !== 0 && strpos($api_url, 'http://') !== 0) {
@@ -133,8 +126,8 @@ class BookJobJunkService {
       ]);
       $endBookJobTimer2 = $this->timeService->getCurrentMicroTime();
       // Logs the Timer BookJobJunk2.
-      $bookJobTimerDuration2 = round($endBookJobTimer2 - $startBookJobTimer2, 2);
-      $availabilityTimerDuration = "API response time: " . $bookJobTimerDuration2;
+      $duration = round($endBookJobTimer2 - $startBookJobTimer2, 2);
+      $availabilityTimerDuration = "API response time: " . $duration;
       $zipCode = "Zip code: " . $sf_response['from_postal_code'];
       $userAgent = "User agent: " . $_SERVER['HTTP_USER_AGENT'];
       $this->obeSfLogger->log(
@@ -150,35 +143,8 @@ class BookJobJunkService {
         'payload' => $options,
         'response' => $result,
       ]);
-
-      // Datadog Implementation.
-      try {
-        $this->httpClient->request('POST', $datadog_url, [
-          'verify' => TRUE,
-          'json' => [
-            [
-              'ddsource' => 'drupal',
-              'ddtags' => $dd_env,
-              'hostname' => $hostname,
-              'message' => $zipCode . " // " .
-              $availabilityTimerDuration . " // " .
-              $userAgent,
-              'service' => 'Timer - BookJobJunk2',
-            ],
-            [
-              'ddsource' => 'drupal',
-              'ddtags' => $dd_env,
-              'hostname' => $hostname,
-              'message' => $data,
-              'service' => 'Salesforce - BookJobJunk2',
-            ],
-          ],
-          'headers' => $dd_headers,
-        ]);
-      }
-      catch (RequestException $e) {
-      }
-      // End of datadog implementation.
+      // Datadog
+      $this->dataDogService->createSuccessDatadog('Salesforce - BookJobJunk2', 'POST', $api_url, $response, $duration); 
       // Tempstore to store bookjobservice request log.
       $this->tempStoreFactory->get('o2e_obe_salesforce')->set('bookjobservice', [
         'name' => 'Book Job Junk Service',
@@ -190,26 +156,8 @@ class BookJobJunkService {
     }
     catch (RequestException $e) {
       $this->obeSfLogger->log('Salesforce - BookJobJunk2 Fail', 'error', $e->getMessage());
-      // Datadog Implementation.
-      try {
-        $this->httpClient->request('POST', $datadog_url, [
-          'verify' => TRUE,
-          'json' => [
-            [
-              'ddsource' => 'drupal',
-              'ddtags' => $dd_env,
-              'hostname' => $hostname,
-              'message' => $e->getMessage(),
-              'service' => 'Salesforce - BookJobJunk2 Fail',
-              "status" => 'error',
-            ],
-          ],
-          'headers' => $dd_headers,
-        ]);
-      }
-      catch (RequestException $e) {
-      }
-      // End of datadog implementation.
+      // Datadog
+      $this->dataDogService->createFailDatadog('Salesforce - BookJobJunk2 Fail', $e); 
       if (!empty($e->getResponse())) {
         // Tempstore to store bookjobservice request log.
         $this->tempStoreFactory->get('o2e_obe_salesforce')->set('bookjobservice', [
