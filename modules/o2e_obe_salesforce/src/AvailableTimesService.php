@@ -332,8 +332,6 @@ class AvailableTimesService {
     }
     else {
       $pattern_v1 = "/onlinebooking/i";
-      $start_date = $params->get('start_date');
-      $end_date = $params->get('end_date');
       if (isset($referer_url) && preg_match($pattern_v1, $referer_url)) {
         $start_date = $params->get('start_date');
         if ($start_date) {
