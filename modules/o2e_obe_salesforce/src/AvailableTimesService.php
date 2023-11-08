@@ -311,28 +311,10 @@ class AvailableTimesService {
    */
   public function getTimesSlots() {
     $params = $this->request->getCurrentRequest();
-    $referer_url = $params->headers->get('referer');
-    // Updating slot request to 1 day for Clone V2.
-    $pattern_v2 = "/onlinebooking2/i";
-    if (isset($referer_url) && preg_match($pattern_v2, $referer_url)) {
-      $start_date = $params->get('start_date');
-      if ($start_date) {
-        $response = $this->getAvailableTimes([
-          'start_date' => $start_date,
-          'end_date' => $start_date,
-        ]);
-        if (in_array("administrator", $this->account->getRoles())) {
-          $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
-        }
-        return new JsonResponse($response);
-      }
-      else {
-        return FALSE;
-      }
-    }
-    else {
-      $pattern_v1 = "/onlinebooking/i";
-      if (isset($referer_url) && preg_match($pattern_v1, $referer_url)) {
+    $brand = $this->authTokenManager->getSfConfig('sf_brand.brand');
+
+    if (!empty($brand)) {
+      if ($brand === '1-800-GOT-JUNK?') {
         $start_date = $params->get('start_date');
         if ($start_date) {
           $response = $this->getAvailableTimes([
@@ -349,13 +331,32 @@ class AvailableTimesService {
         }
       }
       else {
-        $response = [
-          'message' => 'Salesforce - GetAvailableTimes Fail, Invalid request.',
-        ];
-        return new JsonResponse($response);
+        $start_date = $params->get('start_date');
+        $end_date = $params->get('end_date');
+        if ($start_date && $end_date) {
+          $response = $this->getAvailableTimes([
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+          ]);
+          if (in_array("administrator", $this->account->getRoles())) {
+            $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
+          }
+          return new JsonResponse($response);
+        }
+        else {
+          return FALSE;
+        }
+        // End: Ebrands (W1D & SSH)
       }
     }
+    else {
+      $response = [         
+        'message' => 'Salesforce - GetAvailableTimes Fail, Invalid request.',
+      ];
+      return new JsonResponse($response);    
+    }
   }
+
 
   /**
     *  Validate Request to the SalesForce OBE
