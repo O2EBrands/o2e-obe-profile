@@ -335,10 +335,11 @@ class AvailableTimesService {
       $start_date = $params->get('start_date');
       $end_date = $params->get('end_date');
       if (isset($referer_url) && preg_match($pattern_v1, $referer_url)) {
-        if ($start_date && $end_date) {
+        $start_date = $params->get('start_date');
+        if ($start_date) {
           $response = $this->getAvailableTimes([
             'start_date' => $start_date,
-            'end_date' => $end_date,
+            'end_date' => $start_date,
           ]);
           if (in_array("administrator", $this->account->getRoles())) {
             $this->tempStoreFactory->get('o2e_obe_salesforce')->set('getAvailableTimesSlots', $response);
@@ -348,12 +349,12 @@ class AvailableTimesService {
         else {
           return FALSE;
         }
-    }
-    else {
-      $response = [         
-        'message' => 'Salesforce - GetAvailableTimes Fail, Invalid request.',
-      ];
-      return new JsonResponse($response);
+      }
+      else {
+        $response = [
+          'message' => 'Salesforce - GetAvailableTimes Fail, Invalid request.',
+        ];
+        return new JsonResponse($response);
       }
     }
   }
