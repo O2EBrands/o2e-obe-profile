@@ -346,7 +346,6 @@ class AvailableTimesService {
         else {
           return FALSE;
         }
-        // End: Ebrands (W1D & SSH)
       }
     }
     else {
