@@ -65,17 +65,20 @@ class PromoDetailsJunkService {
    * @var \Drupal\Core\Http\RequestStack
    */
   protected $request;
+
   /**
-   * Get the sfConfig values.
+   * Data dog service.
    *
-   * @var \object|null
+   * @var \Drupal\o2e_obe_salesforce\DataDogService
    */
-  protected $ddConfig;
+  protected $dataDogService;
 
   /**
    * Constructor method.
    */
-  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, TimeInterface $time_service, RequestStack $request_stack, ConfigFactoryInterface $config) {
+  public function __construct(Client $http_client, ObeSfLogger $obe_sf_logger, State $state, 
+    PrivateTempStoreFactory $temp_store_factory, AuthTokenManager $auth_token_manager, 
+    TimeInterface $time_service, RequestStack $request_stack, ConfigFactoryInterface $config, DataDogService $data_dog_manager) {
     $this->httpClient = $http_client;
     $this->obeSfLogger = $obe_sf_logger;
     $this->state = $state;
@@ -83,24 +86,13 @@ class PromoDetailsJunkService {
     $this->authTokenManager = $auth_token_manager;
     $this->timeService = $time_service;
     $this->request = $request_stack;
-    $this->ddConfig = $config->get('o2e_obe_salesforce.datadog_settings');
+    $this->dataDogService = $data_dog_manager;   
   }
 
   /**
    * Return the promo code data.
    */
   public function getPromocode(string $promocode) {
-    // Variables for Datadog.
-    $hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
-    $dd_env = (!empty($_ENV["PANTHEON_ENVIRONMENT"])) ? 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"] : '';
-    $dd_api_key = $this->ddConfig->get('dd_config.api_key') ?? '';
-    $datadog_url = $this->ddConfig->get('dd_config.api_url') ?? '';
-    $dd_headers = [
-      'Accept' => 'application/json',
-      'Content-type' => 'application/json',
-      'DD-API-KEY' => $dd_api_key,
-    ];
-
     $options = [];
     $auth_token = $this->authTokenManager->getToken();
     $api_url = $this->authTokenManager->getSfConfig('sf_promo_details_junk.api_url_segment');
@@ -131,8 +123,8 @@ class PromoDetailsJunkService {
       $response = $this->httpClient->request('GET', $api_url, $options);
       $endPromoTimer = $this->timeService->getCurrentMicroTime();
       // Logs the Timer PromoDetailsJunk.
-      $promoTimerDuration = round($endPromoTimer - $startPromoTimer, 2);
-      $this->obeSfLogger->log('Timer PromoDetailsJunk', 'notice', $promoTimerDuration);
+      $duration = round($endPromoTimer - $startPromoTimer, 2);
+      $this->obeSfLogger->log('Timer PromoDetailsJunk', 'notice', $duration);
       $result = Json::decode($response->getBody(), TRUE);
       $data = UrlHelper::buildQuery($options['query']) . ' ' . Json::encode($result);
       $this->obeSfLogger->log('Salesforce - Promo Details Junk', 'notice', $data, [
@@ -142,32 +134,9 @@ class PromoDetailsJunkService {
         'response' => $result,
       ]);
 
-      // Datadog Implementation.
-      try {
-        $this->httpClient->request('POST', $datadog_url, [
-          'verify' => TRUE,
-          'json' => [
-            [
-              'ddsource' => 'drupal',
-              'ddtags' => $dd_env,
-              'hostname' => $hostname,
-              'message' => $promoTimerDuration,
-              'service' => 'Timer - Promo Details Junk',
-            ],
-            [
-              'ddsource' => 'drupal',
-              'ddtags' => $dd_env,
-              'hostname' => $hostname,
-              'message' => $data,
-              'service' => 'Salesforce - Promo Details Junk',
-            ],
-          ],
-          'headers' => $dd_headers,
-        ]);
-      }
-      catch (RequestException $e) {
-      }
-      // End of datadog implementation.
+      // Datadog
+      $this->dataDogService->createSuccessDatadog('Salesforce - Promo Details Junk', 'GET', $api_url, $response, $duration); 
+
       // Tempstore to store promoDetails request log.
       $this->tempStoreFactory->get('o2e_obe_salesforce')->set('promoDetails', [
         'name' => 'Promo Details Junk',
@@ -184,26 +153,8 @@ class PromoDetailsJunkService {
         'response' => $e->getMessage(),
       ]);
       $this->obeSfLogger->log('Salesforce - Promo Details Junk Fail', 'error', $e->getMessage());
-      // Datadog Implementation.
-      try {
-        $this->httpClient->request('POST', $datadog_url, [
-          'verify' => TRUE,
-          'json' => [
-            [
-              'ddsource' => 'drupal',
-              'ddtags' => $dd_env,
-              'hostname' => $hostname,
-              'message' => $e->getMessage(),
-              'service' => 'Salesforce - Promo Details Junk Fail',
-              "status" => 'error',
-            ],
-          ],
-          'headers' => $dd_headers,
-        ]);
-      }
-      catch (RequestException $e) {
-      }
-      // End of datadog implementation.
+      // Datadog
+      $this->dataDogService->createFailDatadog('Salesforce - Promo Details Junk Fail', $e); 
     }
   }
 
