@@ -111,7 +111,7 @@ class DataDogService {
   /**
    * Create a fail entry in datadog
    */
-  public function createFailDatadog(string $api_name, array $context = []) {
+  public function createFailDatadog(string $api_name, RequestException $e = NULL, array $context = []) {
 	// Variables for Datadog.
 	$hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
 	$dd_env = (!empty($_ENV["PANTHEON_ENVIRONMENT"])) ? 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"] : '';
@@ -124,24 +124,28 @@ class DataDogService {
 	];
 	$datalog_msg = "";
 	try {
-		if (!empty($context)){
-		  $datalog_msg = $context['response'];
-			 $this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg);
-			 $this->httpClient->request('POST', $datadog_url, [
-					 'verify' => TRUE,
-						'json' => [
-					   [
-						 'ddsource' => 'drupal',
-						 'ddtags' => $dd_env,
-						 'hostname' => $hostname,
-						 'message' => $datalog_msg,
-						 'service' => $api_name,
-						 'status' => 'error',
-					],
-					],
-				  'headers' => $dd_headers,
-			 ]);
+		if (!empty($context)) {
+			$datalog_msg = $context['response'];
 		}
+		else {
+			$datalog_msg = $e->getResponse()->getBody()->getContents();
+		}
+		$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg);
+		$this->httpClient->request('POST', $datadog_url, [
+				'verify' => TRUE,
+				'json' => [
+				[
+					'ddsource' => 'drupal',
+					'ddtags' => $dd_env,
+					'hostname' => $hostname,
+					'message' => $datalog_msg,
+					'service' => $api_name,
+					'status' => 'error',
+			],
+			],
+			'headers' => $dd_headers,
+		]);
+		
 	}
 	  catch (RequestException $e) {
 	  }
