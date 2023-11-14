@@ -111,22 +111,27 @@ class DataDogService {
   /**
    * Create a fail entry in datadog
    */
-  public function createFailDatadog($api_name,$e) {
-		// Variables for Datadog.
-		$hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
-		$dd_env = (!empty($_ENV["PANTHEON_ENVIRONMENT"])) ? 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"] : '';
-		$dd_api_key = $this->ddConfig->get('dd_config.api_key') ?? '';
-		$datadog_url = $this->ddConfig->get('dd_config.api_url') ?? '';
-		$dd_headers = [
-			'Accept' => 'application/json',
-			'Content-type' => 'application/json',
-			'DD-API-KEY' => $dd_api_key,
-		];
-		$datalog_msg = "";
-		try {        
-			$datalog_msg =  $e->getResponse()->getBody()->getContents();
-			$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg);  
-			$this->httpClient->request('POST', $datadog_url, [
+  public function createFailDatadog(string $api_name, RequestException $e = NULL, array $context = []) {
+	// Variables for Datadog.
+	$hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
+	$dd_env = (!empty($_ENV["PANTHEON_ENVIRONMENT"])) ? 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"] : '';
+	$dd_api_key = $this->ddConfig->get('dd_config.api_key') ?? '';
+	$datadog_url = $this->ddConfig->get('dd_config.api_url') ?? '';
+	$dd_headers = [
+		'Accept' => 'application/json',
+		'Content-type' => 'application/json',
+		'DD-API-KEY' => $dd_api_key,
+	];
+	$datalog_msg = "";
+	try {
+		if (!empty($context)) {
+			$datalog_msg = $context['response'];
+		}
+		else {
+			$datalog_msg = $e->getResponse()->getBody()->getContents();
+		}
+		$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg);
+		$this->httpClient->request('POST', $datadog_url, [
 				'verify' => TRUE,
 				'json' => [
 				[
@@ -135,15 +140,16 @@ class DataDogService {
 					'hostname' => $hostname,
 					'message' => $datalog_msg,
 					'service' => $api_name,
-					"status" => 'error',
-				],
-				],
-				'headers' => $dd_headers,
-			]);
-		}
-		catch (RequestException $e) {
-		}
-		// End of datadog implementation.
+					'status' => 'error',
+			],
+			],
+			'headers' => $dd_headers,
+		]);
+		
 	}
+	  catch (RequestException $e) {
+	  }
+	// End of datadog implementation.
+}
 
 }
