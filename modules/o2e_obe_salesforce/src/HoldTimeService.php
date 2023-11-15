@@ -160,7 +160,7 @@ class HoldTimeService {
       ]);
       $this->obeSfLogger->log('Salesforce - Hold Time Fail', 'error', $e->getMessage());
       // Datadog
-      $this->dataDogService->createFailDatadog('Salesforce - Hold Time Fail', $e); 
+      $this->dataDogService->createFailDatadog('Salesforce - Hold Time Fail', 'POST', $api_url, $e); 
     }
   }
 

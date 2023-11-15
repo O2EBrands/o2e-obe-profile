@@ -165,7 +165,7 @@ class AreaVerificationService {
     catch (RequestException $e) {
       $this->obeSfLogger->log('Salesforce - VerifyAreaServiced Fail', 'error', $e->getMessage());
       // Datadog
-      $this->dataDogService->createFailDatadog('Salesforce - VerifyAreaServiced Fail', $e); 
+      $this->dataDogService->createFailDatadog('Salesforce - VerifyAreaServiced Fail', 'GET', $api_url, $e ); 
       if (!empty($e->getResponse())) {
         // Tempstore to store areaverification request log.
         $tempstore->set('areaverification', [
