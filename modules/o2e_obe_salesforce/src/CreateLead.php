@@ -154,7 +154,7 @@ class CreateLead {
     catch (RequestException $e) {
       $this->obeSfLogger->log('Salesforce - Create Lead Fail', 'error', $e->getMessage());
       // Datadog
-      $this->dataDogService->createFailDatadog('Salesforce - Create Lead Fail', $e); 
+      $this->dataDogService->createFailDatadog('Salesforce - Create Lead Fail', 'POST', $api_url, $e); 
       if (!empty($e->getResponse())) {
         // Tempstore to store createLead request log.
         $this->tempStoreFactory->get('o2e_obe_salesforce')->set('createLead', [

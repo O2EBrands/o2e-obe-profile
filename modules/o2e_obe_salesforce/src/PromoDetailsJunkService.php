@@ -154,7 +154,7 @@ class PromoDetailsJunkService {
       ]);
       $this->obeSfLogger->log('Salesforce - Promo Details Junk Fail', 'error', $e->getMessage());
       // Datadog
-      $this->dataDogService->createFailDatadog('Salesforce - Promo Details Junk Fail', $e); 
+      $this->dataDogService->createFailDatadog('Salesforce - Promo Details Junk Fail', 'GET', $api_url, $e); 
     }
   }
 

@@ -157,7 +157,7 @@ class BookJobJunkService {
     catch (RequestException $e) {
       $this->obeSfLogger->log('Salesforce - BookJobJunk2 Fail', 'error', $e->getMessage());
       // Datadog
-      $this->dataDogService->createFailDatadog('Salesforce - BookJobJunk2 Fail', $e); 
+      $this->dataDogService->createFailDatadog('Salesforce - BookJobJunk2 Fail', 'POST', $api_url, $e); 
       if (!empty($e->getResponse())) {
         // Tempstore to store bookjobservice request log.
         $this->tempStoreFactory->get('o2e_obe_salesforce')->set('bookjobservice', [

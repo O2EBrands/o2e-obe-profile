@@ -254,7 +254,7 @@ class AvailableTimesService {
         ]);
         $this->obeSfLogger->log('Salesforce - GetAvailableTimes Fail', 'error', $e->getMessage());
         // Datadog
-        $this->dataDogService->createFailDatadog('Salesforce - GetAvailableTimes Fail', $e); 
+        $this->dataDogService->createFailDatadog('Salesforce - GetAvailableTimes Fail', 'POST', $api_url, $e); 
       }
     }
   }

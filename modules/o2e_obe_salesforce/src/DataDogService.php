@@ -9,6 +9,7 @@ use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Http\RequestStack;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use GuzzleHttp\Psr7\Response;
+use Drupal\Component\Serialization\Json;
 
 /**
  * Data Dog Service  class is return the book Job details.
@@ -84,14 +85,15 @@ class DataDogService {
 				$zip = 'zip_code="' . $tempstore['from_postal_code'] . '" '; 
 				$request_method = 'request.method="'. $request_method .'" ';
 				$request_url = 'request.url="' . $api_url . '" '; 
-				$response_http_status = 'response.http_status ="' . $response->getStatusCode() . '" '; 
-				$response_body = 'response.body="' . $response->getReasonPhrase() . '" '; 
+				$response_http_status = 'response.http_status="' . $response->getStatusCode() . '" '; 
+				$response_body = 'response.body="' . $response->getBody() . '" '; 
 				$response_api_time = 'response.api_response_time="' . $response_duration . '" '; 
 				$user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" '; 
 				$datalog_msg =  $ip_addr . $zip . $request_method . $request_url 
 					. $response_http_status . $response_body . $response_api_time .  $user_agent_info;
-				//$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg); 
-				$this->httpClient->request('POST', $datadog_url, [
+				$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg);  // For testing purpose
+
+        $this->httpClient->request('POST', $datadog_url, [
 					'verify' => TRUE,
 					'json' => [
 						[
@@ -104,6 +106,7 @@ class DataDogService {
 					],
 					'headers' => $dd_headers,
 				]);
+      
 			}
 			catch (RequestException $e) {
 			}
@@ -112,7 +115,7 @@ class DataDogService {
   /**
    * Create a fail entry in datadog
    */
-  public function createFailDatadog(string $api_name, RequestException $e = NULL, array $context = []) {
+  public function createFailDatadog(string $api_name, string $request_method, string $api_url, RequestException $e = NULL, array $context = []) {
 	// Variables for Datadog.
 	$hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
 	$dd_env = (!empty($_ENV["PANTHEON_ENVIRONMENT"])) ? 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"] : '';
@@ -124,14 +127,26 @@ class DataDogService {
 		'DD-API-KEY' => $dd_api_key,
 	];
 	$datalog_msg = "";
+  $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
 	try {
+
+    $ip_address_value = \Drupal::request()->getClientIp();
+    $ip_addr = 'ip_address="' . $ip_address_value . '" '; 
+    $zip = 'zip_code="' . $tempstore['from_postal_code'] . '" '; 
+    $request_method = 'request.method="'. $request_method .'" ';
+    $request_url = 'request.url="' . $api_url . '" '; 
+    $user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" '; 
+
 		if (!empty($context)) {
-			$datalog_msg = $context['response'];
+			$request_error = $user_agent_info;
 		}
 		else {
-			$datalog_msg = $e->getResponse()->getBody()->getContents();
+			$response_http_status = 'response.http_status ="' . $e->getCode() . '" '; 
+			$response_body = 'response.body="' . $e->getResponseBodySummary($e->getResponse()) . '" '; 
+			$request_error =  $response_http_status . $response_body;
 		}
-		//$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg);
+    $datalog_msg =  $ip_addr . $zip . $request_method . $request_url . $request_error .  $user_agent_info;
+		$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg); // For testing purpose
 		$this->httpClient->request('POST', $datadog_url, [
 				'verify' => TRUE,
 				'json' => [
@@ -148,9 +163,9 @@ class DataDogService {
 		]);
 		
 	}
-	  catch (RequestException $e) {
-	  }
+	catch (RequestException $e) {
+	}
 	// End of datadog implementation.
-}
+  }
 
 }
