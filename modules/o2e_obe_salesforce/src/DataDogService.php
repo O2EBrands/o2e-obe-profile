@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Http\RequestStack;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * Data Dog Service  class is return the book Job details.
@@ -63,7 +64,7 @@ class DataDogService {
   /**
    * Create a success entry in datadog
    */
-  public function createSuccessDatadog($api_name,$request_method, $api_url, $response, $response_duration) {
+  public function createSuccessDatadog(string $api_name, string $request_method, string $api_url, Response $response, string $response_duration) {
 		// Variables for Datadog.
 		$hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
 		$dd_env = (!empty($_ENV["PANTHEON_ENVIRONMENT"])) ? 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"] : '';
@@ -89,7 +90,7 @@ class DataDogService {
 				$user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" '; 
 				$datalog_msg =  $ip_addr . $zip . $request_method . $request_url 
 					. $response_http_status . $response_body . $response_api_time .  $user_agent_info;
-				$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg); 
+				//$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg); 
 				$this->httpClient->request('POST', $datadog_url, [
 					'verify' => TRUE,
 					'json' => [
@@ -130,7 +131,7 @@ class DataDogService {
 		else {
 			$datalog_msg = $e->getResponse()->getBody()->getContents();
 		}
-		$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg);
+		//$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg);
 		$this->httpClient->request('POST', $datadog_url, [
 				'verify' => TRUE,
 				'json' => [
