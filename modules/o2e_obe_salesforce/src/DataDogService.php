@@ -65,8 +65,8 @@ class DataDogService {
   /**
    * Create a success entry in datadog
    */
-  public function createSuccessDatadog(string $api_name, string $request_method, string $api_url, Response $response, string $response_duration) {
-		// Variables for Datadog.
+  public function createSuccessDatadog(string $api_name, string $request_method, string $api_url, Response $response = null, string $response_duration, array $context = []) {
+    // Variables for Datadog.
 		$hostname = $this->request->getCurrentRequest()->getSchemeAndHttpHost();
 		$dd_env = (!empty($_ENV["PANTHEON_ENVIRONMENT"])) ? 'env: ' . $_ENV["PANTHEON_ENVIRONMENT"] : '';
 		$dd_api_key = $this->ddConfig->get('dd_config.api_key') ?? '';
@@ -77,9 +77,13 @@ class DataDogService {
 			'DD-API-KEY' => $dd_api_key,
 		];
 		$datalog_msg = "";
-		$tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
 
 		try {
+      if (!empty($context)) {
+        $datalog_msg = $context['response'];
+      }
+      else {
+        $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
 				$ip_address_value = \Drupal::request()->getClientIp();
 				$ip_addr = 'ip_address="' . $ip_address_value . '" '; 
 				$zip = 'zip_code="' . $tempstore['from_postal_code'] . '" '; 
@@ -91,25 +95,24 @@ class DataDogService {
 				$user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" '; 
 				$datalog_msg =  $ip_addr . $zip . $request_method . $request_url 
 					. $response_http_status . $response_body . $response_api_time .  $user_agent_info;
-				// $this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg);  
-
-        $this->httpClient->request('POST', $datadog_url, [
-					'verify' => TRUE,
-					'json' => [
-						[
-							'ddsource' => 'drupal',
-							'ddtags' => $dd_env,
-							'hostname' => $hostname,
-							'message' => $datalog_msg,
-							'service' => $api_name,
-						],
-					],
-					'headers' => $dd_headers,
-				]);
+      }
+      $this->httpClient->request('POST', $datadog_url, [
+        'verify' => TRUE,
+        'json' => [
+          [
+            'ddsource' => 'drupal',
+            'ddtags' => $dd_env,
+            'hostname' => $hostname,
+            'message' => $datalog_msg,
+            'service' => $api_name,
+          ],
+        ],
+        'headers' => $dd_headers,
+      ]);
       
-			}
-			catch (RequestException $e) {
-			}
+    }
+    catch (RequestException $e) {
+    }
   }
 
   /**
@@ -129,23 +132,21 @@ class DataDogService {
 	$datalog_msg = "";
   $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
 	try {
-    $ip_address_value = \Drupal::request()->getClientIp();
-    $ip_addr = 'ip_address="' . $ip_address_value . '" '; 
-    $zip = 'zip_code="' . $tempstore['from_postal_code'] . '" '; 
-    $request_method = 'request.method="'. $request_method .'" ';
-    $request_url = 'request.url="' . $api_url . '" '; 
-    $user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" '; 
-
 		if (!empty($context)) {
-			$request_error = $user_agent_info;
+			$datalog_msg = $context['response'];
 		}
 		else {
-			$response_http_status = 'response.http_status ="' . $e->getCode() . '" '; 
+      $ip_address_value = \Drupal::request()->getClientIp();
+      $ip_addr = 'ip_address="' . $ip_address_value . '" '; 
+      $zip = 'zip_code="' . $tempstore['from_postal_code'] . '" '; 
+      $request_method = 'request.method="'. $request_method .'" ';
+      $request_url = 'request.url="' . $api_url . '" '; 
+      $user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" ';       
+			$response_http_status = 'response.http_status="' . $e->getCode() . '" '; 
 			$response_body = 'response.body="' . $e->getResponseBodySummary($e->getResponse()) . '" '; 
-			$request_error =  $response_http_status . $response_body;
+      $datalog_msg =  $ip_addr . $zip . $request_method . $request_url . $response_http_status 
+        . $response_body .  $user_agent_info;      
 		}
-    $datalog_msg =  $ip_addr . $zip . $request_method . $request_url . $request_error .  $user_agent_info;
-	//	$this->obeSfLogger->log('DataDog Log  - ' .  $api_name, 'notice', $datalog_msg); 
   
 		$this->httpClient->request('POST', $datadog_url, [
 				'verify' => TRUE,
