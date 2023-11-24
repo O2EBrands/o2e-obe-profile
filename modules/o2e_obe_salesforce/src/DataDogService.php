@@ -6,10 +6,10 @@ use GuzzleHttp\Client;
 use Drupal\Core\State\State;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
-use Drupal\Core\Http\RequestStack;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use GuzzleHttp\Psr7\Response;
 use Drupal\Component\Serialization\Json;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Data Dog Service  class is return the book Job details.
