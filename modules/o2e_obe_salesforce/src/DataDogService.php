@@ -84,17 +84,17 @@ class DataDogService {
       }
       else {
         $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
-				$ip_address_value = \Drupal::request()->getClientIp();
-				$ip_addr = 'ip_address="' . $ip_address_value . '" '; 
-				$zip = 'zip_code="' . $tempstore['from_postal_code'] . '" '; 
-				$request_method = 'request.method="'. $request_method .'" ';
-				$request_url = 'request.url="' . $api_url . '" '; 
-				$response_http_status = 'response.http_status="' . $response->getStatusCode() . '" '; 
-				$response_body = 'response.body="' . $response->getBody() . '" '; 
-				$response_api_time = 'response.api_response_time="' . $response_duration . '" '; 
-				$user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" '; 
-				$datalog_msg =  $ip_addr . $zip . $request_method . $request_url 
-					. $response_http_status . $response_body . $response_api_time .  $user_agent_info;
+        $ip_address_value = \Drupal::request()->getClientIp();
+        $ip_addr = 'ip_address="' . $ip_address_value . '" ';
+        $zip = 'zip_code="' . $tempstore['from_postal_code'] . '" ';
+        $request_method = 'request.method="'. $request_method .'" ';
+        $request_url = 'request.url="' . $api_url . '" ';
+        $response_http_status = 'response.http_status="' . $response->getStatusCode() . '" ';
+        $response_body = 'response.body="' . $response->getBody() . '" ';
+        $response_api_time = 'response.api_response_time="' . $response_duration . '" ';
+        $user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" ';
+        $datalog_msg =  $ip_addr . $zip . $request_method . $request_url
+          . $response_http_status . $response_body . $response_api_time .  $user_agent_info;
       }
       $this->httpClient->request('POST', $datadog_url, [
         'verify' => TRUE,
@@ -109,7 +109,7 @@ class DataDogService {
         ],
         'headers' => $dd_headers,
       ]);
-      
+
     }
     catch (RequestException $e) {
     }
@@ -136,18 +136,20 @@ class DataDogService {
 			$datalog_msg = $context['response'];
 		}
 		else {
-      $ip_address_value = \Drupal::request()->getClientIp();
-      $ip_addr = 'ip_address="' . $ip_address_value . '" '; 
-      $zip = 'zip_code="' . $tempstore['from_postal_code'] . '" '; 
-      $request_method = 'request.method="'. $request_method .'" ';
-      $request_url = 'request.url="' . $api_url . '" '; 
-      $user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" ';       
-			$response_http_status = 'response.http_status="' . $e->getCode() . '" '; 
-			$response_body = 'response.body="' . $e->getResponseBodySummary($e->getResponse()) . '" '; 
-      $datalog_msg =  $ip_addr . $zip . $request_method . $request_url . $response_http_status 
-        . $response_body .  $user_agent_info;      
+      if (!empty($e->getResponse())) {
+        $ip_address_value = \Drupal::request()->getClientIp();
+        $ip_addr = 'ip_address="' . $ip_address_value . '" ';
+        $zip = 'zip_code="' . $tempstore['from_postal_code'] . '" ';
+        $request_method = 'request.method="'. $request_method .'" ';
+        $request_url = 'request.url="' . $api_url . '" ';
+        $user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" ';
+        $response_http_status = 'response.http_status="' . $e->getCode() . '" ';
+        $response_body = 'response.body="' . $e->getResponseBodySummary($e->getResponse()) . '" ';
+        $datalog_msg =  $ip_addr . $zip . $request_method . $request_url . $response_http_status
+          . $response_body .  $user_agent_info;
+      }
 		}
-  
+
 		$this->httpClient->request('POST', $datadog_url, [
 				'verify' => TRUE,
 				'json' => [
@@ -162,7 +164,7 @@ class DataDogService {
 			],
 			'headers' => $dd_headers,
 		]);
-		
+
 	}
 	catch (RequestException $e) {
 	}
