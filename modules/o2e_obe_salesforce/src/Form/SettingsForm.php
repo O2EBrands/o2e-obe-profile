@@ -284,14 +284,9 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('create_lead.api_url_segment'),
       '#required' => TRUE,
     ];
-    $form['st_cache_refresh_franchise'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('ST Cache Refresh Franchise Table API Details'),
-      '#tree' => TRUE,
-    ];
     $form['st_cache_create_serviceid'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t('ST Cache Create Service ID API Details'),
+      '#title' => $this->t('Create Service ID API Details'),
       '#tree' => TRUE,
     ];
     $form['st_cache_create_serviceid']['api_url_segment'] = [
