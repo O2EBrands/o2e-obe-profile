@@ -289,12 +289,6 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('ST Cache Refresh Franchise Table API Details'),
       '#tree' => TRUE,
     ];
-    $form['st_cache_refresh_franchise']['api_url_segment'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Franchise Refresh Service'),
-      '#default_value' => $config->get('st_cache_refresh_franchise.api_url_segment'),
-      '#required' => TRUE,
-    ];
     $form['st_cache_create_serviceid'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('ST Cache Create Service ID API Details'),
@@ -343,7 +337,6 @@ class SettingsForm extends ConfigFormBase {
       ->set('sf_book_job_junk', $form_state->getValue('sf_book_job_junk'))
       ->set('sf_hold_time', $form_state->getValue('sf_hold_time'))
       ->set('create_lead', $form_state->getValue('create_lead'))
-      ->set('st_cache_refresh_franchise', $form_state->getValue('st_cache_refresh_franchise'))
       ->set('st_cache_create_serviceid', $form_state->getValue('st_cache_create_serviceid'))
       ->save();
     // Salesforce config data to be stored in STATE.
