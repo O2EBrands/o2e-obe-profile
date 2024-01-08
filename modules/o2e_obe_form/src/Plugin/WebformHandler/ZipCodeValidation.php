@@ -61,6 +61,12 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
    */
   protected $tempStoreFactory;
 
+    /**
+   * The language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
   /**
    * {@inheritdoc}
    */
@@ -71,6 +77,7 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
     $instance->state = $container->get('state');
     $instance->timeService = $container->get('datetime.time');
     $instance->tempStoreFactory = $container->get('tempstore.private');
+    $instance->languageManager = $container->get('language_manager');
     return $instance;
   }
 
@@ -99,46 +106,49 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
         $zip_code = str_replace(' ', '', $zip_code);
         $zip_code = preg_replace('/\s+/', '', $zip_code);
         $zip_code = str_replace($delete_val, '', $zip_code);
+        $langcode = $this->languageManager->getCurrentLanguage()->getId();
+        if ((preg_match('#[0-9]{5}#', $zip_code) && ($langcode == 'en') || (preg_match('/^([a-zA-Z]\d[a-zA-Z])\ {0,1}(\d[a-zA-Z]\d)$/', $zip_code) && ($langcode == 'en-ca' || $langcode == 'fr-ca')))) {
         $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
-        if (!empty($response)) {
-          if (isset($response['service_id'])) {
-            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
-            $this->tempStoreFactory->get('o2e_obe_salesforce')->set('postalCodeData', [
-              'state' => $response['state'],
-              'zip_code' => $response['from_postal_code'],
-              'job_duration' => $response['job_duration'],
-              'drivetime_adjustment' => $response['drivetime_adjustment'] ?? '',
-              'franchise_id' => $response['franchise_id'],
-              'franchise_name' => $response['franchise_name'],
-              'geolocation' => $response['geolocation'] ?? '',
-            ]);
-            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
-            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
-            return TRUE;
-          }
-          else {
-            $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
-            $message = $booking_error_message;
-            if (isset($response['code']) && $response['code'] === 404) {
-              $this->tempStoreFactory->get('o2e_obe_salesforce')->set('ans_zip', $zip_code);
-              $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
-              $enable_ans = $salesforceConfigData['enable_ans'];
-              if ($enable_ans == TRUE) {
-                $message = Markup::create($salesforceConfigData['ans_message']);
-              }
-              else {
-                $message = $response['message'];
-              }
+          if (!empty($response)) {
+            if (isset($response['service_id'])) {
+              $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
+              $this->tempStoreFactory->get('o2e_obe_salesforce')->set('postalCodeData', [
+                'state' => $response['state'],
+                'zip_code' => $response['from_postal_code'],
+                'job_duration' => $response['job_duration'],
+                'drivetime_adjustment' => $response['drivetime_adjustment'] ?? '',
+                'franchise_id' => $response['franchise_id'],
+                'franchise_name' => $response['franchise_name'],
+                'geolocation' => $response['geolocation'] ?? '',
+              ]);
+              $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('slotHoldTime');
+              $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('ans_zip');
+              return TRUE;
             }
             else {
-              $message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('o2e_obe_common.500_message');
-              if (!empty($message)) {
-                $message = Markup::create($message);
+              $this->tempStoreFactory->get('o2e_obe_salesforce')->delete('response');
+              $message = $booking_error_message;
+              if (isset($response['code']) && $response['code'] === 404) {
+                $this->tempStoreFactory->get('o2e_obe_salesforce')->set('ans_zip', $zip_code);
+                $salesforceConfigData = $this->salesforceConfig->get('o2e_obe_salesforce.settings')->get('sf_verify_area');
+                $enable_ans = $salesforceConfigData['enable_ans'];
+                if ($enable_ans == TRUE) {
+                  $message = Markup::create($salesforceConfigData['ans_message']);
+                }
+                else {
+                  $message = $response['message'];
+                }
               }
+              else {
+                $message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('o2e_obe_common.500_message');
+                if (!empty($message)) {
+                  $message = Markup::create($message);
+                }
+              }
+              $formState->setErrorByName('from_postal_code', $message);
             }
-            $formState->setErrorByName('from_postal_code', $message);
           }
-        }
+      }
       }
       else {
         $formState->setErrorByName('', $this->t('Invalid ZIP/Postal code format'));
