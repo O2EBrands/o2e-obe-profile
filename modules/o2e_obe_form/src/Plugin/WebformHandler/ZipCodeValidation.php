@@ -107,7 +107,8 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
         $zip_code = preg_replace('/\s+/', '', $zip_code);
         $zip_code = str_replace($delete_val, '', $zip_code);
         $langcode = $this->languageManager->getCurrentLanguage()->getId();
-        //if ((preg_match('#[0-9]{5}#', $zip_code) && ($langcode == 'en') || (preg_match('/^([a-zA-Z]\d[a-zA-Z])\ {0,1}(\d[a-zA-Z]\d)$/', $zip_code) && ($langcode == 'en-ca' || $langcode == 'fr-ca')) || (strlen($zip_code) == 4) && (preg_match('#[0-9]{4}#', $zip_code)) )) {
+        $brand = $this->salesforceConfig->get('o2e_obe_common.settings')->get('o2e_obe_common')['brand'];
+        if ((preg_match('#[0-9]{5}#', $zip_code) && ($langcode == 'en') || (preg_match('/^([a-zA-Z]\d[a-zA-Z])\ {0,1}(\d[a-zA-Z]\d)$/', $zip_code) && ($langcode == 'en-ca' || $langcode == 'fr-ca')) || ($brand == 'GJ AU') )) {
           $response = $this->areaVerificationManager->verifyAreaCode($zip_code);
           if (!empty($response)) {
             if (isset($response['service_id'])) {
@@ -148,7 +149,7 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
               $formState->setErrorByName('from_postal_code', $message);
             }
           }
-     // }
+      }
       }
       else {
         $formState->setErrorByName('', $this->t('Invalid ZIP/Postal code format'));
