@@ -170,6 +170,7 @@ class AreaVerificationService {
           'request' => $request,
           'response' => $e->getResponseBodySummary($e->getResponse()),
         ]);
+        // Save the zipcode to tempstore.
         $tempstore->set('response', [
           'service_id' => '',
           'from_postal_code' => $zipcode,
