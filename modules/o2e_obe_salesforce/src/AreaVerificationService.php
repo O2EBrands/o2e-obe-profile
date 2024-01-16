@@ -162,10 +162,7 @@ class AreaVerificationService {
       ]);
       return $result;
     }
-    catch (RequestException $e) {
-      $this->obeSfLogger->log('Salesforce - VerifyAreaServiced Fail', 'error', $e->getMessage());
-      // Datadog
-      $this->dataDogService->createFailDatadog('Salesforce - VerifyAreaServiced Fail', 'GET', $api_url, $e ); 
+    catch (RequestException $e) {    
       if (!empty($e->getResponse())) {
         // Tempstore to store areaverification request log.
         $tempstore->set('areaverification', [
@@ -173,6 +170,18 @@ class AreaVerificationService {
           'request' => $request,
           'response' => $e->getResponseBodySummary($e->getResponse()),
         ]);
+        $tempstore->set('response', [
+          'service_id' => '',
+          'from_postal_code' => $zipcode,
+          'franchise_id' => '',
+          'franchise_name' => '',
+          'job_duration' => '',
+          'lastServiceTime' => '',
+          'state' => '',
+        ]);
+        $this->obeSfLogger->log('Salesforce - VerifyAreaServiced Fail', 'error', $e->getMessage());
+        // Datadog
+        $this->dataDogService->createFailDatadog('Salesforce - VerifyAreaServiced Fail', 'GET', $api_url, $e ); 
         return [
           'code' => $e->getCode(),
           'message' => $e->getResponseBodySummary($e->getResponse()),
