@@ -171,15 +171,7 @@ class AreaVerificationService {
           'response' => $e->getResponseBodySummary($e->getResponse()),
         ]);
         // Save the zipcode to tempstore.
-        $tempstore->set('response', [
-          'service_id' => '',
-          'from_postal_code' => $zipcode,
-          'franchise_id' => '',
-          'franchise_name' => '',
-          'job_duration' => '',
-          'lastServiceTime' => $currentTimeStamp,
-          'state' => '',
-        ]);
+        $tempstore->set('from_postal_code', $zipcode);
         $this->obeSfLogger->log('Salesforce - VerifyAreaServiced Fail', 'error', $e->getMessage());
         // Datadog
         $this->dataDogService->createFailDatadog('Salesforce - VerifyAreaServiced Fail', 'GET', $api_url, $e ); 

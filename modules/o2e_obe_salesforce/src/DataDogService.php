@@ -130,7 +130,7 @@ class DataDogService {
 		'DD-API-KEY' => $dd_api_key,
 	];
 	$datalog_msg = "";
-  $tempstore = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('response');
+  $from_postal_code = $this->tempStoreFactory->get('o2e_obe_salesforce')->get('from_postal_code') ?? '';
 	try {
 		if (!empty($context)) {
 			$datalog_msg = $context['response'];
@@ -139,7 +139,7 @@ class DataDogService {
       if (!empty($e->getResponse())) {
         $ip_address_value = \Drupal::request()->getClientIp();
         $ip_addr = 'ip_address="' . $ip_address_value . '" ';
-        $zip = 'zip_code="' . $tempstore['from_postal_code'] . '" ';
+        $zip = 'zip_code="' . $from_postal_code . '" ';
         $request_method = 'request.method="'. $request_method .'" ';
         $request_url = 'request.url="' . $api_url . '" ';
         $user_agent_info = 'user_agent="' . $_SERVER['HTTP_USER_AGENT'] . '" ';
