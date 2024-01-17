@@ -177,7 +177,7 @@ class AreaVerificationService {
           'franchise_id' => '',
           'franchise_name' => '',
           'job_duration' => '',
-          'lastServiceTime' => '',
+          'lastServiceTime' => $currentTimeStamp,
           'state' => '',
         ]);
         $this->obeSfLogger->log('Salesforce - VerifyAreaServiced Fail', 'error', $e->getMessage());
