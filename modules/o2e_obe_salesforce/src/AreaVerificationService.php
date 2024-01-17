@@ -121,6 +121,8 @@ class AreaVerificationService {
       'brand' => $this->authTokenManager->getSfConfig('sf_brand.brand'),
       'from_postal_code' => $zipcode,
     ];
+    // Save the zipcode to tempstore.
+    $tempstore->set('from_postal_code', $zipcode);
     // Request object for Email entry.
     $request = $api_url . '?' . UrlHelper::buildQuery($options['query']);
     try {
@@ -170,8 +172,7 @@ class AreaVerificationService {
           'request' => $request,
           'response' => $e->getResponseBodySummary($e->getResponse()),
         ]);
-        // Save the zipcode to tempstore.
-        $tempstore->set('from_postal_code', $zipcode);
+        
         $this->obeSfLogger->log('Salesforce - VerifyAreaServiced Fail', 'error', $e->getMessage());
         // Datadog
         $this->dataDogService->createFailDatadog('Salesforce - VerifyAreaServiced Fail', 'GET', $api_url, $e ); 
