@@ -264,9 +264,10 @@ class AvailableTimesService {
    */
   public function getTimesSlots() {
     $params = $this->request->getCurrentRequest();
-    $brand = $this->authTokenManager->getSfConfig('sf_brand.brand');
-
-    if (!empty($brand)) {
+    $brand = $this->authTokenManager->getSfConfig('sf_brand.brand'); 
+    $referer_url = $params->headers->get('referer');
+    $pattern = "/onlinebooking/i";
+    if (!empty($brand) && preg_match($pattern, $referer_url)) {
       if ($brand === '1-800-GOT-JUNK?') {
         $start_date = $params->get('start_date');
         if ($start_date) {
@@ -283,7 +284,7 @@ class AvailableTimesService {
           return FALSE;
         }
       }
-      else {
+      else { 
         $start_date = $params->get('start_date');
         $end_date = $params->get('end_date');
         if ($start_date && $end_date) {
@@ -303,11 +304,12 @@ class AvailableTimesService {
     }
     else {
       $response = [         
-        'message' => 'Salesforce - GetAvailableTimes Fail, Invalid request.',
+        'message' => 'Salesforce - GetAvailableTimes Fail, Invalid Request.',
       ];
       return new JsonResponse($response);    
     }
   }
+
 
 
   /**
