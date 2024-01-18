@@ -98,7 +98,12 @@ class ZipCodeValidation extends ObeWebformHandlerBase {
     $current_page = $formState->get('current_page');
     $selected_step = $this->configuration['steps'];
     if ($current_page === $selected_step) {
-      $zip_code = !empty($formState->getValue('from_postal_code')) ? $formState->getValue('from_postal_code') : NULL;
+      $query = \Drupal::request()->query->all();      
+      if($query['zipcode'] != ''){
+        $zip_code = $query['zipcode'] ?? '';
+      } else {
+        $zip_code = !empty($formState->getValue('from_postal_code')) ? $formState->getValue('from_postal_code') : NULL;
+      }      
       $booking_error_message = $this->salesforceConfig->get('o2e_obe_common.settings')->get('o2e_obe_common')['booking_error_message'];
       // Skip empty field.
       if (!empty($zip_code)) {
